@@ -32,6 +32,9 @@ next-env.d.ts
 .DS_Store
 *.pem
 
+# local agent instructions (not for the public repo)
+AGENTS.md
+
 # playwright
 /test-results/
 /playwright-report/

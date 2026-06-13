@@ -12,7 +12,7 @@
 
 > DevTrack is **designed, built, and maintained by Mowlid only**. This repository has a **single author** — no third-party code contributions.
 
-> **⚠️ Disclaimer:** This project is **not affiliated with, endorsed by, or connected to Linear, Jira, Asana, or any other project management platform**. All organization names, issues, and user data in the seed files are entirely fictional. Third-party service names (Clerk, Convex, Vercel, Next.js, OpenAI, Tailwind CSS, etc.) are trademarks of their respective owners and are used here solely to describe the technologies used in this project.
+> **⚠️ Disclaimer:** This project is **not affiliated with, endorsed by, or connected to Linear, Jira, Asana, or any other project management platform**. All organization names, issues, and user data in the seed files are entirely fictional. Third-party service names (Clerk, Convex, Vercel, Next.js, Groq, Tailwind CSS, etc.) are trademarks of their respective owners and are used here solely to describe the technologies used in this project.
 
 A full-stack, real-time **Linear clone** — a B2B multi-tenant SaaS issue tracker where teams manage issues on Kanban boards, plan projects and cycles, collaborate with comments and mentions, and ship faster with a built-in **AI agent** that knows their entire workspace.
 
@@ -20,10 +20,10 @@ A full-stack, real-time **Linear clone** — a B2B multi-tenant SaaS issue track
 > Anyone who wants to learn how to build a production-grade, multi-tenant B2B SaaS using modern tools — or anyone looking for a serious starter template for their own project management product.
 
 > **What makes it different?**
-> Every update is **real-time** (no page refreshes). Auth, organizations, AND billing are handled by **Clerk** — no Stripe wiring required. The backend is powered by **Convex** — a reactive database that pushes changes to every connected client instantly. And there's a fully working **AI agent** (Convex Agent + OpenAI) with org-scoped tools, triage assist, duplicate detection, and rate limiting.
+> Every update is **real-time** (no page refreshes). Auth, organizations, AND billing are handled by **Clerk** — no Stripe wiring required. The backend is powered by **Convex** — a reactive database that pushes changes to every connected client instantly. And there's a fully working **AI agent** (Convex Agent + [Groq](https://groq.com/)) with org-scoped tools, triage assist, duplicate detection, and rate limiting.
 
 > **Under the hood**
-> Bun · Next.js 16 App Router · Convex reactive backend · Clerk auth + organizations + B2B billing · Convex Agent + OpenAI · @dnd-kit drag & drop · shadcn/ui · Tailwind CSS v4 · TypeScript strict mode
+> Bun · Next.js 16 App Router · Convex reactive backend · Clerk auth + organizations + B2B billing · Convex Agent + Groq · @dnd-kit drag & drop · shadcn/ui · Tailwind CSS v4 · TypeScript strict mode
 
 ---
 
@@ -35,7 +35,7 @@ You'll need free accounts on these services to run the app. **Set them up before
 | ----------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------ |
 | **Clerk**               | Authentication, organizations, and B2B subscription billing  | [Create a free Clerk account →](https://clerk.com)                         |
 | **Convex**              | Real-time backend, database, vector search, and file storage | [Create a free Convex account →](https://convex.dev)                       |
-| **OpenAI**              | Powers the AI agent, triage assist, and duplicate detection  | [platform.openai.com →](https://platform.openai.com)                     |
+| **Groq**                | Powers the AI agent, triage assist, and duplicate detection  | [Get a free API key →](https://groq.com/)                                 |
 | **Vercel** _(optional)_ | Deployment & hosting                                         | [vercel.com →](https://vercel.com)                                       |
 
 ---
@@ -118,8 +118,8 @@ All application code, architecture, and UI in this repository were built by Mowl
 
 ### AI Agent (Pro & Enterprise)
 
-- 🤖 **Workspace-aware chat** — A Convex Agent + OpenAI assistant with org-scoped tools: create/update/search issues, summarize cycles, report project status, list members
-- 🧠 **Duplicate detection** — Issues are embedded (1536-dim vectors) on create; the agent finds semantically similar issues before you file the same bug twice
+- 🤖 **Workspace-aware chat** — A Convex Agent + Groq assistant (`llama-3.3-70b-versatile`) with org-scoped tools: create/update/search issues, summarize cycles, report project status, list members
+- 🧠 **Duplicate detection** — Issues are embedded (1536-dim vectors) on create; the agent finds similar issues before you file the same bug twice
 - 🩺 **Triage assist** — AI-suggested priority and labels for new issues
 - 📋 **Standup & cycle reports** — Generate summaries of what shipped and what's blocked
 - ⏱️ **Rate limiting** — 50 messages/user/day on Pro, unlimited on Enterprise (`@convex-dev/rate-limiter`)
@@ -190,7 +190,7 @@ flowchart TB
     Convex -->|"Real-time sync"| Browser
     Clerk[Clerk Auth + Orgs + Billing] -->|"Svix Webhooks"| ConvexHTTP["Convex HTTP /clerk-webhook"]
     ConvexHTTP -->|"Sync users, orgs, members, subscriptions"| Convex
-    Convex -->|"Agent tools + embeddings"| OpenAI[OpenAI]
+    Convex -->|"Agent tools + embeddings"| Groq[Groq]
     Convex -->|"File storage"| Storage[Convex Storage]
     Browser -->|"proxy.ts middleware"| Clerk
 ```
@@ -205,7 +205,7 @@ flowchart TB
 - **Node.js** 18+ (required by Next.js / Convex tooling)
 - A **[Clerk](https://clerk.com)** account
 - A **[Convex](https://convex.dev)** account
-- An **[OpenAI](https://platform.openai.com)** API key (for the AI agent)
+- A **[Groq](https://groq.com/)** API key (for the AI agent)
 
 ### 1. Clone the repository
 
@@ -276,7 +276,7 @@ NEXT_PUBLIC_CONVEX_SITE_URL=https://your-deployment.convex.site
 ```bash
 npx convex env set CLERK_FRONTEND_API_URL https://your-instance.clerk.accounts.dev
 npx convex env set CLERK_WEBHOOK_SECRET whsec_...   # from step 6 below
-npx convex env set OPENAI_API_KEY sk-...            # for the AI agent
+npx convex env set GROQ_API_KEY gsk_...             # for the AI agent (Groq)
 ```
 
 ### 6. Configure Clerk Webhooks
@@ -307,7 +307,7 @@ This runs the Next.js frontend and the Convex backend in parallel. Open [http://
 - [ ] Clerk Organizations enabled
 - [ ] Clerk JWT template `convex` created with `org_id` / `org_slug` / `org_role` claims
 - [ ] Clerk Billing plans (`free_org`, `pro`, `enterprise`) and features configured
-- [ ] Convex project linked; `CLERK_FRONTEND_API_URL`, `CLERK_WEBHOOK_SECRET`, and `OPENAI_API_KEY` set in Convex env vars
+- [ ] Convex project linked; `CLERK_FRONTEND_API_URL`, `CLERK_WEBHOOK_SECRET`, and `GROQ_API_KEY` set in Convex env vars
 - [ ] Clerk webhook pointing at `https://<deployment>.convex.site/clerk-webhook`
 - [ ] `bun dev` runs without errors
 - [ ] You can sign up, create an org, and create your first issue
@@ -370,7 +370,7 @@ vercel
 npx convex deploy
 ```
 
-This deploys your Convex functions and schema to a production deployment. Set `CLERK_FRONTEND_API_URL`, `CLERK_WEBHOOK_SECRET`, and `OPENAI_API_KEY` in the Convex **production** dashboard too.
+This deploys your Convex functions and schema to a production deployment. Set `CLERK_FRONTEND_API_URL`, `CLERK_WEBHOOK_SECRET`, and `GROQ_API_KEY` in the Convex **production** dashboard too.
 
 ### Post-Deployment Checklist
 
@@ -408,7 +408,7 @@ This deploys your Convex functions and schema to a production deployment. Set `C
 | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | Plan not updating after checkout             | Make sure all `subscription.*` and `subscriptionItem.*` events are subscribed on the webhook. The plan syncs to `organizations.plan` in Convex. |
 | AI page says upgrade required on a paid plan | AI access is gated by plan in Convex (`hasAiAccess`). Confirm the subscription webhook fired and the org's plan is `pro` or `enterprise`.       |
-| AI chat errors immediately                   | Set `OPENAI_API_KEY` on the Convex deployment: `npx convex env set OPENAI_API_KEY sk-...`                                                       |
+| AI chat errors immediately                   | Set `GROQ_API_KEY` on the Convex deployment: `npx convex env set GROQ_API_KEY gsk_...`                                                         |
 | AI stops responding mid-day                  | Pro is rate-limited to 50 messages/user/day. Enterprise is unlimited.                                                                           |
 
 ### Database
@@ -471,7 +471,7 @@ Copyright © 2026 [Mowlid](https://devmowlid.vercel.app/). All rights reserved u
 
 ### Trademark Notice
 
-This project is **not affiliated with, endorsed by, or connected to Linear, Atlassian (Jira), Asana, or any other project management platform or company**. All third-party names and logos (Clerk, Convex, Vercel, Next.js, React, OpenAI, Tailwind CSS, TypeScript, etc.) are trademarks of their respective owners.
+This project is **not affiliated with, endorsed by, or connected to Linear, Atlassian (Jira), Asana, or any other project management platform or company**. All third-party names and logos (Clerk, Convex, Vercel, Next.js, React, Groq, Tailwind CSS, TypeScript, etc.) are trademarks of their respective owners.
 
 See the full [LICENSE](LICENSE) for details.
 

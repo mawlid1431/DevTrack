@@ -1,20 +1,15 @@
-import { embed, embedMany } from "ai";
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
 import { internalAction } from "../_generated/server";
 import { orgMutation } from "../lib/customFunctions";
 import { hasAiAccess } from "../lib/limits";
-import { embeddingModel, isAiConfigured } from "./models";
+import { embedTextLocally, isAiConfigured } from "./models";
 
 const BACKFILL_BATCH_SIZE = 16;
 
 /** Embed one text snippet (1536 dims — `by_embedding` index). */
 export async function embedText(text: string): Promise<number[]> {
-  const { embedding } = await embed({
-    model: embeddingModel,
-    value: text.slice(0, 8000),
-  });
-  return embedding;
+  return embedTextLocally(text);
 }
 
 /**
@@ -26,9 +21,7 @@ export const embedIssue = internalAction({
   returns: v.null(),
   handler: async (ctx, args): Promise<null> => {
     if (!isAiConfigured()) {
-      // Graceful no-op: the backfill loop will pick this issue up once the
-      // deployment has an OPENAI_API_KEY.
-      console.warn("Skipping issue embedding: OPENAI_API_KEY is not set");
+      console.warn("Skipping issue embedding: GROQ_API_KEY is not set");
       return null;
     }
     const source = await ctx.runQuery(
@@ -57,7 +50,7 @@ export const backfillOrgEmbeddings = internalAction({
   returns: v.null(),
   handler: async (ctx, args): Promise<null> => {
     if (!isAiConfigured()) {
-      console.warn("Skipping embedding backfill: OPENAI_API_KEY is not set");
+      console.warn("Skipping embedding backfill: GROQ_API_KEY is not set");
       return null;
     }
     const batch = await ctx.runQuery(
@@ -67,10 +60,7 @@ export const backfillOrgEmbeddings = internalAction({
     if (batch.length === 0) {
       return null;
     }
-    const { embeddings } = await embedMany({
-      model: embeddingModel,
-      values: batch.map((item) => item.text.slice(0, 8000)),
-    });
+    const embeddings = batch.map((item) => embedTextLocally(item.text.slice(0, 8000)));
     await ctx.runMutation(internal.agent.data.saveIssueEmbeddings, {
       orgId: args.orgId,
       items: batch.map((item, index) => ({
@@ -98,11 +88,8 @@ export const ensureOrgEmbeddings = orgMutation({
   returns: v.null(),
   handler: async (ctx): Promise<null> => {
     if (!hasAiAccess(ctx.org)) {
-      // Silent no-op — semantic features are plan-gated elsewhere.
       return null;
     }
-    // The frozen schema has no "missing embedding" index; this org-scoped
-    // existence check stops at the first match.
     const missing = await ctx.db
       .query("issues")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.org._id))

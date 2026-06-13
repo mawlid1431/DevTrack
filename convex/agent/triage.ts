@@ -1,4 +1,4 @@
-import { Output, generateText, jsonSchema } from "ai";
+import { generateText } from "ai";
 import { Infer, v } from "convex/values";
 import { internal } from "../_generated/api";
 import { Id } from "../_generated/dataModel";
@@ -140,36 +140,8 @@ export const suggestTriage = action({
 
     const labelNames = issue.orgLabels.map((label) => label.name);
     try {
-      const { output } = await generateText({
+      const { text } = await generateText({
         model: chatModel,
-        output: Output.object({
-          schema: jsonSchema<{
-            priority: SuggestedPriority;
-            labelNames: string[];
-            reasoning: string;
-          }>({
-            type: "object",
-            properties: {
-              priority: {
-                type: "string",
-                enum: [...PRIORITIES],
-                description: "Suggested priority for the issue",
-              },
-              labelNames: {
-                type: "array",
-                items: { type: "string" },
-                description:
-                  "Labels to apply, chosen ONLY from the provided workspace labels (empty if none fit)",
-              },
-              reasoning: {
-                type: "string",
-                description: "One short sentence explaining the suggestion",
-              },
-            },
-            required: ["priority", "labelNames", "reasoning"],
-            additionalProperties: false,
-          }),
-        }),
         prompt: [
           "You triage issues in a software project tracker.",
           `Issue ${issue.identifier} in team "${issue.teamName}":`,
@@ -179,10 +151,26 @@ export const suggestTriage = action({
             ? `Workspace labels you may choose from: ${labelNames.join(", ")}`
             : "This workspace has no labels yet, so suggest none.",
           "Suggest the most fitting priority (urgent = production-breaking, high = important and time-sensitive, medium = normal, low = nice-to-have, none = unclear) and any fitting labels.",
+          'Reply with ONLY valid JSON: {"priority":"none|urgent|high|medium|low","labelNames":["..."],"reasoning":"one short sentence"}',
         ]
           .filter(Boolean)
           .join("\n"),
       });
+
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error("Model did not return JSON");
+      }
+      const parsed = JSON.parse(jsonMatch[0]) as {
+        priority?: string;
+        labelNames?: string[];
+        reasoning?: string;
+      };
+      const output = {
+        priority: parsed.priority ?? "none",
+        labelNames: Array.isArray(parsed.labelNames) ? parsed.labelNames : [],
+        reasoning: parsed.reasoning ?? "No reasoning provided.",
+      };
 
       const byName = new Map(
         issue.orgLabels.map((label) => [label.name.toLowerCase(), label])
@@ -195,8 +183,8 @@ export const suggestTriage = action({
 
       return {
         ok: true as const,
-        priority: PRIORITIES.includes(output.priority)
-          ? output.priority
+        priority: PRIORITIES.includes(output.priority as SuggestedPriority)
+          ? (output.priority as SuggestedPriority)
           : ("none" as const),
         labels,
         reasoning: output.reasoning,
