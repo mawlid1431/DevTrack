@@ -1,0 +1,10 @@
+[install]
+# Native/postinstall packages that need lifecycle scripts
+trustedDependencies = [
+  "bufferutil",
+  "core-js",
+  "esbuild",
+  "sharp",
+  "unrs-resolver",
+  "utf-8-validate",
+]
