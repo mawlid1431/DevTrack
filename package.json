@@ -19,7 +19,8 @@
     "start": "bun scripts/lan-url.ts && next start -H 0.0.0.0",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test:e2e": "playwright test --config=e2e/playwright.config.ts"
+    "test:e2e": "playwright test --config=e2e/playwright.config.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.69",
@@ -52,16 +53,19 @@
   },
   "devDependencies": {
     "@convex-dev/eslint-plugin": "^2.0.0",
+    "@edge-runtime/vm": "^5.0.0",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "convex-test": "0.0.54",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.0.5"
   },
   "overrides": {
     "esbuild": ">=0.28.1",
