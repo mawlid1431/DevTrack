@@ -2,6 +2,9 @@ import { v } from "convex/values";
 import { orgMutation, orgQuery } from "./lib/customFunctions";
 import { getOrgIssue } from "./issues";
 
+const MAX_LABEL_NAME_LENGTH = 48;
+const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
+
 const labelShape = {
   _id: v.id("labels"),
   _creationTime: v.number(),
@@ -25,9 +28,30 @@ export const create = orgMutation({
   args: { name: v.string(), color: v.string() },
   returns: v.id("labels"),
   handler: async (ctx, args) => {
+    const name = args.name.trim();
+    if (!name) {
+      throw new Error("Label name cannot be empty");
+    }
+    if (name.length > MAX_LABEL_NAME_LENGTH) {
+      throw new Error(
+        `Label names are limited to ${MAX_LABEL_NAME_LENGTH} characters`
+      );
+    }
+    if (!HEX_COLOR.test(args.color)) {
+      throw new Error("Label color must be a hex value like #5e6ad2");
+    }
+
+    const existing = await ctx.db
+      .query("labels")
+      .withIndex("by_org", (q) => q.eq("orgId", ctx.org._id))
+      .collect();
+    if (existing.some((l) => l.name.toLowerCase() === name.toLowerCase())) {
+      throw new Error(`A label named "${name}" already exists`);
+    }
+
     return await ctx.db.insert("labels", {
       orgId: ctx.org._id,
-      name: args.name.trim(),
+      name,
       color: args.color,
     });
   },
