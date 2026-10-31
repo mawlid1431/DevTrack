@@ -41,8 +41,24 @@ export const create = orgMutation({
   handler: async (ctx, args) => {
     const issue = await getOrgIssue(ctx, ctx.org._id, args.issueId);
 
-    if (args.fileSize > MAX_ATTACHMENT_BYTES) {
+    // Never trust the client-reported size: read the real one from storage.
+    const stored = await ctx.db.system.get(args.storageId);
+    if (!stored) {
+      throw new Error("Uploaded file not found");
+    }
+    if (stored.size > MAX_ATTACHMENT_BYTES) {
+      await ctx.storage.delete(args.storageId);
       throw new Error("Attachments are limited to 25 MB");
+    }
+
+    // Each stored file may back at most one attachment, so a storage ID
+    // can't be re-linked into another issue or organization.
+    const alreadyLinked = await ctx.db
+      .query("attachments")
+      .withIndex("by_storage", (q) => q.eq("storageId", args.storageId))
+      .first();
+    if (alreadyLinked) {
+      throw new Error("This file is already attached");
     }
 
     const fileName = args.fileName.trim() || "Untitled";
@@ -51,8 +67,8 @@ export const create = orgMutation({
       issueId: issue._id,
       storageId: args.storageId,
       fileName,
-      fileType: args.fileType,
-      fileSize: args.fileSize,
+      fileType: stored.contentType ?? args.fileType,
+      fileSize: stored.size,
       uploadedBy: ctx.user._id,
     });
 
