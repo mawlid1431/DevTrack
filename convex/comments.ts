@@ -5,6 +5,23 @@ import { getOrgIssue } from "./issues";
 import { logActivity } from "./lib/activity";
 import { orgMutation, orgQuery } from "./lib/customFunctions";
 
+/** Keeps comments well under Convex's 1 MB document limit. */
+const MAX_COMMENT_LENGTH = 10_000;
+
+/** Trim a comment body and reject empty or oversized ones. */
+function normalizeBody(raw: string): string {
+  const body = raw.trim();
+  if (!body) {
+    throw new Error("Comment cannot be empty");
+  }
+  if (body.length > MAX_COMMENT_LENGTH) {
+    throw new Error(
+      `Comments are limited to ${MAX_COMMENT_LENGTH.toLocaleString("en-US")} characters`
+    );
+  }
+  return body;
+}
+
 /** Comment enriched with author + mention display info for the feed. */
 const enrichedCommentValidator = v.object({
   _id: v.id("comments"),
@@ -112,10 +129,7 @@ export const create = orgMutation({
   handler: async (ctx, args) => {
     const issue = await getOrgIssue(ctx, ctx.org._id, args.issueId);
 
-    const body = args.body.trim();
-    if (!body) {
-      throw new Error("Comment cannot be empty");
-    }
+    const body = normalizeBody(args.body);
 
     const mentions = await filterToOrgMembers(
       ctx,
@@ -155,10 +169,7 @@ export const update = orgMutation({
       throw new Error("Only the author can edit a comment");
     }
 
-    const body = args.body.trim();
-    if (!body) {
-      throw new Error("Comment cannot be empty");
-    }
+    const body = normalizeBody(args.body);
 
     const mentions =
       args.mentions !== undefined
