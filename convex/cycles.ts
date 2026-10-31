@@ -194,6 +194,34 @@ export const candidateIssues = orgQuery({
   },
 });
 
+/**
+ * A team runs one cycle at a time. Reject a date range that overlaps any of
+ * the team's other cycles (back-to-back cycles sharing a boundary are fine).
+ */
+async function assertNoOverlap(
+  ctx: { db: QueryCtx["db"] },
+  teamId: Id<"teams">,
+  startDate: number,
+  endDate: number,
+  excludeCycleId?: Id<"cycles">
+): Promise<void> {
+  const cycles = await ctx.db
+    .query("cycles")
+    .withIndex("by_team", (q) => q.eq("teamId", teamId))
+    .collect();
+  const clash = cycles.find(
+    (other) =>
+      other._id !== excludeCycleId &&
+      startDate < other.endDate &&
+      other.startDate < endDate
+  );
+  if (clash) {
+    throw new Error(
+      `These dates overlap ${clash.name ?? `Cycle ${clash.number}`}`
+    );
+  }
+}
+
 /** Create a cycle for a team. Cycles are auto-numbered per team (Cycle 1, 2, …). */
 export const create = orgMutation({
   args: {
@@ -208,6 +236,7 @@ export const create = orgMutation({
     if (args.endDate <= args.startDate) {
       throw new Error("Cycle end date must be after its start date");
     }
+    await assertNoOverlap(ctx, args.teamId, args.startDate, args.endDate);
 
     // Claim the next per-team cycle number.
     const latest = await ctx.db
@@ -244,6 +273,9 @@ export const update = orgMutation({
     const endDate = args.endDate ?? cycle.endDate;
     if (endDate <= startDate) {
       throw new Error("Cycle end date must be after its start date");
+    }
+    if (args.startDate !== undefined || args.endDate !== undefined) {
+      await assertNoOverlap(ctx, cycle.teamId, startDate, endDate, cycle._id);
     }
 
     const updates: Partial<Doc<"cycles">> = {};
