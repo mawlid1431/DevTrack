@@ -91,6 +91,20 @@ export const getByNumber = orgQuery({
  * (and, for cycles, to the issue's team). Without this a client could link
  * an issue to another organization's user, project, cycle or issue.
  */
+const MAX_TITLE_LENGTH = 255;
+
+/** Trim a title and reject empty or overly long ones. */
+function normalizeTitle(raw: string): string {
+  const title = raw.trim();
+  if (!title) {
+    throw new Error("Issue title cannot be empty");
+  }
+  if (title.length > MAX_TITLE_LENGTH) {
+    throw new Error(`Issue titles are limited to ${MAX_TITLE_LENGTH} characters`);
+  }
+  return title;
+}
+
 async function assertIssueRefsInOrg(
   ctx: { db: QueryCtx["db"] },
   orgId: Id<"organizations">,
@@ -175,7 +189,7 @@ export const create = orgMutation({
       orgId: ctx.org._id,
       teamId: args.teamId,
       number,
-      title: args.title.trim(),
+      title: normalizeTitle(args.title),
       description: args.description,
       status: args.status ?? "todo",
       priority: args.priority ?? "none",
@@ -227,9 +241,12 @@ export const update = orgMutation({
     const changes: { field: string; oldValue?: string; newValue?: string }[] =
       [];
 
-    if (args.title !== undefined && args.title !== issue.title) {
-      updates.title = args.title.trim();
-      changes.push({ field: "title", oldValue: issue.title, newValue: args.title });
+    if (args.title !== undefined) {
+      const title = normalizeTitle(args.title);
+      if (title !== issue.title) {
+        updates.title = title;
+        changes.push({ field: "title", oldValue: issue.title, newValue: title });
+      }
     }
     if (args.description !== undefined) {
       updates.description = args.description;
