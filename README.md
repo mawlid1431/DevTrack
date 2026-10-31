@@ -8,9 +8,9 @@
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind%20CSS-v4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178c6?logo=typescript)](https://www.typescriptlang.org/)
 
-**Author & sole developer:** [Mowlid](https://devmowlid.vercel.app/) · [GitHub @Mawlid1431](https://github.com/Mawlid1431)
+**Author & maintainer:** [Mowlid](https://devmowlid.vercel.app/) · [GitHub @Mawlid1431](https://github.com/Mawlid1431)
 
-> DevTrack is **designed, built, and maintained by Mowlid only**. This repository has a **single author** — no third-party code contributions.
+> DevTrack is designed, built, and maintained by Mowlid. Issues, ideas, and pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). If DevTrack helps you, a ⭐ helps others find it.
 
 > **⚠️ Disclaimer:** This project is **not affiliated with, endorsed by, or connected to Linear, Jira, Asana, or any other project management platform**. All organization names, issues, and user data in the seed files are entirely fictional. Third-party service names (Clerk, Convex, Vercel, Next.js, Groq, Tailwind CSS, etc.) are trademarks of their respective owners and are used here solely to describe the technologies used in this project.
 
@@ -79,7 +79,7 @@ It's a multi-tenant workspace app. Every organization gets its own isolated work
 
 ## 👨‍💻 About the Developer
 
-**[Mowlid](https://devmowlid.vercel.app/)** (Dev Mowlid Haibe) is the sole designer, developer, and owner of DevTrack.
+**[Mowlid](https://devmowlid.vercel.app/)** (Dev Mowlid Haibe) is the creator and maintainer of DevTrack.
 
 | | |
 |---|---|
@@ -87,7 +87,7 @@ It's a multi-tenant workspace app. Every organization gets its own isolated work
 | **GitHub** | [@Mawlid1431](https://github.com/Mawlid1431) |
 | **License** | [MIT](LICENSE) |
 
-All application code, architecture, and UI in this repository were built by Mowlid. Third-party packages (Convex, Clerk, Next.js, etc.) are **dependencies** — not project contributors.
+DevTrack was created by Mowlid. Third-party packages (Convex, Clerk, Next.js, etc.) are dependencies. Community contributions are credited in the commit history.
 
 ---
 
@@ -449,6 +449,12 @@ Already have the base app running? Here are some ideas to make it your own:
 - 💺 **Per-seat metering** — Track active seats and surface usage on the billing page
 - 🏷️ **Add-on features** — Sell the AI agent as a standalone add-on with Clerk features
 - 🎁 **Trials** — Time-boxed Pro trials for new organizations
+
+---
+
+## 🤝 Contributing
+
+Bug reports, feature ideas, and pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup and the checks every PR must pass. Good first areas are the items in the roadmap above.
 
 ---
 
