@@ -318,6 +318,55 @@ export const remove = orgMutation({
       await ctx.db.delete(link._id);
     }
 
+    const comments = await ctx.db
+      .query("comments")
+      .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+      .collect();
+    for (const comment of comments) {
+      await ctx.db.delete(comment._id);
+    }
+
+    // Attachments own a file in storage; delete the blob as well.
+    const attachments = await ctx.db
+      .query("attachments")
+      .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+      .collect();
+    for (const attachment of attachments) {
+      await ctx.storage.delete(attachment.storageId);
+      await ctx.db.delete(attachment._id);
+    }
+
+    const activity = await ctx.db
+      .query("activity")
+      .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+      .collect();
+    for (const entry of activity) {
+      await ctx.db.delete(entry._id);
+    }
+
+    // Relations can point either way.
+    const outgoing = await ctx.db
+      .query("issueRelations")
+      .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+      .collect();
+    const incoming = await ctx.db
+      .query("issueRelations")
+      .withIndex("by_related", (q) => q.eq("relatedIssueId", issue._id))
+      .collect();
+    for (const relation of [...outgoing, ...incoming]) {
+      await ctx.db.delete(relation._id);
+    }
+
+    // Sub-issues survive as top-level issues instead of pointing at a
+    // parent that no longer exists.
+    const children = await ctx.db
+      .query("issues")
+      .withIndex("by_parent", (q) => q.eq("parentIssueId", issue._id))
+      .collect();
+    for (const child of children) {
+      await ctx.db.patch(child._id, { parentIssueId: undefined });
+    }
+
     await ctx.db.delete(issue._id);
     return null;
   },
