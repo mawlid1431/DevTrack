@@ -25,7 +25,10 @@ Thanks for helping improve DevTrack.
 ```bash
 bun run typecheck
 bun run lint
+bun run test
 ```
+
+Backend tests live next to the code as `convex/*.test.ts` and run against an in-memory Convex backend with [convex-test](https://docs.convex.dev/testing/convex-test). Add a test when you change a query or mutation.
 
 CI runs the same checks on every pull request.
 
