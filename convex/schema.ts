@@ -212,7 +212,9 @@ export default defineSchema({
     fileType: v.string(),
     fileSize: v.number(),
     uploadedBy: v.id("users"),
-  }).index("by_issue", ["issueId"]),
+  })
+    .index("by_issue", ["issueId"])
+    .index("by_storage", ["storageId"]),
 
   views: defineTable({
     orgId: v.id("organizations"),
