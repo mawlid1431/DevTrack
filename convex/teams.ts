@@ -42,7 +42,14 @@ export const create = orgAdminMutation({
   },
   returns: v.id("teams"),
   handler: async (ctx, args) => {
-    const key = args.key.toUpperCase().trim();
+    const name = args.name.trim();
+    if (!name) {
+      throw new Error("Team name cannot be empty");
+    }
+    if (name.length > 64) {
+      throw new Error("Team names are limited to 64 characters");
+    }
+    const key = args.key.trim().toUpperCase();
     if (!/^[A-Z][A-Z0-9]{0,4}$/.test(key)) {
       throw new Error(
         "Team key must be 1-5 characters, letters and digits, starting with a letter"
@@ -59,7 +66,7 @@ export const create = orgAdminMutation({
     }
     return await ctx.db.insert("teams", {
       orgId: ctx.org._id,
-      name: args.name.trim(),
+      name,
       key,
       description: args.description,
       nextIssueNumber: 1,
