@@ -31,6 +31,29 @@ export const progressShape = v.object({
 });
 
 /** Verify a project belongs to the caller's org before any read/write. */
+const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
+const MAX_PROJECT_NAME_LENGTH = 80;
+
+/** Trim a project name and reject empty or overly long ones. */
+function normalizeProjectName(raw: string): string {
+  const name = raw.trim();
+  if (!name) {
+    throw new Error("Project name is required");
+  }
+  if (name.length > MAX_PROJECT_NAME_LENGTH) {
+    throw new Error(
+      `Project names are limited to ${MAX_PROJECT_NAME_LENGTH} characters`
+    );
+  }
+  return name;
+}
+
+function assertHexColor(color: string): void {
+  if (!HEX_COLOR.test(color)) {
+    throw new Error("Project color must be a hex value like #5e6ad2");
+  }
+}
+
 async function getOrgProject(
   ctx: { db: QueryCtx["db"] },
   orgId: Id<"organizations">,
@@ -159,9 +182,9 @@ export const create = orgMutation({
   },
   returns: v.id("projects"),
   handler: async (ctx, args) => {
-    const name = args.name.trim();
-    if (!name) {
-      throw new Error("Project name is required");
+    const name = normalizeProjectName(args.name);
+    if (args.color !== undefined) {
+      assertHexColor(args.color);
     }
     await assertCanCreateProject(ctx, ctx.org);
 
@@ -205,11 +228,7 @@ export const update = orgMutation({
 
     const updates: Partial<Doc<"projects">> = {};
     if (args.name !== undefined) {
-      const name = args.name.trim();
-      if (!name) {
-        throw new Error("Project name is required");
-      }
-      updates.name = name;
+      updates.name = normalizeProjectName(args.name);
     }
     if (args.description !== undefined) {
       updates.description = args.description ?? undefined;
@@ -237,6 +256,9 @@ export const update = orgMutation({
       updates.targetDate = args.targetDate ?? undefined;
     }
     if (args.color !== undefined) {
+      if (args.color !== null) {
+        assertHexColor(args.color);
+      }
       updates.color = args.color ?? undefined;
     }
 
