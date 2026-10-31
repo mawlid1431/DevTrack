@@ -105,6 +105,26 @@ function normalizeTitle(raw: string): string {
   return title;
 }
 
+const MAX_ESTIMATE = 100;
+
+/** Estimates are whole story points; due dates are finite timestamps. */
+function assertValidPlanning(args: {
+  estimate?: number | null;
+  dueDate?: number | null;
+}): void {
+  const { estimate, dueDate } = args;
+  if (estimate !== undefined && estimate !== null) {
+    if (!Number.isInteger(estimate) || estimate < 0 || estimate > MAX_ESTIMATE) {
+      throw new Error(
+        `Estimate must be a whole number between 0 and ${MAX_ESTIMATE}`
+      );
+    }
+  }
+  if (dueDate !== undefined && dueDate !== null && !Number.isFinite(dueDate)) {
+    throw new Error("Due date must be a valid date");
+  }
+}
+
 async function assertIssueRefsInOrg(
   ctx: { db: QueryCtx["db"] },
   orgId: Id<"organizations">,
@@ -166,6 +186,7 @@ export const create = orgMutation({
       throw new Error("Team not found");
     }
     await assertCanCreateIssue(ctx, ctx.org);
+    assertValidPlanning(args);
     await assertIssueRefsInOrg(ctx, ctx.org._id, team._id, {
       assigneeId: args.assigneeId,
       projectId: args.projectId,
@@ -231,6 +252,7 @@ export const update = orgMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const issue = await getOrgIssue(ctx, ctx.org._id, args.issueId);
+    assertValidPlanning(args);
     await assertIssueRefsInOrg(ctx, ctx.org._id, issue.teamId, {
       assigneeId: args.assigneeId,
       projectId: args.projectId,
