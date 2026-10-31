@@ -86,6 +86,51 @@ export const getByNumber = orgQuery({
   },
 });
 
+/**
+ * Verify that every record an issue points at belongs to the caller's org
+ * (and, for cycles, to the issue's team). Without this a client could link
+ * an issue to another organization's user, project, cycle or issue.
+ */
+async function assertIssueRefsInOrg(
+  ctx: { db: QueryCtx["db"] },
+  orgId: Id<"organizations">,
+  teamId: Id<"teams">,
+  refs: {
+    assigneeId?: Id<"users"> | null;
+    projectId?: Id<"projects"> | null;
+    cycleId?: Id<"cycles"> | null;
+    parentIssueId?: Id<"issues"> | null;
+  }
+): Promise<void> {
+  if (refs.assigneeId) {
+    const assigneeId = refs.assigneeId;
+    const membership = await ctx.db
+      .query("members")
+      .withIndex("by_org_and_user", (q) =>
+        q.eq("orgId", orgId).eq("userId", assigneeId)
+      )
+      .unique();
+    if (!membership) {
+      throw new Error("Assignee must be a member of this organization");
+    }
+  }
+  if (refs.projectId) {
+    const project = await ctx.db.get(refs.projectId);
+    if (!project || project.orgId !== orgId) {
+      throw new Error("Project not found");
+    }
+  }
+  if (refs.cycleId) {
+    const cycle = await ctx.db.get(refs.cycleId);
+    if (!cycle || cycle.orgId !== orgId || cycle.teamId !== teamId) {
+      throw new Error("Cycle not found for this team");
+    }
+  }
+  if (refs.parentIssueId) {
+    await getOrgIssue(ctx, orgId, refs.parentIssueId);
+  }
+}
+
 export const create = orgMutation({
   args: {
     teamId: v.id("teams"),
@@ -107,6 +152,12 @@ export const create = orgMutation({
       throw new Error("Team not found");
     }
     await assertCanCreateIssue(ctx, ctx.org);
+    await assertIssueRefsInOrg(ctx, ctx.org._id, team._id, {
+      assigneeId: args.assigneeId,
+      projectId: args.projectId,
+      cycleId: args.cycleId,
+      parentIssueId: args.parentIssueId,
+    });
 
     // Claim the next per-team issue number (ENG-1, ENG-2, ...).
     const number = team.nextIssueNumber;
@@ -166,6 +217,11 @@ export const update = orgMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const issue = await getOrgIssue(ctx, ctx.org._id, args.issueId);
+    await assertIssueRefsInOrg(ctx, ctx.org._id, issue.teamId, {
+      assigneeId: args.assigneeId,
+      projectId: args.projectId,
+      cycleId: args.cycleId,
+    });
 
     const updates: Partial<Doc<"issues">> = {};
     const changes: { field: string; oldValue?: string; newValue?: string }[] =
