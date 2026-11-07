@@ -118,7 +118,7 @@ DevTrack was created by Mowlid. Third-party packages (Convex, Clerk, Next.js, et
 
 ### AI Agent (Pro & Enterprise)
 
-- 🤖 **Workspace-aware chat** — A Convex Agent + Groq assistant (`openai/gpt-oss-120b` by default, override with `GROQ_MODEL_NAME`) with org-scoped tools: create/update/search issues, summarize cycles, report project status, list members
+- 🤖 **Workspace-aware chat** — A Convex Agent assistant on Groq + OpenRouter with automatic model fallback with org-scoped tools: create/update/search issues, summarize cycles, report project status, list members
 - 🧠 **Duplicate detection** — Issues are embedded (1536-dim vectors) on create; the agent finds similar issues before you file the same bug twice
 - 🩺 **Triage assist** — AI-suggested priority and labels for new issues
 - 📋 **Standup & cycle reports** — Generate summaries of what shipped and what's blocked
@@ -276,7 +276,28 @@ NEXT_PUBLIC_CONVEX_SITE_URL=https://your-deployment.convex.site
 ```bash
 npx convex env set CLERK_FRONTEND_API_URL https://your-instance.clerk.accounts.dev
 npx convex env set CLERK_WEBHOOK_SECRET whsec_...   # from step 6 below
-npx convex env set GROQ_API_KEY gsk_...             # for the AI agent (Groq)
+npx convex env set GROQ_API_KEY gsk_...             # AI agent — Groq
+npx convex env set OPENROUTER_API_KEY sk-or-v1-...  # AI agent — OpenRouter (models + embeddings)
+```
+
+#### AI models
+
+The agent reads its models from Convex env vars (`convex/agent/models.ts`). Chat models form an ordered chain, so if one is rate-limited, down or retired, the next is tried automatically. Every chat model must support tool calling.
+
+| Variable | Purpose | Default |
+| --- | --- | --- |
+| `AI_MODEL_PROVIDER` | Which provider's model goes first: `groq` or `openrouter` | `groq` |
+| `GROQ_MODEL_NAME` | Groq chat model | `openai/gpt-oss-120b` |
+| `AI_MODEL_NAME` | OpenRouter chat model | `google/gemma-4-31b-it:free` |
+| `AI_FALLBACK_MODELS` | Comma-separated `provider:model` list tried after the two above | `openrouter:recursive/flint-v1.0:free,openrouter:google/gemma-4-26b-a4b-it:free,openrouter:liquid/lfm-3-1.7b:free` |
+| `AI_EMBED_MODEL` | OpenRouter embedding model for duplicate detection (called with `dimensions: 1536`) | unset → local hashed embeddings |
+
+Models whose provider key is missing are skipped. After setting or changing `AI_EMBED_MODEL`, re-embed existing issues once, then check every model against the live APIs:
+
+```bash
+npx convex env set AI_EMBED_MODEL nvidia/nemotron-3.5-embed-8b:free
+npx convex run agent/embeddings:reembedAllIssues
+npx convex run agent/diagnostics:checkModels
 ```
 
 ### 6. Configure Clerk Webhooks
@@ -307,7 +328,7 @@ This runs the Next.js frontend and the Convex backend in parallel. Open [http://
 - [ ] Clerk Organizations enabled
 - [ ] Clerk JWT template `convex` created with `org_id` / `org_slug` / `org_role` claims
 - [ ] Clerk Billing plans (`free_org`, `pro`, `enterprise`) and features configured
-- [ ] Convex project linked; `CLERK_FRONTEND_API_URL`, `CLERK_WEBHOOK_SECRET`, and `GROQ_API_KEY` set in Convex env vars
+- [ ] Convex project linked; `CLERK_FRONTEND_API_URL`, `CLERK_WEBHOOK_SECRET`, and `GROQ_API_KEY` and/or `OPENROUTER_API_KEY` set in Convex env vars
 - [ ] Clerk webhook pointing at `https://<deployment>.convex.site/clerk-webhook`
 - [ ] `bun dev` runs without errors
 - [ ] You can sign up, create an org, and create your first issue
@@ -370,7 +391,7 @@ vercel
 npx convex deploy
 ```
 
-This deploys your Convex functions and schema to a production deployment. Set `CLERK_FRONTEND_API_URL`, `CLERK_WEBHOOK_SECRET`, and `GROQ_API_KEY` in the Convex **production** dashboard too.
+This deploys your Convex functions and schema to a production deployment. Set `CLERK_FRONTEND_API_URL`, `CLERK_WEBHOOK_SECRET`, the AI keys and the AI model variables in the Convex **production** dashboard too.
 
 ### Post-Deployment Checklist
 
@@ -408,7 +429,7 @@ This deploys your Convex functions and schema to a production deployment. Set `C
 | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | Plan not updating after checkout             | Make sure all `subscription.*` and `subscriptionItem.*` events are subscribed on the webhook. The plan syncs to `organizations.plan` in Convex. |
 | AI page says upgrade required on a paid plan | AI access is gated by plan in Convex (`hasAiAccess`). Confirm the subscription webhook fired and the org's plan is `pro` or `enterprise`.       |
-| AI chat errors immediately                   | Set `GROQ_API_KEY` on the Convex deployment: `npx convex env set GROQ_API_KEY gsk_...`                                                         |
+| AI chat errors immediately                   | Set `GROQ_API_KEY` and/or `OPENROUTER_API_KEY` on Convex, then run `npx convex run agent/diagnostics:checkModels`                                                         |
 | AI stops responding mid-day                  | Pro is rate-limited to 50 messages/user/day. Enterprise is unlimited.                                                                           |
 
 ### Database
