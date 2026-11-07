@@ -62,7 +62,7 @@ export type PlanDefinition = {
 export const FREE_PLAN: PlanDefinition = {
   plan: "free",
   slug: "free_org",
-  clerkPlanId: "cplan_3F1zEN33U3ist3e1eWPiu7xwDUg",
+  clerkPlanId: "cplan_3F4cMFVL9jxwR5RAd7qceXEDnkB",
   name: "Free",
   tagline: "For small teams getting started with issue tracking.",
   monthlyPrice: 0,
@@ -81,7 +81,7 @@ export const FREE_PLAN: PlanDefinition = {
 export const PRO_PLAN: PlanDefinition = {
   plan: "pro",
   slug: "pro",
-  clerkPlanId: "cplan_3F1zOlRdECmGJjGmWIwzRyjeK5O",
+  clerkPlanId: "cplan_3Ln8uYWQGcoUT3J7l2dX2hutIG9",
   name: "Pro",
   tagline: "For growing teams that want AI superpowers and no limits.",
   monthlyPrice: 20,
@@ -102,7 +102,7 @@ export const PRO_PLAN: PlanDefinition = {
 export const ENTERPRISE_PLAN: PlanDefinition = {
   plan: "enterprise",
   slug: "enterprise",
-  clerkPlanId: "cplan_3F1zOpyzIlH2xrZiCaIc2DqFOOL",
+  clerkPlanId: "cplan_3Ln9ZEWmw7dAVCDB8kESljx5Eeu",
   name: "Enterprise",
   tagline: "For organizations that need unlimited scale and support.",
   monthlyPrice: 99,
