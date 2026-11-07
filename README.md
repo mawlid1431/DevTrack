@@ -118,7 +118,7 @@ DevTrack was created by Mowlid. Third-party packages (Convex, Clerk, Next.js, et
 
 ### AI Agent (Pro & Enterprise)
 
-- 🤖 **Workspace-aware chat** — A Convex Agent + Groq assistant (`llama-3.3-70b-versatile`) with org-scoped tools: create/update/search issues, summarize cycles, report project status, list members
+- 🤖 **Workspace-aware chat** — A Convex Agent + Groq assistant (`openai/gpt-oss-120b` by default, override with `GROQ_MODEL_NAME`) with org-scoped tools: create/update/search issues, summarize cycles, report project status, list members
 - 🧠 **Duplicate detection** — Issues are embedded (1536-dim vectors) on create; the agent finds similar issues before you file the same bug twice
 - 🩺 **Triage assist** — AI-suggested priority and labels for new issues
 - 📋 **Standup & cycle reports** — Generate summaries of what shipped and what's blocked

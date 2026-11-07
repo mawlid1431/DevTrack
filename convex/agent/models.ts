@@ -7,8 +7,12 @@ import { createOpenAI } from "@ai-sdk/openai";
  * The provider reads GROQ_API_KEY lazily at request time, so these
  * module-level instances are safe to construct on deployments where the key
  * is not yet set — only actual LLM calls will fail.
+ *
+ * Groq retired `llama-3.3-70b-versatile`; `openai/gpt-oss-120b` is verified to
+ * support tool calling. Override with the GROQ_MODEL_NAME env var on Convex.
  */
-export const CHAT_MODEL_ID = "llama-3.3-70b-versatile";
+export const CHAT_MODEL_ID =
+  process.env.GROQ_MODEL_NAME || "openai/gpt-oss-120b";
 
 /** 1536 dimensions — matches the frozen `by_embedding` vector index on `issues`. */
 export const EMBEDDING_DIMENSIONS = 1536;
