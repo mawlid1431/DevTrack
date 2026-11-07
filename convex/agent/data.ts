@@ -45,7 +45,7 @@ type IssueSummary = {
   assigneeName: string | null;
 };
 
-async function summarizeIssue(
+export async function summarizeIssue(
   ctx: QueryCtx | MutationCtx,
   issue: Doc<"issues">,
   teamKeys: Map<Id<"teams">, string>
@@ -71,7 +71,7 @@ async function summarizeIssue(
   };
 }
 
-async function getOrgTeamByKey(
+export async function getOrgTeamByKey(
   ctx: QueryCtx | MutationCtx,
   orgId: Id<"organizations">,
   teamKey: string
@@ -90,7 +90,7 @@ async function getOrgTeamByKey(
   return team;
 }
 
-async function resolveMemberByEmail(
+export async function resolveMemberByEmail(
   ctx: QueryCtx | MutationCtx,
   orgId: Id<"organizations">,
   email: string

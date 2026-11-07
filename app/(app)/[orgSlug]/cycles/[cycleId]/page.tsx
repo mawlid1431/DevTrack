@@ -99,7 +99,7 @@ function CycleDetail({
   const handleDelete = async () => {
     try {
       await removeCycle({ cycleId: cycle._id });
-      toast.success("Cycle deleted");
+      toast.success("Cycle moved to the recycle bin");
       router.push(`/${orgSlug}/cycles`);
     } catch (error) {
       toast.error(
@@ -166,8 +166,8 @@ function CycleDetail({
                   Delete {cycleDisplayName(cycle)}?
                 </AlertDialogTitle>
                 <AlertDialogDescription>
-                  The cycle will be permanently deleted. Its issues are kept
-                  and simply unscheduled.
+                  The cycle moves to the recycle bin, where you can restore
+                  it for 30 days. Its issues are kept and simply unscheduled.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

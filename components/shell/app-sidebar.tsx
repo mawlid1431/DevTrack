@@ -6,10 +6,12 @@ import {
   Bot,
   Box,
   ChevronDown,
+  LayoutTemplate,
   Plus,
   RefreshCcw,
   Search,
   SquarePen,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
@@ -138,6 +140,15 @@ export function AppSidebar({
           </NavLink>
           <NavLink href={`${base}/ai`} icon={<Bot className="size-4" />}>
             AI Agent
+          </NavLink>
+          <NavLink
+            href={`${base}/templates`}
+            icon={<LayoutTemplate className="size-4" />}
+          >
+            Templates
+          </NavLink>
+          <NavLink href={`${base}/trash`} icon={<Trash2 className="size-4" />}>
+            Recycle bin
           </NavLink>
         </nav>
 

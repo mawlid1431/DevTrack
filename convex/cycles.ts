@@ -2,9 +2,9 @@ import { v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
 import { QueryCtx } from "./_generated/server";
 import { issueShape } from "./issues";
-import { logActivity } from "./lib/activity";
 import { orgMutation, orgQuery } from "./lib/customFunctions";
 import { progressShape } from "./projects";
+import { trashCycle } from "./trash";
 
 export const cycleShape = {
   _id: v.id("cycles"),
@@ -301,28 +301,8 @@ export const remove = orgMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const cycle = await getOrgCycle(ctx, ctx.org._id, args.cycleId);
-
-    const issues = await ctx.db
-      .query("issues")
-      .withIndex("by_cycle", (q) => q.eq("cycleId", cycle._id))
-      .collect();
-    for (const issue of issues) {
-      if (issue.orgId !== ctx.org._id) {
-        continue;
-      }
-      await ctx.db.patch(issue._id, { cycleId: undefined });
-      await logActivity(ctx, {
-        orgId: ctx.org._id,
-        issueId: issue._id,
-        actorId: ctx.user._id,
-        type: "cycle_changed",
-        field: "cycle",
-        oldValue: cycle.name ?? `Cycle ${cycle.number}`,
-        newValue: undefined,
-      });
-    }
-
-    await ctx.db.delete(cycle._id);
+    // Recycle bin: issues are unscheduled now and re-scheduled on restore.
+    await trashCycle(ctx, ctx.org._id, ctx.user._id, cycle);
     return null;
   },
 });

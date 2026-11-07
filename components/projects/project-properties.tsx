@@ -76,7 +76,7 @@ export function ProjectProperties({ project }: { project: Doc<"projects"> }) {
   const handleDelete = async () => {
     try {
       await removeProject({ projectId: project._id });
-      toast.success("Project deleted");
+      toast.success("Project moved to the recycle bin");
       router.push(`/${params.orgSlug}/projects`);
     } catch (error) {
       toast.error(
@@ -186,8 +186,8 @@ export function ProjectProperties({ project }: { project: Doc<"projects"> }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete {project.name}?</AlertDialogTitle>
             <AlertDialogDescription>
-              The project will be permanently deleted. Its issues are kept and
-              simply detached from the project.
+              The project moves to the recycle bin, where you can restore it
+              for 30 days. Its issues are kept and simply detached.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -10,16 +10,19 @@
 
 import type * as activity from "../activity.js";
 import type * as agent_chat from "../agent/chat.js";
+import type * as agent_confirm from "../agent/confirm.js";
 import type * as agent_data from "../agent/data.js";
 import type * as agent_devTrackAgent from "../agent/devTrackAgent.js";
 import type * as agent_diagnostics from "../agent/diagnostics.js";
 import type * as agent_embeddings from "../agent/embeddings.js";
 import type * as agent_limiter from "../agent/limiter.js";
 import type * as agent_models from "../agent/models.js";
+import type * as agent_operations from "../agent/operations.js";
 import type * as agent_tools from "../agent/tools.js";
 import type * as agent_triage from "../agent/triage.js";
 import type * as attachments from "../attachments.js";
 import type * as comments from "../comments.js";
+import type * as crons from "../crons.js";
 import type * as cycles from "../cycles.js";
 import type * as http from "../http.js";
 import type * as issueRelations from "../issueRelations.js";
@@ -35,6 +38,8 @@ import type * as projects from "../projects.js";
 import type * as search from "../search.js";
 import type * as seed from "../seed.js";
 import type * as teams from "../teams.js";
+import type * as templates from "../templates.js";
+import type * as trash from "../trash.js";
 import type * as users from "../users.js";
 import type * as views from "../views.js";
 import type * as webhooks from "../webhooks.js";
@@ -48,16 +53,19 @@ import type {
 declare const fullApi: ApiFromModules<{
   activity: typeof activity;
   "agent/chat": typeof agent_chat;
+  "agent/confirm": typeof agent_confirm;
   "agent/data": typeof agent_data;
   "agent/devTrackAgent": typeof agent_devTrackAgent;
   "agent/diagnostics": typeof agent_diagnostics;
   "agent/embeddings": typeof agent_embeddings;
   "agent/limiter": typeof agent_limiter;
   "agent/models": typeof agent_models;
+  "agent/operations": typeof agent_operations;
   "agent/tools": typeof agent_tools;
   "agent/triage": typeof agent_triage;
   attachments: typeof attachments;
   comments: typeof comments;
+  crons: typeof crons;
   cycles: typeof cycles;
   http: typeof http;
   issueRelations: typeof issueRelations;
@@ -73,6 +81,8 @@ declare const fullApi: ApiFromModules<{
   search: typeof search;
   seed: typeof seed;
   teams: typeof teams;
+  templates: typeof templates;
+  trash: typeof trash;
   users: typeof users;
   views: typeof views;
   webhooks: typeof webhooks;

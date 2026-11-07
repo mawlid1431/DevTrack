@@ -15,6 +15,8 @@ const CONVEX_VARS = [
   // Auth
   "CLERK_FRONTEND_API_URL",
   "CLERK_WEBHOOK_SECRET",
+  // Lets the AI agent create new workspaces (Clerk organizations)
+  "CLERK_SECRET_KEY",
   // AI providers
   "GROQ_API_KEY",
   "OPENROUTER_API_KEY",

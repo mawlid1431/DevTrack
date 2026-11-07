@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { getOrgIssue } from "./issues";
 import { logActivity } from "./lib/activity";
 import { orgMutation, orgQuery } from "./lib/customFunctions";
+import { trashAttachment } from "./trash";
 
 /** Server-side cap; the upload UI also enforces this before uploading. */
 export const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024;
@@ -131,8 +132,8 @@ export const remove = orgMutation({
       );
     }
 
-    await ctx.storage.delete(attachment.storageId);
-    await ctx.db.delete(attachment._id);
+    // Recycle bin keeps the file in storage until the item is purged.
+    await trashAttachment(ctx, ctx.org._id, ctx.user._id, attachment);
 
     await logActivity(ctx, {
       orgId: ctx.org._id,

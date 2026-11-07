@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { orgMutation, orgQuery } from "./lib/customFunctions";
+import { trashView } from "./trash";
 
 const viewShape = {
   _id: v.id("views"),
@@ -115,7 +116,7 @@ export const remove = orgMutation({
     if (view.creatorId !== ctx.user._id && ctx.membership.role !== "admin") {
       throw new Error("Only the view's creator or an admin can delete it");
     }
-    await ctx.db.delete(view._id);
+    await trashView(ctx, ctx.org._id, ctx.user._id, view);
     return null;
   },
 });

@@ -115,6 +115,8 @@ DevTrack was created by Mowlid. Third-party packages (Convex, Clerk, Next.js, et
 - 📊 **Projects** — Group issues across teams with statuses, leads, target dates, and live progress (issue counts by status)
 - 🔄 **Cycles** — Time-boxed sprints per team, auto-numbered, with current-cycle tracking
 - 🏗️ **Multi-team workspaces** — Unlimited teams per organization, each with its own board and cycles
+- 🧩 **Templates** — Project templates (a project + starter issues) and workspace templates (teams, labels, first cycle). Four built-in project templates, three built-in workspace templates, plus your own custom ones (private to the workspace)
+- ♻️ **Recycle bin** — Everything you delete (issues with their comments and files, projects, cycles, comments, attachments, saved views, templates) goes to the bin and can be restored for 30 days; then it's purged automatically
 
 ### AI Agent (Pro & Enterprise)
 
@@ -122,6 +124,9 @@ DevTrack was created by Mowlid. Third-party packages (Convex, Clerk, Next.js, et
 - 🔀 **Multi-model, multi-provider** — One shared model pool (Groq + OpenRouter) serves every AI feature: chat, triage and duplicate detection
 - ⚡ **Parallel + failover** — One-shot calls race the two best models and keep the first answer; streaming chat fails over instantly. Rate-limited, down, retired or misconfigured models are classified and sidelined for a cooldown
 - 🩹 **Clear failure messages** — When every model is unavailable, users are told why (usage limit, provider outage, or misconfiguration) instead of a generic error
+- 🛠️ **Full workspace management** — On request the agent creates and deletes issues and projects, creates projects from templates, saves new templates, sets up the workspace from a workspace template, creates brand-new workspaces, and restores items from the recycle bin
+- ✋ **Asks before it acts** — The agent asks clarifying questions when a request is vague, and every create/delete is confirmation-gated on the server: nothing happens until you reply "yes" in a new message
+- 🗂️ **Sorts and prioritizes your tasks** — "Prioritize my tasks" / "put ENG-4 first" sets priorities and the exact order on your lists and boards
 - 🩺 **Live diagnostics** — `npx convex run agent/diagnostics:checkModels` tests every model in parallel and reports a plain-language reason for any that isn't ready
 - 🧠 **Duplicate detection** — Issues are embedded (1536-dim vectors) on create; the agent finds similar issues before you file the same bug twice
 - 🩺 **Triage assist** — AI-suggested priority and labels for new issues
@@ -255,6 +260,58 @@ sequenceDiagram
     P-->>UI: Token deltas streamed live over the websocket
     A-->>UI: On total failure: assistant message with the classified reason
 ```
+
+### Agent Management & Confirmation Workflow
+
+Creating or deleting anything through the agent (issues, projects, templates, workspace setup, new workspaces) goes through a server-enforced confirmation gate in `convex/agent/confirm.ts`.
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant AG as AI agent
+    participant G as Confirmation gate
+    participant DB as Convex DB
+    U->>AG: "Create a Website launch project in ENG"
+    AG->>AG: Unclear? Ask a clarifying question first
+    AG->>G: createProjectFromTemplate(args) - no code
+    G-->>AG: needs_confirmation + summary + code bound to (tool, args, this message)
+    AG-->>U: "I'll create ... with 7 issues. Reply yes to confirm."
+    U->>AG: "yes" (a NEW message)
+    AG->>G: same args + code
+    G->>G: Code issued for the previous message? New message is an explicit yes? Args unchanged?
+    G->>DB: Run the action (org-scoped, membership re-checked)
+    DB-->>AG: status "done"
+    AG-->>U: "Created Website launch: ENG-12 ... ENG-18"
+```
+
+- The model can't confirm on its own: the code is only accepted after a newer user message that says yes ("yes", "ok", "go ahead", "haa"…), and "no"/"wait"/"cancel" always blocks it.
+- Small edits (priority, status, sorting, assignment, titles) run immediately and are reported back.
+- Deletes never destroy data: they go to the recycle bin.
+
+### Recycle Bin Workflow
+
+```mermaid
+flowchart LR
+    Delete["Delete (UI or agent)"] --> Snapshot["Snapshot the item + its dependents<br/>(issue: comments, files, labels, history, links)"]
+    Snapshot --> Bin[("trash table<br/>expires in 30 days")]
+    Bin -->|Restore| Rebuild["Rebuild records,<br/>re-link project / cycle / sub-issues"]
+    Bin -->|"Delete forever / Empty bin"| Purge["Remove row + stored files"]
+    Bin -->|"Daily cron after 30 days"| Purge
+```
+
+| Who | Sees in the bin | Can restore / delete forever | Can empty the bin |
+| --- | --- | --- | --- |
+| Member | Only what they deleted | Their own items | — |
+| Admin | Everything deleted in the workspace | Any item in the workspace | ✅ |
+| Other workspaces | Nothing | Nothing | — |
+
+Restore keeps the original issue number when it's still free, re-attaches sub-issues, skips links to things that were deleted meanwhile, and respects free-plan limits.
+
+### Data Privacy
+
+- **Per workspace:** every table row carries `orgId`, and every function goes through `orgQuery` / `orgMutation`, which verify the caller is a member of the active workspace. Nothing (issues, templates, recycle bin, AI threads) is visible across workspaces.
+- **Per user:** AI conversations are owned by one user in one workspace; recycle-bin entries are visible only to the person who deleted them (and workspace admins).
+- **Agent scoping:** the agent's tools receive the workspace and user from the authenticated session, never from the model, and re-check membership (and admin role for workspace setup) on every call.
 
 ### Model Selection & Failover Workflow
 
@@ -514,6 +571,8 @@ DevTrack uses **Convex** as its database with a flat, relational schema design. 
 | **cycles**                   | Sprints per team                  | `teamId`, `number`, `startDate`, `endDate`                                       |
 | **attachments**              | Files on issues (Convex storage)  | `issueId`, `storageId`, `fileName`, `fileSize`                                   |
 | **views**                    | Saved filter configurations       | `creatorId`, `filters` (JSON), `shared`                                          |
+| **trash**                    | Recycle bin (30-day retention)    | `kind`, `label`, `deletedBy`, `expiresAt`, `snapshot` (JSON), `storageIds`       |
+| **templates**                | Custom project/workspace templates | `kind`, `name`, `content` (JSON), `creatorId`                                   |
 
 ### Design Decisions
 
@@ -594,6 +653,9 @@ This deploys your Convex functions and schema to a production deployment. Set `C
 | "All AI models have reached their usage limit" | Every model in the chain returned 429. Free OpenRouter models are often overloaded; add a Groq fallback (`groq:openai/gpt-oss-20b`) or OpenRouter credits and drop `:free`. |
 | "The AI models are misconfigured"            | A key is wrong or a model id is retired/unsupported. Run `npx convex run agent/diagnostics:checkModels` and read each model's `reason`. |
 | One model is always `rate_limited` in diagnostics | Normal for free models; the pool skips it automatically. Reorder `AI_FALLBACK_MODELS` if it slows replies down. |
+| Agent can't create a new workspace           | `CLERK_SECRET_KEY` must be set on Convex (`bun scripts/setup-convex-env.ts` pushes it). |
+| Agent keeps asking to confirm                | Confirmation only counts in a NEW message after the preview, and must be an explicit yes. Changing details produces a fresh preview. |
+| "Can't restore: the issue's team no longer exists" | Restores rebuild into the original team/issue. Restore the parent item first (e.g. the issue before its comment). |
 | Webhook only syncs users, not orgs or plans  | The endpoint must subscribe to `user.*`, `organization.*`, `organizationMembership.*`, `subscription.*` and `subscriptionItem.*`. |
 
 ### Database
@@ -686,7 +748,7 @@ See the full [LICENSE](LICENSE) for details.
 | `bun scripts/setup-convex-env.ts` | Push Clerk + AI variables from `.env.local` to Convex |
 | `npx convex run agent/diagnostics:checkModels` | Test every AI model live and explain any that isn't ready |
 | `npx convex run agent/embeddings:reembedAllIssues` | Re-embed every issue after changing `AI_EMBED_MODEL` |
-| `bun run test` | Run the Convex backend test suite (Vitest) |
+| `bun run test` | Run the Convex backend test suite (Vitest): validation, recycle bin, privacy, templates, agent operations |
 
 ### Key Files & Folders
 
@@ -703,6 +765,11 @@ See the full [LICENSE](LICENSE) for details.
 | `convex/agent/`                                                       | AI agent: chat, tools, embeddings, triage, rate limiting                         |
 | `convex/agent/models.ts`                                              | Model pool: provider chain, parallel racing, failover, error classification     |
 | `convex/agent/diagnostics.ts`                                         | `checkModels`: live health report for every AI model                             |
+| `convex/agent/confirm.ts`                                             | Server-enforced confirmation gate for agent creates/deletes                      |
+| `convex/agent/operations.ts`                                          | Org-scoped operations behind the agent's management tools                        |
+| `convex/trash.ts` + `convex/crons.ts`                                 | Recycle bin (snapshot, restore, purge) and the daily 30-day purge                |
+| `convex/templates.ts`                                                 | Built-in + custom project/workspace templates and how they're applied            |
+| `app/(app)/[orgSlug]/trash/`, `app/(app)/[orgSlug]/templates/`        | Recycle bin and Templates pages                                                  |
 | `scripts/setup-convex-env.ts`                                         | Pushes server-side env vars from `.env.local` to Convex                          |
 | `components/ui/`                                                      | shadcn/ui primitives                                                             |
 | `components/shell/`                                                   | App shell: sidebar, mobile top bar + drawer (`mobile-nav.tsx`), command palette |

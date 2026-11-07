@@ -12,6 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { IssueProperties } from "@/components/issue-detail/issue-properties";
+import { DeleteIssueButton } from "@/components/issues/delete-issue-button";
 import {
   issueDetailMainSlots,
   issueDetailSidebarSlots,
@@ -106,6 +107,14 @@ function IssueDetail({
         <span className="font-mono text-xs text-muted-foreground">
           {identifier}
         </span>
+        <div className="ml-auto">
+          <DeleteIssueButton
+            issueId={issue._id}
+            identifier={identifier}
+            orgSlug={orgSlug}
+            backHref={`/${orgSlug}/team/${team._id}`}
+          />
+        </div>
       </header>
       {/* Below lg the properties panel stacks under the content and the
           whole page scrolls as one column; from lg it sits on the right. */}

@@ -2,10 +2,10 @@ import { v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
 import { QueryCtx } from "./_generated/server";
 import { issueShape } from "./issues";
-import { logActivity } from "./lib/activity";
 import { orgMutation, orgQuery } from "./lib/customFunctions";
 import { assertCanCreateProject } from "./lib/limits";
 import { projectStatusValidator } from "./schema";
+import { trashProject } from "./trash";
 
 export const projectShape = {
   _id: v.id("projects"),
@@ -273,28 +273,8 @@ export const remove = orgMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const project = await getOrgProject(ctx, ctx.org._id, args.projectId);
-
-    const issues = await ctx.db
-      .query("issues")
-      .withIndex("by_project", (q) => q.eq("projectId", project._id))
-      .collect();
-    for (const issue of issues) {
-      if (issue.orgId !== ctx.org._id) {
-        continue;
-      }
-      await ctx.db.patch(issue._id, { projectId: undefined });
-      await logActivity(ctx, {
-        orgId: ctx.org._id,
-        issueId: issue._id,
-        actorId: ctx.user._id,
-        type: "project_changed",
-        field: "project",
-        oldValue: project.name,
-        newValue: undefined,
-      });
-    }
-
-    await ctx.db.delete(project._id);
+    // Recycle bin: issues are detached now and re-attached on restore.
+    await trashProject(ctx, ctx.org._id, ctx.user._id, project);
     return null;
   },
 });

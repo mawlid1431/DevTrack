@@ -49,6 +49,22 @@ export const issueRelationTypeValidator = v.union(
   v.literal("duplicate_of")
 );
 
+/** Kinds of records the recycle bin can hold and restore. */
+export const trashKindValidator = v.union(
+  v.literal("issue"),
+  v.literal("project"),
+  v.literal("cycle"),
+  v.literal("comment"),
+  v.literal("attachment"),
+  v.literal("view"),
+  v.literal("template")
+);
+
+export const templateKindValidator = v.union(
+  v.literal("project"),
+  v.literal("workspace")
+);
+
 export default defineSchema({
   // ── Synced from Clerk via webhooks ─────────────────────────────────────
   users: defineTable({
@@ -226,4 +242,38 @@ export default defineSchema({
   })
     .index("by_org", ["orgId"])
     .index("by_creator", ["creatorId"]),
+
+  /**
+   * Recycle bin. Deleting moves a record here as a JSON snapshot (with its
+   * dependent records, e.g. an issue's comments and attachments) so it can be
+   * restored. Rows expire after 30 days and are purged by a daily cron.
+   * Privacy: members only see their own deletions; admins see the org's.
+   */
+  trash: defineTable({
+    orgId: v.id("organizations"),
+    kind: trashKindValidator,
+    /** Human label shown in the bin, e.g. "ENG-42 · Fix login" */
+    label: v.string(),
+    deletedBy: v.id("users"),
+    deletedAt: v.number(),
+    expiresAt: v.number(),
+    /** JSON snapshot used to rebuild the record on restore */
+    snapshot: v.string(),
+    /** Storage blobs kept alive for restore; deleted on permanent purge */
+    storageIds: v.array(v.id("_storage")),
+  })
+    .index("by_org", ["orgId", "deletedAt"])
+    .index("by_org_and_deleter", ["orgId", "deletedBy", "deletedAt"])
+    .index("by_expires", ["expiresAt"]),
+
+  /** Custom project / workspace templates (built-ins live in code). */
+  templates: defineTable({
+    orgId: v.id("organizations"),
+    creatorId: v.id("users"),
+    kind: templateKindValidator,
+    name: v.string(),
+    description: v.optional(v.string()),
+    /** JSON: ProjectTemplateContent | WorkspaceTemplateContent */
+    content: v.string(),
+  }).index("by_org", ["orgId"]),
 });

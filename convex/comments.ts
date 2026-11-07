@@ -4,6 +4,7 @@ import { QueryCtx } from "./_generated/server";
 import { getOrgIssue } from "./issues";
 import { logActivity } from "./lib/activity";
 import { orgMutation, orgQuery } from "./lib/customFunctions";
+import { trashComment } from "./trash";
 
 /** Keeps comments well under Convex's 1 MB document limit. */
 const MAX_COMMENT_LENGTH = 10_000;
@@ -194,7 +195,7 @@ export const remove = orgMutation({
     if (!isAuthor && !isAdmin) {
       throw new Error("Only the author or an admin can delete a comment");
     }
-    await ctx.db.delete(comment._id);
+    await trashComment(ctx, ctx.org._id, ctx.user._id, comment);
     return null;
   },
 });
