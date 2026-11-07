@@ -12,15 +12,15 @@ export function MockAiChat({ className }: { className?: string }) {
   return (
     <MockFrame className={className}>
       <MockWindowBar>
-        <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+        <span className="flex items-center gap-1.5 text-[0.6875rem] text-muted-foreground">
           <Sparkles className="size-3" />
           Agent
         </span>
-        <span className="ml-auto rounded border px-1.5 py-0.5 text-[10px] text-muted-foreground">
+        <span className="ml-auto rounded border px-1.5 py-0.5 text-[0.625rem] text-muted-foreground">
           Pro
         </span>
       </MockWindowBar>
-      <div className="space-y-4 p-4 text-[13px]">
+      <div className="space-y-4 p-4 text-[0.8125rem]">
         <div className="flex items-start gap-2.5">
           <UserAvatar name={MOCK_PEOPLE.ivy} className="mt-0.5 size-5" />
           <div>
@@ -59,13 +59,13 @@ export function MockAiChat({ className }: { className?: string }) {
             </div>
             <div className="flex items-center gap-2 rounded-lg border bg-muted/30 px-2.5 py-2">
               <StatusIcon status="todo" className="size-3.5" />
-              <span className="font-mono text-[10px] text-muted-foreground">
+              <span className="font-mono text-[0.625rem] text-muted-foreground">
                 ENG-151
               </span>
               <span className="truncate text-xs font-medium">
                 Assign reviewer for vector index migration
               </span>
-              <span className="ml-auto shrink-0 rounded border px-1 text-[9px] text-muted-foreground">
+              <span className="ml-auto shrink-0 rounded border px-1 text-[0.5625rem] text-muted-foreground">
                 filed by Agent
               </span>
             </div>
@@ -74,7 +74,7 @@ export function MockAiChat({ className }: { className?: string }) {
 
         <div className="flex h-9 items-center gap-2 rounded-lg border bg-background px-3 text-xs text-muted-foreground">
           Draft the standup for #engineering…
-          <span className="ml-auto flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px]">
+          <span className="ml-auto flex items-center gap-1 rounded border px-1.5 py-0.5 text-[0.625rem]">
             <CornerDownLeft className="size-3" /> Send
           </span>
         </div>
@@ -85,7 +85,7 @@ export function MockAiChat({ className }: { className?: string }) {
 
 function ToolChip({ name }: { name: string }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-md border bg-muted/50 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+    <span className="inline-flex items-center gap-1 rounded-md border bg-muted/50 px-1.5 py-0.5 font-mono text-[0.625rem] text-muted-foreground">
       <Check className="size-2.5 text-emerald-500" />
       {name}
     </span>

@@ -26,7 +26,7 @@ export function QuotaPill({ quota }: { quota: AiQuota | undefined }) {
     <span
       title={resetHint}
       className={cn(
-        "rounded-full border px-2 py-0.5 text-[10px] font-medium text-muted-foreground",
+        "rounded-full border px-2 py-0.5 text-[0.625rem] font-medium text-muted-foreground",
         exhausted && "border-destructive/40 text-destructive"
       )}
     >

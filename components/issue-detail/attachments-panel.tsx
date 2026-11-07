@@ -151,7 +151,7 @@ export function AttachmentsPanel({ issue }: IssueDetailSlotProps) {
                     {attachment.fileName}
                   </span>
                 )}
-                <span className="shrink-0 text-[11px] text-muted-foreground/70 group-hover:hidden">
+                <span className="shrink-0 text-[0.6875rem] text-muted-foreground/70 group-hover:hidden">
                   {formatFileSize(attachment.fileSize)}
                 </span>
                 <Button

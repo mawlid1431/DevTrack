@@ -51,7 +51,7 @@ export function BoardCardContent({
       )}
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="font-mono text-[11px] text-muted-foreground">
+        <span className="font-mono text-[0.6875rem] text-muted-foreground">
           {teamKey}-{issue.number}
         </span>
         {assignee ? (
@@ -66,14 +66,14 @@ export function BoardCardContent({
       <div className="flex flex-wrap items-center gap-1.5">
         <PriorityIcon priority={issue.priority} className="size-3.5" />
         {issue.estimate !== undefined ? (
-          <span className="rounded border px-1 font-mono text-[10px] text-muted-foreground">
+          <span className="rounded border px-1 font-mono text-[0.625rem] text-muted-foreground">
             {issue.estimate}
           </span>
         ) : null}
         {issue.dueDate !== undefined ? (
           <span
             className={cn(
-              "inline-flex items-center gap-1 text-[11px]",
+              "inline-flex items-center gap-1 text-[0.6875rem]",
               overdue ? "text-red-500" : "text-muted-foreground"
             )}
           >
@@ -86,7 +86,7 @@ export function BoardCardContent({
             key={label.labelId}
             name={label.name}
             color={label.color}
-            className="px-1.5 py-0 text-[10px]"
+            className="px-1.5 py-0 text-[0.625rem]"
           />
         ))}
       </div>

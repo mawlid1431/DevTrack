@@ -28,7 +28,7 @@ export function MockApp({ className }: { className?: string }) {
   return (
     <MockFrame className={className}>
       <MockWindowBar title="devtrack.app/acme/team/eng" />
-      <div className="flex h-[26rem] text-[13px]">
+      <div className="flex h-[26rem] text-[0.8125rem]">
         <MockSidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="flex h-10 shrink-0 items-center gap-2 border-b px-4">
@@ -76,7 +76,7 @@ function MockSidebar() {
   return (
     <aside className="hidden w-52 shrink-0 flex-col border-r bg-muted/20 md:flex">
       <div className="flex h-10 items-center gap-2 border-b px-3">
-        <span className="flex size-5 items-center justify-center rounded bg-primary text-[10px] font-bold text-primary-foreground">
+        <span className="flex size-5 items-center justify-center rounded bg-primary text-[0.625rem] font-bold text-primary-foreground">
           A
         </span>
         <span className="text-xs font-semibold">Acme Inc</span>
@@ -86,13 +86,13 @@ function MockSidebar() {
         <SidebarItem icon={<Inbox className="size-3.5" />} label="Inbox" badge="3" />
         <SidebarItem icon={<UserRound className="size-3.5" />} label="My issues" />
         <SidebarItem icon={<Search className="size-3.5" />} label="Search" kbd="/" />
-        <p className="mt-3 mb-1 px-2 text-[10px] font-medium tracking-wider uppercase">
+        <p className="mt-3 mb-1 px-2 text-[0.625rem] font-medium tracking-wider uppercase">
           Workspace
         </p>
         <SidebarItem icon={<Target className="size-3.5" />} label="Projects" />
         <SidebarItem icon={<RefreshCcw className="size-3.5" />} label="Cycles" />
         <SidebarItem icon={<Bot className="size-3.5" />} label="AI Agent" badge="Pro" />
-        <p className="mt-3 mb-1 px-2 text-[10px] font-medium tracking-wider uppercase">
+        <p className="mt-3 mb-1 px-2 text-[0.625rem] font-medium tracking-wider uppercase">
           Teams
         </p>
         <SidebarItem
@@ -130,7 +130,7 @@ function SidebarItem({
       {icon}
       {label}
       {badge ? (
-        <span className="ml-auto rounded border px-1 text-[10px]">{badge}</span>
+        <span className="ml-auto rounded border px-1 text-[0.625rem]">{badge}</span>
       ) : null}
       {kbd ? <Kbd className="ml-auto h-4">{kbd}</Kbd> : null}
     </span>
@@ -141,7 +141,7 @@ export function MockIssueRow({ issue }: { issue: MockIssue }) {
   return (
     <div className="flex h-9 items-center gap-3 border-b px-4 transition-colors hover:bg-accent/50">
       <PriorityIcon priority={issue.priority} className="size-3.5" />
-      <span className="w-14 shrink-0 font-mono text-[11px] text-muted-foreground">
+      <span className="w-14 shrink-0 font-mono text-[0.6875rem] text-muted-foreground">
         {issue.id}
       </span>
       <StatusIcon status={issue.status} className="size-3.5" />
@@ -150,11 +150,11 @@ export function MockIssueRow({ issue }: { issue: MockIssue }) {
         <LabelChip
           name={issue.label.name}
           color={issue.label.color}
-          className="hidden py-0 text-[10px] lg:inline-flex"
+          className="hidden py-0 text-[0.625rem] lg:inline-flex"
         />
       ) : null}
       {issue.due ? (
-        <span className="hidden shrink-0 text-[11px] text-muted-foreground sm:block">
+        <span className="hidden shrink-0 text-[0.6875rem] text-muted-foreground sm:block">
           {issue.due}
         </span>
       ) : null}

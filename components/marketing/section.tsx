@@ -19,7 +19,7 @@ export function Section({
     <section id={id} className={cn("relative border-t", className)}>
       <div
         className={cn(
-          "mx-auto w-full max-w-6xl px-6 py-20 md:py-28",
+          "mx-auto w-full max-w-6xl px-4 sm:px-6 py-20 md:py-28",
           containerClassName
         )}
       >
@@ -50,7 +50,7 @@ export function SectionHeading({
         className
       )}
     >
-      <p className="font-mono text-[11px] font-medium tracking-[0.2em] text-muted-foreground uppercase">
+      <p className="font-mono text-[0.6875rem] font-medium tracking-[0.2em] text-muted-foreground uppercase">
         {eyebrow}
       </p>
       <h2 className="text-3xl font-semibold tracking-tight text-balance md:text-4xl">

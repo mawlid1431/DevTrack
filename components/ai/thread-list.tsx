@@ -17,7 +17,9 @@ export function ThreadList({
   onSelect,
   onNew,
   onDelete,
+  className,
 }: {
+  className?: string;
   threads: ThreadSummary[] | undefined;
   selectedThreadId: string | null;
   onSelect: (threadId: string) => void;
@@ -25,7 +27,7 @@ export function ThreadList({
   onDelete: (threadId: string) => void;
 }) {
   return (
-    <aside className="flex w-60 shrink-0 flex-col border-r">
+    <aside className={cn("flex w-60 shrink-0 flex-col border-r", className)}>
       <div className="p-2">
         <Button
           variant="outline"

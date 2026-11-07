@@ -134,12 +134,12 @@ function TeamBoardContent() {
           >
             {team.name}
           </Link>
-          <span className="text-muted-foreground">·</span>
-          <span className="font-medium">
+          <span className="hidden text-muted-foreground sm:inline">·</span>
+          <span className="hidden font-medium sm:inline">
             {display === "board" ? "Board" : "List"}
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <ViewSwitcher
             orgSlug={params.orgSlug}
             teamId={teamId}
@@ -153,24 +153,24 @@ function TeamBoardContent() {
             }
           >
             <TabsList className="h-7">
-              <TabsTrigger value="board" className="h-6 gap-1 px-2 text-xs">
+              <TabsTrigger value="board" className="h-6 gap-1 px-2 text-xs" aria-label="Board view">
                 <Columns3 className="size-3.5" />
-                Board
+                <span className="hidden sm:inline">Board</span>
               </TabsTrigger>
-              <TabsTrigger value="list" className="h-6 gap-1 px-2 text-xs">
+              <TabsTrigger value="list" className="h-6 gap-1 px-2 text-xs" aria-label="List view">
                 <List className="size-3.5" />
-                List
+                <span className="hidden sm:inline">List</span>
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          <Button size="sm" variant="outline" onClick={openCreateIssue}>
+          <Button size="sm" variant="outline" onClick={openCreateIssue} aria-label="New issue">
             <Plus className="size-4" />
-            New issue
+            <span className="hidden sm:inline">New issue</span>
           </Button>
         </div>
       </header>
 
-      <div className="flex h-10 shrink-0 items-center border-b px-3">
+      <div className="flex h-10 shrink-0 items-center overflow-x-auto border-b px-3">
         <FilterBar
           filters={filters}
           onFiltersChange={(next) => applyState(next, display)}

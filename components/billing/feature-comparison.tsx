@@ -68,7 +68,7 @@ function SectionRows({
       <TableRow className="bg-muted/40 hover:bg-muted/40">
         <TableCell
           colSpan={PLANS.length + 1}
-          className="px-4 py-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase"
+          className="px-4 py-1.5 text-[0.6875rem] font-semibold tracking-wide text-muted-foreground uppercase"
         >
           {section.title}
         </TableCell>

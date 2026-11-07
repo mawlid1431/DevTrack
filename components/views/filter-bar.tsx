@@ -62,7 +62,7 @@ function FilterMenu({
           {icon}
           {label}
           {activeCount > 0 ? (
-            <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-primary/15 px-1 font-mono text-[10px] text-primary">
+            <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-primary/15 px-1 font-mono text-[0.625rem] text-primary">
               {activeCount}
             </span>
           ) : null}
@@ -93,7 +93,7 @@ export function FilterBar({
   const activeCount = countActiveFilters(filters);
 
   return (
-    <div className="flex flex-wrap items-center gap-1">
+    <div className="flex shrink-0 items-center gap-1">
       <FilterMenu
         label="Status"
         icon={<CircleDashed className="size-3.5" />}

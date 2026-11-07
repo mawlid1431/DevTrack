@@ -132,12 +132,12 @@ export function UsageCard({ org }: { org: Doc<"organizations"> }) {
           />
         )}
         {!isFree && (
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-[0.6875rem] text-muted-foreground">
             Issues and projects are unlimited on {plan.name}.
           </p>
         )}
         {isFree && (
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-[0.6875rem] text-muted-foreground">
             Free workspaces also include up to{" "}
             {FREE_PLAN_DISPLAY_LIMITS.projects} projects. Pro removes every
             limit.

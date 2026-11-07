@@ -55,7 +55,16 @@ function NavLink({
   );
 }
 
-export function AppSidebar() {
+/**
+ * Workspace navigation. Rendered as a fixed column on tablets and up
+ * (`variant="desktop"`, hidden below `md`) and inside the mobile drawer
+ * (`variant="drawer"`, see mobile-nav.tsx) — same content, one source.
+ */
+export function AppSidebar({
+  variant = "desktop",
+}: {
+  variant?: "desktop" | "drawer";
+}) {
   const params = useParams<{ orgSlug: string }>();
   const teams = useQuery(api.teams.list);
   const { openCreateIssue, openPalette } = useCommands();
@@ -63,7 +72,14 @@ export function AppSidebar() {
   const base = `/${params.orgSlug}`;
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col border-r bg-sidebar">
+    <aside
+      className={cn(
+        "flex-col bg-sidebar",
+        variant === "desktop"
+          ? "hidden w-60 shrink-0 border-r md:flex"
+          : "flex h-full w-full"
+      )}
+    >
       <div className="flex items-center justify-between gap-2 p-3">
         <OrganizationSwitcher
           hidePersonal
@@ -99,7 +115,7 @@ export function AppSidebar() {
         >
           <Search className="size-3.5" />
           Search…
-          <kbd className="ml-auto rounded border bg-muted px-1 font-mono text-[10px]">
+          <kbd className="ml-auto rounded border bg-muted px-1 font-mono text-[0.625rem]">
             ⌘K
           </kbd>
         </button>
@@ -147,7 +163,7 @@ export function AppSidebar() {
                 key={team._id}
                 href={`${base}/team/${team._id}`}
                 icon={
-                  <span className="flex size-4 items-center justify-center rounded bg-primary/15 text-[9px] font-semibold text-primary">
+                  <span className="flex size-4 items-center justify-center rounded bg-primary/15 text-[0.5625rem] font-semibold text-primary">
                     {team.key.slice(0, 2)}
                   </span>
                 }

@@ -135,9 +135,10 @@ export function ViewSwitcher({
             variant="ghost"
             size="sm"
             className="h-7 gap-1.5 px-2 text-xs text-muted-foreground data-[state=open]:bg-accent data-[state=open]:text-foreground"
+            aria-label="Saved views"
           >
             <Bookmark className="size-3.5" />
-            Views
+            <span className="hidden sm:inline">Views</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-64">

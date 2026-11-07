@@ -165,7 +165,7 @@ function TriagePanelInner({ issue }: IssueDetailSlotProps) {
 
       {/* Duplicates */}
       <div className="flex flex-col gap-1.5">
-        <p className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+        <p className="flex items-center gap-1.5 text-[0.6875rem] font-medium text-muted-foreground">
           <CopyX className="size-3" />
           Possible duplicates
         </p>
@@ -185,13 +185,13 @@ function TriagePanelInner({ issue }: IssueDetailSlotProps) {
                   className="flex h-7 items-center gap-2 rounded-md px-1.5 text-sm transition-colors hover:bg-accent"
                 >
                   <StatusIcon status={duplicate.status} className="size-3.5" />
-                  <span className="font-mono text-[11px] text-muted-foreground">
+                  <span className="font-mono text-[0.6875rem] text-muted-foreground">
                     {duplicate.identifier}
                   </span>
                   <span className="min-w-0 flex-1 truncate">
                     {duplicate.title}
                   </span>
-                  <span className="shrink-0 rounded-full border px-1.5 text-[10px] text-muted-foreground">
+                  <span className="shrink-0 rounded-full border px-1.5 text-[0.625rem] text-muted-foreground">
                     {Math.round(duplicate.similarity * 100)}%
                   </span>
                 </Link>

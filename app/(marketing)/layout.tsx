@@ -14,15 +14,17 @@ export default function MarketingLayout({
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
-        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-6">
+        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-2 px-4 sm:px-6">
           <Link href="/" className="flex items-center gap-2 font-semibold">
             <span className="flex size-6 items-center justify-center rounded bg-primary text-xs font-bold text-primary-foreground">
               V
             </span>
             DevTrack
           </Link>
-          <nav className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild>
+          <nav className="flex items-center gap-1 sm:gap-2">
+            {/* Hidden only on the narrowest phones (<360px); the hero's
+                "View pricing" button still links there. */}
+            <Button variant="ghost" size="sm" className="max-[359px]:hidden" asChild>
               <Link href="/pricing">Pricing</Link>
             </Button>
             <Show when="signed-out">
@@ -41,7 +43,8 @@ export default function MarketingLayout({
           </nav>
         </div>
       </header>
-      <div className="flex-1">{children}</div>
+      {/* overflow-x-clip: decorative glows never cause sideways scroll. */}
+      <div className="flex-1 overflow-x-clip">{children}</div>
     </div>
   );
 }

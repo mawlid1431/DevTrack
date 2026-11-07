@@ -14,7 +14,7 @@ export function FeaturesAi() {
       <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
         <MockAiChat className="order-last lg:order-first" />
         <div>
-          <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+          <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[0.6875rem] font-medium text-muted-foreground">
             <span className="size-1.5 rounded-full bg-emerald-500" />
             Included in Pro & Enterprise
           </div>

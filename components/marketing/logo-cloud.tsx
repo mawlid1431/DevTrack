@@ -20,8 +20,8 @@ const COMPANIES: { name: string; icon: LucideIcon }[] = [
 export function LogoCloud() {
   return (
     <section className="border-t">
-      <div className="mx-auto w-full max-w-6xl px-6 py-12">
-        <p className="text-center font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase">
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 py-12">
+        <p className="text-center font-mono text-[0.6875rem] tracking-[0.2em] text-muted-foreground uppercase">
           Powering product teams at
         </p>
         <div className="mt-7 flex flex-wrap items-center justify-center gap-x-10 gap-y-5 md:justify-between">

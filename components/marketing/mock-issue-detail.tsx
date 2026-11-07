@@ -14,13 +14,13 @@ export function MockIssueDetail({ className }: { className?: string }) {
   return (
     <MockFrame className={className}>
       <MockWindowBar>
-        <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+        <span className="flex items-center gap-1.5 text-[0.6875rem] text-muted-foreground">
           Engineering
           <ChevronRight className="size-3" />
           <span className="font-mono">ENG-142</span>
         </span>
       </MockWindowBar>
-      <div className="flex text-[13px]">
+      <div className="flex text-[0.8125rem]">
         <div className="min-w-0 flex-1 space-y-4 p-5">
           <h3 className="text-base font-semibold tracking-tight">
             Polish board drag physics on long columns
@@ -31,7 +31,7 @@ export function MockIssueDetail({ className }: { className?: string }) {
             scrolled, which makes fractional reordering feel imprecise.
           </p>
           <div className="space-y-1.5">
-            <p className="text-[11px] font-medium text-muted-foreground">
+            <p className="text-[0.6875rem] font-medium text-muted-foreground">
               Sub-issues · 2/3
             </p>
             <MockSubIssue id="ENG-148" title="Clamp spring overshoot" done />
@@ -42,7 +42,7 @@ export function MockIssueDetail({ className }: { className?: string }) {
             <div className="flex items-center gap-2">
               <UserAvatar name={MOCK_PEOPLE.jonas} className="size-4" />
               <span className="text-xs font-medium">{MOCK_PEOPLE.jonas}</span>
-              <span className="text-[11px] text-muted-foreground">2h ago</span>
+              <span className="text-[0.6875rem] text-muted-foreground">2h ago</span>
             </div>
             <p className="mt-1.5 text-xs text-muted-foreground">
               <span className="rounded bg-blue-500/10 px-1 font-medium text-blue-500">
@@ -52,13 +52,13 @@ export function MockIssueDetail({ className }: { className?: string }) {
               cycle sync.
             </p>
           </div>
-          <p className="flex items-center gap-2 text-[11px] text-muted-foreground">
+          <p className="flex items-center gap-2 text-[0.6875rem] text-muted-foreground">
             <span className="size-1.5 rounded-full bg-yellow-500" />
             {MOCK_PEOPLE.ada} moved from Todo to In Progress · 2h ago
           </p>
         </div>
         <aside className="hidden w-44 shrink-0 space-y-3 border-l p-4 text-xs sm:block">
-          <p className="text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
+          <p className="text-[0.625rem] font-medium tracking-wider text-muted-foreground uppercase">
             Properties
           </p>
           <PropertyRow label="Status">
@@ -74,13 +74,13 @@ export function MockIssueDetail({ className }: { className?: string }) {
             Ada
           </PropertyRow>
           <PropertyRow label="Cycle">
-            <span className="font-mono text-[11px]">Cycle 14</span>
+            <span className="font-mono text-[0.6875rem]">Cycle 14</span>
           </PropertyRow>
           <PropertyRow label="Labels">
             <LabelChip
               name={MOCK_LABELS.design.name}
               color={MOCK_LABELS.design.color}
-              className="py-0 text-[10px]"
+              className="py-0 text-[0.625rem]"
             />
           </PropertyRow>
           <PropertyRow label="Links">
@@ -106,7 +106,7 @@ function MockSubIssue({
   return (
     <div className="flex h-7 items-center gap-2 rounded-md border px-2 text-xs">
       <StatusIcon status={done ? "done" : "todo"} className="size-3.5" />
-      <span className="font-mono text-[10px] text-muted-foreground">{id}</span>
+      <span className="font-mono text-[0.625rem] text-muted-foreground">{id}</span>
       <span className={done ? "text-muted-foreground line-through" : undefined}>
         {title}
       </span>

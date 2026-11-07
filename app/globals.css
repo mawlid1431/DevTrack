@@ -131,3 +131,48 @@
     @apply font-sans;
   }
 }
+/*
+ * Screen-size scaling. Every size in the app is in rem, so changing the root
+ * font size scales the whole UI evenly. Tiers need BOTH a minimum width and
+ * a minimum height: a curved ultrawide (3440x1440, 5120x1440) is very wide
+ * but only 1440 tall, so it scales like a 1440p monitor, not like 4K.
+ *
+ *   phones / tablets / laptops / 21"-24" 1080p-1200p  → 16px (default)
+ *   27"-32" 1440p, 34"-49" ultrawides (1440 tall)      → 18px
+ *   3200x1800-class panels                             → 20px
+ *   4K (3840x2160) at 100% OS scaling, 5K2K ultrawides → 24px
+ *   5K / 6K and 8K panels                              → 28-32px
+ *
+ * At OS display scaling (e.g. 4K at 150%) the browser already reports the
+ * smaller CSS size, so these tiers only kick in when text would be tiny.
+ */
+@media (min-width: 2560px) and (min-height: 1300px) {
+  html {
+    font-size: 112.5%;
+  }
+}
+@media (min-width: 3200px) and (min-height: 1700px) {
+  html {
+    font-size: 125%;
+  }
+}
+@media (min-width: 3840px) and (min-height: 2000px) {
+  html {
+    font-size: 150%;
+  }
+}
+@media (min-width: 5120px) and (min-height: 2800px) {
+  html {
+    font-size: 175%;
+  }
+}
+@media (min-width: 7680px) and (min-height: 4000px) {
+  html {
+    font-size: 200%;
+  }
+}
+
+/* Never let a stray wide element cause a horizontal page scroll on phones. */
+body {
+  overflow-x: clip;
+}

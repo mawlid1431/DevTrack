@@ -52,7 +52,7 @@ export function CurrentPlanCard({ org }: { org: Doc<"organizations"> }) {
               {org.subscriptionStatus && (
                 <Badge
                   variant={statusBadgeVariant(org.subscriptionStatus)}
-                  className="h-4 rounded-full px-1.5 text-[10px] capitalize"
+                  className="h-4 rounded-full px-1.5 text-[0.625rem] capitalize"
                 >
                   {org.subscriptionStatus.replace(/_/g, " ")}
                 </Badge>
@@ -69,7 +69,7 @@ export function CurrentPlanCard({ org }: { org: Doc<"organizations"> }) {
               </span>
             </div>
             {plan.priceNote && (
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[0.6875rem] text-muted-foreground">
                 {plan.priceNote}
               </p>
             )}

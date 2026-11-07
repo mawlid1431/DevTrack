@@ -68,7 +68,7 @@ export function QuickCreateCard({
         }}
         className="h-7 border-none px-1 text-sm shadow-none focus-visible:ring-0 dark:bg-transparent"
       />
-      <p className="px-1 pt-1 text-[10px] text-muted-foreground">
+      <p className="px-1 pt-1 text-[0.625rem] text-muted-foreground">
         Enter to create · Esc to dismiss
       </p>
     </div>

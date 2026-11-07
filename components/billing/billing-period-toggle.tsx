@@ -48,7 +48,7 @@ export function BillingPeriodToggle({
         Annual
         <Badge
           variant="secondary"
-          className="h-4 rounded-full px-1.5 text-[10px] font-medium text-primary"
+          className="h-4 rounded-full px-1.5 text-[0.625rem] font-medium text-primary"
         >
           Save 20%
         </Badge>

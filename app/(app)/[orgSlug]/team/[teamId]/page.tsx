@@ -50,12 +50,12 @@ export default function TeamIssuesPage() {
 
   return (
     <>
-      <header className="flex h-12 shrink-0 items-center justify-between border-b px-4">
-        <div className="flex items-center gap-2 text-sm">
-          <span className="font-medium">{team.name}</span>
-          <span className="text-muted-foreground">Issues</span>
+      <header className="flex h-12 shrink-0 items-center justify-between gap-2 border-b px-4">
+        <div className="flex min-w-0 items-center gap-2 text-sm">
+          <span className="truncate font-medium">{team.name}</span>
+          <span className="hidden text-muted-foreground sm:inline">Issues</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <Tabs
             value="list"
             onValueChange={(value) => {
@@ -65,19 +65,19 @@ export default function TeamIssuesPage() {
             }}
           >
             <TabsList className="h-7">
-              <TabsTrigger value="board" className="h-6 gap-1 px-2 text-xs">
+              <TabsTrigger value="board" className="h-6 gap-1 px-2 text-xs" aria-label="Board view">
                 <Columns3 className="size-3.5" />
-                Board
+                <span className="hidden sm:inline">Board</span>
               </TabsTrigger>
-              <TabsTrigger value="list" className="h-6 gap-1 px-2 text-xs">
+              <TabsTrigger value="list" className="h-6 gap-1 px-2 text-xs" aria-label="List view">
                 <List className="size-3.5" />
-                List
+                <span className="hidden sm:inline">List</span>
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          <Button size="sm" variant="outline" onClick={openCreateIssue}>
+          <Button size="sm" variant="outline" onClick={openCreateIssue} aria-label="New issue">
             <Plus className="size-4" />
-            New issue
+            <span className="hidden sm:inline">New issue</span>
           </Button>
         </div>
       </header>

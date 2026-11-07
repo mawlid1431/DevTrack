@@ -42,7 +42,7 @@ export function AddIssuesPopover({
           Add issues
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-96 p-0">
+      <PopoverContent align="end" className="w-[min(24rem,calc(100vw-2rem))] p-0">
         <Command>
           <CommandInput placeholder="Add existing issues…" />
           <CommandList>

@@ -64,7 +64,7 @@ export function CommentComposer({ issueId }: { issueId: Id<"issues"> }) {
           disabled={submitting}
         />
         <div className="flex items-center justify-end gap-2 pt-1">
-          <span className="text-[11px] text-muted-foreground">⌘↵ to send</span>
+          <span className="text-[0.6875rem] text-muted-foreground">⌘↵ to send</span>
           <Button
             size="sm"
             className="h-7"

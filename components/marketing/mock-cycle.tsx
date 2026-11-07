@@ -28,7 +28,7 @@ export function MockCycle({ className }: { className?: string }) {
           style={{ width: `${percent}%` }}
         />
       </div>
-      <div className="mt-3 flex items-center gap-4 text-[11px] text-muted-foreground">
+      <div className="mt-3 flex items-center gap-4 text-[0.6875rem] text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <span className="size-1.5 rounded-full bg-foreground/30" />
           Scope {scope}
@@ -55,7 +55,7 @@ export function MockCycle({ className }: { className?: string }) {
           />
         ))}
       </div>
-      <p className="mt-2 text-[10px] text-muted-foreground">
+      <p className="mt-2 text-[0.625rem] text-muted-foreground">
         Unfinished issues roll into Cycle 15 automatically.
       </p>
     </div>

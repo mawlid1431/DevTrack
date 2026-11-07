@@ -27,7 +27,7 @@ const COLUMNS: {
 export function Footer() {
   return (
     <footer className="border-t">
-      <div className="mx-auto w-full max-w-6xl px-6 py-14">
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 py-14">
         <div className="flex flex-col justify-between gap-10 md:flex-row">
           <div className="max-w-xs">
             <Link href="/" className="flex items-center gap-2 font-semibold">
@@ -45,7 +45,7 @@ export function Footer() {
           <div className="grid grid-cols-2 gap-10 sm:gap-16">
             {COLUMNS.map((column) => (
               <nav key={column.heading} className="flex flex-col gap-2.5">
-                <p className="mb-1 font-mono text-[11px] tracking-[0.18em] text-muted-foreground uppercase">
+                <p className="mb-1 font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
                   {column.heading}
                 </p>
                 {column.links.map((link) => (
@@ -84,7 +84,7 @@ export function Footer() {
             {" · "}
             <span>MIT License</span>
           </p>
-          <p className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
+          <p className="flex items-center gap-1.5 font-mono text-[0.6875rem] text-muted-foreground">
             <span className="size-1.5 rounded-full bg-emerald-500" />
             Realtime sync · 99.99% uptime
           </p>

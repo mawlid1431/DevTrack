@@ -106,7 +106,7 @@ export default function SearchPage() {
                 </p>
                 <p className="text-xs text-muted-foreground/70">
                   Tip: press{" "}
-                  <kbd className="rounded border bg-muted px-1 font-mono text-[10px]">
+                  <kbd className="rounded border bg-muted px-1 font-mono text-[0.625rem]">
                     /
                   </kbd>{" "}
                   anywhere to get here.

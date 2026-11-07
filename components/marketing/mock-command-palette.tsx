@@ -29,7 +29,7 @@ export function MockCommandPalette({ className }: { className?: string }) {
         <Kbd className="ml-auto">esc</Kbd>
       </div>
       <div className="p-1.5 text-sm">
-        <p className="px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground">
+        <p className="px-2.5 py-1.5 text-[0.6875rem] font-medium text-muted-foreground">
           Issue · ENG-142
         </p>
         <PaletteRow
@@ -47,7 +47,7 @@ export function MockCommandPalette({ className }: { className?: string }) {
           icon={<RefreshCcw className="size-4" />}
           label="Move to cycle…"
         />
-        <p className="px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground">
+        <p className="px-2.5 py-1.5 text-[0.6875rem] font-medium text-muted-foreground">
           Workspace
         </p>
         <PaletteRow
@@ -66,7 +66,7 @@ export function MockCommandPalette({ className }: { className?: string }) {
           kbd="⌘J"
         />
       </div>
-      <div className="flex h-9 items-center gap-2 border-t bg-muted/30 px-3.5 text-[11px] text-muted-foreground">
+      <div className="flex h-9 items-center gap-2 border-t bg-muted/30 px-3.5 text-[0.6875rem] text-muted-foreground">
         <ArrowRight className="size-3" />
         Select
         <span className="ml-auto flex items-center gap-1.5">

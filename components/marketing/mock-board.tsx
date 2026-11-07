@@ -23,7 +23,7 @@ export function MockBoard({ className }: { className?: string }) {
             <div className="flex items-center gap-1.5 px-1">
               <StatusIcon status={column.status} className="size-3.5" />
               <span className="text-xs font-medium">{column.label}</span>
-              <span className="text-[11px] text-muted-foreground">
+              <span className="text-[0.6875rem] text-muted-foreground">
                 {column.issues.length}
               </span>
             </div>
@@ -35,7 +35,7 @@ export function MockBoard({ className }: { className?: string }) {
                 dragging={columnIndex === 1 && issueIndex === 0}
               />
             ))}
-            <div className="flex h-7 items-center justify-center rounded-lg border border-dashed text-[11px] text-muted-foreground/60">
+            <div className="flex h-7 items-center justify-center rounded-lg border border-dashed text-[0.6875rem] text-muted-foreground/60">
               + Add issue
             </div>
           </div>
@@ -60,7 +60,7 @@ function MockBoardCard({
       )}
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="font-mono text-[10px] text-muted-foreground">
+        <span className="font-mono text-[0.625rem] text-muted-foreground">
           {issue.id}
         </span>
         {issue.assignee ? (
@@ -78,7 +78,7 @@ function MockBoardCard({
             style={{ backgroundColor: issue.label.color }}
           />
         ) : null}
-        <span className="text-[10px] text-muted-foreground">Cycle 14</span>
+        <span className="text-[0.625rem] text-muted-foreground">Cycle 14</span>
       </div>
     </div>
   );

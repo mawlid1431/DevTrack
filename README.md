@@ -118,7 +118,11 @@ DevTrack was created by Mowlid. Third-party packages (Convex, Clerk, Next.js, et
 
 ### AI Agent (Pro & Enterprise)
 
-- 🤖 **Workspace-aware chat** — A Convex Agent assistant on Groq + OpenRouter with automatic model fallback with org-scoped tools: create/update/search issues, summarize cycles, report project status, list members
+- 🤖 **Workspace-aware chat** — A Convex Agent assistant with org-scoped tools: create/update/search issues, summarize cycles, report project status, list members
+- 🔀 **Multi-model, multi-provider** — One shared model pool (Groq + OpenRouter) serves every AI feature: chat, triage and duplicate detection
+- ⚡ **Parallel + failover** — One-shot calls race the two best models and keep the first answer; streaming chat fails over instantly. Rate-limited, down, retired or misconfigured models are classified and sidelined for a cooldown
+- 🩹 **Clear failure messages** — When every model is unavailable, users are told why (usage limit, provider outage, or misconfiguration) instead of a generic error
+- 🩺 **Live diagnostics** — `npx convex run agent/diagnostics:checkModels` tests every model in parallel and reports a plain-language reason for any that isn't ready
 - 🧠 **Duplicate detection** — Issues are embedded (1536-dim vectors) on create; the agent finds similar issues before you file the same bug twice
 - 🩺 **Triage assist** — AI-suggested priority and labels for new issues
 - 📋 **Standup & cycle reports** — Generate summaries of what shipped and what's blocked
@@ -154,6 +158,7 @@ _Annual billing: Pro $16/mo-equivalent, Enterprise $79/mo-equivalent._
 - 🖱️ **@dnd-kit drag & drop** — With fractional `sortOrder` ranking so reorders are O(1) writes
 - 🧩 **shadcn/ui + Tailwind CSS v4** — Linear-style density, dark theme by default, light mode via `next-themes`
 - ✅ **Validators everywhere** — Every public Convex function validates args AND return values
+- 📱🖥️ **Responsive from 320px phones to 4K and curved ultrawides** — Drawer navigation on phones, stacked panels on tablets, and height-aware UI scaling on 1440p, ultrawide and 4K screens (see [Responsive Design](#-responsive-design))
 
 ---
 
@@ -190,10 +195,138 @@ flowchart TB
     Convex -->|"Real-time sync"| Browser
     Clerk[Clerk Auth + Orgs + Billing] -->|"Svix Webhooks"| ConvexHTTP["Convex HTTP /clerk-webhook"]
     ConvexHTTP -->|"Sync users, orgs, members, subscriptions"| Convex
-    Convex -->|"Agent tools + embeddings"| Groq[Groq]
+    Convex -->|"Chat models (primary)"| Groq[Groq]
+    Convex -->|"Chat fallbacks + embeddings"| OpenRouter[OpenRouter]
     Convex -->|"File storage"| Storage[Convex Storage]
     Browser -->|"proxy.ts middleware"| Clerk
 ```
+
+### Sign-Up & Sync Workflow
+
+Clerk is the source of truth; Convex holds a mirror that the app reads in real time.
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant C as Clerk
+    participant W as Convex /clerk-webhook
+    participant DB as Convex DB
+    participant App as Workspace shell
+    U->>C: Sign up + create organization
+    C->>W: user.created, organization.created, organizationMembership.created (Svix-signed)
+    W->>W: Verify signature with CLERK_WEBHOOK_SECRET
+    W->>DB: Upsert users / organizations / members
+    U->>App: Open /[orgSlug]
+    App->>C: Set active org (JWT carries org_id, org_slug, org_role)
+    App->>DB: users.current + organizations.current (live queries)
+    DB-->>App: Synced docs arrive -> workspace renders
+```
+
+### Issue Lifecycle Workflow
+
+```mermaid
+flowchart LR
+    Create[Create issue] --> Gate{"orgMutation:<br/>member of org?"}
+    Gate -->|no| Reject[Not authenticated / not a member]
+    Gate -->|yes| Limit{"Free plan<br/>issue limit?"}
+    Limit -->|over| Upgrade[Upgrade prompt in UI]
+    Limit -->|ok| Insert[Insert issue + logActivity]
+    Insert --> Live[Every open client updates live]
+    Insert --> Embed["Embedding scheduled<br/>(agent-created) or backfilled<br/>when AI pages open"]
+    Embed --> Dupes[Duplicate detection & semantic search]
+```
+
+### AI Agent Request Workflow
+
+```mermaid
+sequenceDiagram
+    participant UI as AI page
+    participant M as agent/chat:sendMessage
+    participant A as streamResponse (action)
+    participant P as Resilient model pool
+    participant T as Org-scoped tools
+    UI->>M: prompt
+    M->>M: Plan gate (Pro/Enterprise), Pro rate limit 50/day, save message
+    M->>A: schedule (returns immediately)
+    A->>P: streamText with tools
+    P->>P: Pick first healthy model, fail over on error
+    P->>T: Tool calls (listTeams, searchIssues, createIssue, ...)
+    T-->>P: Results scoped to the caller's org only
+    P-->>UI: Token deltas streamed live over the websocket
+    A-->>UI: On total failure: assistant message with the classified reason
+```
+
+### Model Selection & Failover Workflow
+
+Every AI feature (chat, triage assist, duplicate detection) goes through the same pool in `convex/agent/models.ts`.
+
+```mermaid
+flowchart TB
+    Env["Convex env vars<br/>AI_MODEL_PROVIDER, GROQ_MODEL_NAME,<br/>AI_MODEL_NAME, AI_FALLBACK_MODELS"] --> Chain["Ordered chain<br/>(models without an API key are skipped)"]
+    Chain --> Order["Healthy models first,<br/>cooling-down models last"]
+    Order --> Kind{"Call type"}
+    Kind -->|"Streaming chat"| Seq["Try one model at a time<br/>(30s to start answering)"]
+    Kind -->|"One-shot (triage, tool steps)"| Race["Race 2 models in parallel,<br/>keep first answer, cancel the loser"]
+    Seq --> Ok{"Answered?"}
+    Race --> Ok
+    Ok -->|yes| Healthy[Mark healthy, return answer]
+    Ok -->|no| Classify["Classify error:<br/>rate_limited, server_error, timeout,<br/>network, auth, not_found, unsupported"]
+    Classify --> Cool["Sideline model for a cooldown"]
+    Cool --> More{"More models?"}
+    More -->|yes| Order
+    More -->|no| Fail["AllModelsFailedError -><br/>clear message to the user"]
+```
+
+| Failure kind | Typical cause | Cooldown | What the user sees if every model fails this way |
+| --- | --- | --- | --- |
+| `rate_limited` | HTTP 429/402: free-tier limit or quota | 60s, or the provider's `Retry-After` | "All AI models have reached their usage limit for the moment…" |
+| `server_error`, `timeout`, `network` | Provider outage, overload, or slow start | 15–30s | "The AI providers are not responding right now…" |
+| `auth`, `not_found`, `unsupported` | Bad API key, retired model, or not a tool-calling chat model | 10 min | "The AI models are misconfigured… run `agent/diagnostics:checkModels`" |
+| mixed | A combination of the above | per kind | "Every AI model is unavailable right now…" |
+
+Cooldowns live in memory per warm Convex worker: a fast path, never needed for correctness. A sidelined model is still tried last, so a request only fails when no model at all can answer.
+
+### Embeddings & Duplicate Detection Workflow
+
+```mermaid
+flowchart LR
+    Text["Issue title + description"] --> Model{"AI_EMBED_MODEL set?"}
+    Model -->|yes| Remote["OpenRouter embedding model<br/>dimensions: 1536"]
+    Model -->|no| Local["Local hashed 1536-dim vector"]
+    Remote --> Store["issues.embedding<br/>(by_embedding vector index)"]
+    Local --> Store
+    Remote -.->|"fails"| Skip["Leave issue unembedded,<br/>backfill retries later"]
+    Store --> Search["Vector search filtered by orgId<br/>(similarity >= 0.35-0.4)"]
+```
+
+Only one embedding model is active at a time: vectors from different models can't be compared. After changing `AI_EMBED_MODEL`, run `npx convex run agent/embeddings:reembedAllIssues`.
+
+---
+
+## 📱 Responsive Design
+
+DevTrack is built to fit everything from a 320px phone to a 4K monitor or a curved ultrawide.
+
+| Screen | Width × height | What changes |
+| --- | --- | --- |
+| Small phones | 320–374px | Marketing nav drops its Pricing link (still in the hero); 16px side padding |
+| Phones | 375–767px | Workspace sidebar becomes a slide-in drawer from a top bar; AI conversations open in a drawer; settings tabs scroll sideways; board/list headers show icons only |
+| Tablets | 768–1023px | Fixed sidebar returns; issue and project property panels stack under the content |
+| Laptops, 21"–24" monitors | 1024–2559px | Full desktop layout at 16px base size; readable content is capped in width |
+| 27"–32" 1440p, 34"–49" curved ultrawides | ≥ 2560 wide **and** ≥ 1300 tall | UI scales to 18px base |
+| 3200×1800-class panels | ≥ 3200 × 1700 | 20px base |
+| 4K at 100% OS scaling, 5K2K ultrawides | ≥ 3840 × 2000 | 24px base |
+| 5K / 6K, 8K | ≥ 5120 × 2800, ≥ 7680 × 4000 | 28px, 32px base |
+
+How it works:
+
+- **Everything is in `rem`**, so one root font size in `app/globals.css` scales the whole UI evenly. Text that used fixed pixel sizes was converted to the equivalent `rem`.
+- **Height-aware tiers:** a curved ultrawide is very wide but only 1440px tall, so it scales like a 1440p monitor instead of being blown up like 4K. Readable content stays centred with a capped width.
+- **OS scaling is respected:** at 150% or 200% Windows/macOS scaling the browser already reports a smaller CSS size, so the large tiers only apply when text would otherwise be tiny.
+- **No sideways scrolling:** the page body clips horizontal overflow, and decorative glows are clipped on marketing pages. Board columns and filter bars scroll inside their own rows.
+- **Mobile navigation:** `components/shell/mobile-nav.tsx` reuses the same `AppSidebar` inside a drawer that closes on navigation or when the screen grows past 768px.
+
+The landing, pricing and sign-in pages were measured with zero horizontal overflow at 320×568, 375×812, 768×1024, 1280×800, 1920×1080, 2560×1440, 3440×1440, 5120×1440 and 3840×2160. The signed-in workspace layouts follow the same breakpoints.
 
 ---
 
@@ -231,6 +364,8 @@ Create a `.env.local` file in the project root:
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
 NEXT_PUBLIC_CLERK_FRONTEND_API_URL=https://your-instance.clerk.accounts.dev
+CLERK_FRONTEND_API_URL=https://your-instance.clerk.accounts.dev   # pushed to Convex
+CLERK_WEBHOOK_SECRET=whsec_...                                     # pushed to Convex (step 6)
 
 # Clerk routing
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
@@ -242,6 +377,15 @@ NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/onboarding
 CONVEX_DEPLOYMENT=dev:your-deployment
 NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
 NEXT_PUBLIC_CONVEX_SITE_URL=https://your-deployment.convex.site
+
+# AI — read by Convex functions, pushed with scripts/setup-convex-env.ts
+GROQ_API_KEY=gsk_...
+OPENROUTER_API_KEY=sk-or-v1-...
+AI_MODEL_PROVIDER=groq
+GROQ_MODEL_NAME=openai/gpt-oss-120b
+AI_MODEL_NAME=google/gemma-4-31b-it:free
+AI_FALLBACK_MODELS=groq:openai/gpt-oss-20b,openrouter:recursive/flint-v1.0:free,openrouter:google/gemma-4-26b-a4b-it:free,openrouter:liquid/lfm-3-1.7b:free
+AI_EMBED_MODEL=nvidia/nemotron-3.5-embed-8b:free
 ```
 
 > 🔒 **Security:** Never commit `.env.local` to git. The `NEXT_PUBLIC_` prefix means the value is exposed to the browser — only use it for public keys like `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`.
@@ -271,18 +415,18 @@ NEXT_PUBLIC_CONVEX_SITE_URL=https://your-deployment.convex.site
 ### 5. Set up Convex
 
 1. Run `npx convex dev` — this will prompt you to create a new project or link an existing one, and fills in `CONVEX_DEPLOYMENT` / `NEXT_PUBLIC_CONVEX_URL` for you
-2. Set these environment variables in the [Convex dashboard](https://dashboard.convex.dev) (Settings → Environment Variables) — or via the CLI:
+2. Push the server-side variables from `.env.local` to the Convex deployment in one go (values are never printed):
 
 ```bash
-npx convex env set CLERK_FRONTEND_API_URL https://your-instance.clerk.accounts.dev
-npx convex env set CLERK_WEBHOOK_SECRET whsec_...   # from step 6 below
-npx convex env set GROQ_API_KEY gsk_...             # AI agent — Groq
-npx convex env set OPENROUTER_API_KEY sk-or-v1-...  # AI agent — OpenRouter (models + embeddings)
+bun scripts/setup-convex-env.ts            # sets every non-empty value
+bun scripts/setup-convex-env.ts --dry-run  # shows what would be set
 ```
+
+It sets `CLERK_FRONTEND_API_URL`, `CLERK_WEBHOOK_SECRET`, `GROQ_API_KEY`, `OPENROUTER_API_KEY` and the AI model variables below. You can also set them one by one with `npx convex env set NAME value` or in the [Convex dashboard](https://dashboard.convex.dev) (Settings → Environment Variables).
 
 #### AI models
 
-The agent reads its models from Convex env vars (`convex/agent/models.ts`). Chat models form an ordered chain, so if one is rate-limited, down or retired, the next is tried automatically. Every chat model must support tool calling.
+The agent reads its models from Convex env vars (`convex/agent/models.ts`). See [Model Selection & Failover Workflow](#model-selection--failover-workflow) for how they're used. Every chat model must support tool calling.
 
 | Variable | Purpose | Default |
 | --- | --- | --- |
@@ -291,14 +435,30 @@ The agent reads its models from Convex env vars (`convex/agent/models.ts`). Chat
 | `AI_MODEL_NAME` | OpenRouter chat model | `google/gemma-4-31b-it:free` |
 | `AI_FALLBACK_MODELS` | Comma-separated `provider:model` list tried after the two above | `openrouter:recursive/flint-v1.0:free,openrouter:google/gemma-4-26b-a4b-it:free,openrouter:liquid/lfm-3-1.7b:free` |
 | `AI_EMBED_MODEL` | OpenRouter embedding model for duplicate detection (called with `dimensions: 1536`) | unset → local hashed embeddings |
+| `AI_PARALLEL_MODELS` | How many models race per one-shot call (1–4) | `2` |
+| `AI_MODEL_TIMEOUT_MS` | Max wait for a model to start answering before moving on | `30000` |
 
-Models whose provider key is missing are skipped. After setting or changing `AI_EMBED_MODEL`, re-embed existing issues once, then check every model against the live APIs:
+**Recommended setup (verified against the live APIs):**
+
+| Order | Model | Role |
+| --- | --- | --- |
+| 1 | Groq `openai/gpt-oss-120b` | Primary |
+| 2 | OpenRouter `google/gemma-4-31b-it:free` | Fallback (often rate-limited on the free tier) |
+| 3 | Groq `openai/gpt-oss-20b` | Reliable second Groq model |
+| 4 | OpenRouter `recursive/flint-v1.0:free` | Backup on a second provider |
+| 5–6 | OpenRouter `gemma-4-26b-a4b-it:free`, `liquid/lfm-3-1.7b:free` | Extra free backups |
+| embeddings | OpenRouter `nvidia/nemotron-3.5-embed-8b:free` | Exactly 1536 dims |
+
+**Deliberately not used:** `parallel/decisions-fast:free` and `respan/span-01-lite:free` are OpenRouter "decisions" models that reject chat requests; `nvidia/nemotron-3.5-embed-1b:free` fails when asked for 1536 dimensions; Groq `qwen/qwen3.8-27b` has flaky tool calling and a 1,000 output-token/minute free limit.
+
+After setting or changing `AI_EMBED_MODEL`, re-embed existing issues once, then check every model against the live APIs:
 
 ```bash
-npx convex env set AI_EMBED_MODEL nvidia/nemotron-3.5-embed-8b:free
 npx convex run agent/embeddings:reembedAllIssues
 npx convex run agent/diagnostics:checkModels
 ```
+
+The diagnostics report `ready`, a per-model `status` with a plain-language `reason`, which model answered the live failover test, the embedding check, the excluded models, and any models currently cooling down.
 
 ### 6. Configure Clerk Webhooks
 
@@ -431,6 +591,10 @@ This deploys your Convex functions and schema to a production deployment. Set `C
 | AI page says upgrade required on a paid plan | AI access is gated by plan in Convex (`hasAiAccess`). Confirm the subscription webhook fired and the org's plan is `pro` or `enterprise`.       |
 | AI chat errors immediately                   | Set `GROQ_API_KEY` and/or `OPENROUTER_API_KEY` on Convex, then run `npx convex run agent/diagnostics:checkModels`                                                         |
 | AI stops responding mid-day                  | Pro is rate-limited to 50 messages/user/day. Enterprise is unlimited.                                                                           |
+| "All AI models have reached their usage limit" | Every model in the chain returned 429. Free OpenRouter models are often overloaded; add a Groq fallback (`groq:openai/gpt-oss-20b`) or OpenRouter credits and drop `:free`. |
+| "The AI models are misconfigured"            | A key is wrong or a model id is retired/unsupported. Run `npx convex run agent/diagnostics:checkModels` and read each model's `reason`. |
+| One model is always `rate_limited` in diagnostics | Normal for free models; the pool skips it automatically. Reorder `AI_FALLBACK_MODELS` if it slows replies down. |
+| Webhook only syncs users, not orgs or plans  | The endpoint must subscribe to `user.*`, `organization.*`, `organizationMembership.*`, `subscription.*` and `subscriptionItem.*`. |
 
 ### Database
 
@@ -519,6 +683,10 @@ See the full [LICENSE](LICENSE) for details.
 | `npx convex deploy`            | Deploy Convex to production                          |
 | `npx convex dashboard`         | Open the Convex dashboard in your browser            |
 | `npx convex env set KEY value` | Set an environment variable on the Convex deployment |
+| `bun scripts/setup-convex-env.ts` | Push Clerk + AI variables from `.env.local` to Convex |
+| `npx convex run agent/diagnostics:checkModels` | Test every AI model live and explain any that isn't ready |
+| `npx convex run agent/embeddings:reembedAllIssues` | Re-embed every issue after changing `AI_EMBED_MODEL` |
+| `bun run test` | Run the Convex backend test suite (Vitest) |
 
 ### Key Files & Folders
 
@@ -533,8 +701,12 @@ See the full [LICENSE](LICENSE) for details.
 | `convex/lib/customFunctions.ts`                                       | `orgQuery` / `orgMutation` wrappers (auth + org scoping)                         |
 | `convex/lib/limits.ts`                                                | Free-plan limit enforcement (`assertCanCreateIssue`, etc.)                       |
 | `convex/agent/`                                                       | AI agent: chat, tools, embeddings, triage, rate limiting                         |
+| `convex/agent/models.ts`                                              | Model pool: provider chain, parallel racing, failover, error classification     |
+| `convex/agent/diagnostics.ts`                                         | `checkModels`: live health report for every AI model                             |
+| `scripts/setup-convex-env.ts`                                         | Pushes server-side env vars from `.env.local` to Convex                          |
 | `components/ui/`                                                      | shadcn/ui primitives                                                             |
-| `components/shell/`                                                   | App shell: sidebar, command palette wiring                                       |
+| `components/shell/`                                                   | App shell: sidebar, mobile top bar + drawer (`mobile-nav.tsx`), command palette |
+| `app/globals.css`                                                     | Theme tokens and the screen-size scaling tiers                                   |
 | `components/board/`, `components/issues/`, `components/issue-detail/` | Board, list, and issue detail UI                                                 |
 | `lib/plans.ts`                                                        | Single source of truth for Clerk plan IDs, slugs, and pricing display            |
 | `proxy.ts`                                                            | Clerk middleware for route protection (Next.js 16)                               |

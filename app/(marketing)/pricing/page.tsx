@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function PricingPage() {
   return (
-    <main className="mx-auto w-full max-w-5xl px-6 py-20">
+    <main className="mx-auto w-full max-w-5xl px-4 py-14 sm:px-6 sm:py-20">
       <div className="mx-auto flex max-w-2xl flex-col items-center gap-3 text-center">
         <span className="rounded-full border bg-muted/40 px-3 py-1 text-xs font-medium text-muted-foreground">
           Pricing

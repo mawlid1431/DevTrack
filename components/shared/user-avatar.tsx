@@ -21,7 +21,7 @@ export function UserAvatar({
   return (
     <Avatar className={cn("size-5", className)}>
       <AvatarImage src={imageUrl} alt={name} />
-      <AvatarFallback className="text-[9px]">{initials}</AvatarFallback>
+      <AvatarFallback className="text-[0.5625rem]">{initials}</AvatarFallback>
     </Avatar>
   );
 }

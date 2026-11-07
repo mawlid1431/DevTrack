@@ -2,11 +2,17 @@
 
 import { optimisticallySendMessage } from "@convex-dev/agent/react";
 import { useMutation, useQuery } from "convex/react";
-import { Bot, Loader2, Sparkles } from "lucide-react";
+import { Bot, Loader2, MessagesSquare, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { AiComposer } from "./composer";
 import { convexErrorMessage } from "./convex-error";
 import { AiConversation } from "./conversation";
@@ -42,6 +48,7 @@ function AiWorkspace() {
   const threads = useQuery(api.agent.chat.listThreads);
   const quota = useQuery(api.agent.chat.quota);
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
+  const [threadsOpen, setThreadsOpen] = useState(false);
 
   const createThread = useMutation(api.agent.chat.createThread);
   const deleteThread = useMutation(api.agent.chat.deleteThread);
@@ -103,23 +110,58 @@ function AiWorkspace() {
       });
   };
 
+  const threadListProps = {
+    threads,
+    selectedThreadId,
+    onDelete: removeThread,
+  };
+
   return (
     <>
       <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
         <Bot className="size-4 text-primary" />
         <h1 className="text-sm font-medium">AI Agent</h1>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
           <QuotaPill quota={quota} />
+          {/* Phones: conversations live in a drawer instead of a column. */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-7 gap-1.5 md:hidden"
+            onClick={() => setThreadsOpen(true)}
+          >
+            <MessagesSquare className="size-3.5" />
+            Chats
+          </Button>
         </div>
       </header>
       <div className="flex min-h-0 flex-1">
         <ThreadList
-          threads={threads}
-          selectedThreadId={selectedThreadId}
+          {...threadListProps}
+          className="hidden md:flex"
           onSelect={setSelectedThreadId}
           onNew={() => setSelectedThreadId(null)}
-          onDelete={removeThread}
         />
+        <Sheet open={threadsOpen} onOpenChange={setThreadsOpen}>
+          <SheetContent side="left" className="w-[min(18rem,85vw)] gap-0 p-0">
+            <SheetTitle className="sr-only">Conversations</SheetTitle>
+            <SheetDescription className="sr-only">
+              Your AI agent conversations
+            </SheetDescription>
+            <ThreadList
+              {...threadListProps}
+              className="h-full w-full border-r-0 pt-10"
+              onSelect={(threadId) => {
+                setSelectedThreadId(threadId);
+                setThreadsOpen(false);
+              }}
+              onNew={() => {
+                setSelectedThreadId(null);
+                setThreadsOpen(false);
+              }}
+            />
+          </SheetContent>
+        </Sheet>
         <main className="flex min-w-0 flex-1 flex-col">
           {selectedThreadId ? (
             <AiConversation threadId={selectedThreadId} />

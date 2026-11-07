@@ -316,13 +316,13 @@ function MembersTable({
                         {isSelf && (
                           <Badge
                             variant="secondary"
-                            className="h-4 rounded-full px-1.5 text-[10px]"
+                            className="h-4 rounded-full px-1.5 text-[0.625rem]"
                           >
                             You
                           </Badge>
                         )}
                       </span>
-                      <span className="truncate text-[11px] text-muted-foreground">
+                      <span className="truncate text-[0.6875rem] text-muted-foreground">
                         {member.publicUserData?.identifier}
                       </span>
                     </div>

@@ -134,9 +134,11 @@ function ProjectDetail({
         />
       </header>
 
-      <div className="flex min-h-0 flex-1">
-        <ScrollArea className="flex-1">
-          <div className="mx-auto flex max-w-3xl flex-col gap-4 px-8 pt-8 pb-4">
+      {/* Below lg the properties panel stacks under the content and the
+          whole page scrolls as one column; from lg it sits on the right. */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
+        <ScrollArea className="shrink-0 lg:flex-1 lg:shrink">
+          <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 sm:px-8 pt-6 sm:pt-8 pb-4">
             <Textarea
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -214,7 +216,7 @@ function ProjectDetail({
           )}
         </ScrollArea>
 
-        <aside className="w-72 shrink-0 border-l p-4">
+        <aside className="w-full shrink-0 border-t p-4 lg:w-72 lg:overflow-y-auto lg:border-t-0 lg:border-l">
           <h3 className="mb-3 text-xs font-medium text-muted-foreground">
             Properties
           </h3>

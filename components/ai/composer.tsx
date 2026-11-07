@@ -78,7 +78,7 @@ export function AiComposer({
           <ArrowUp className="size-4" />
         </Button>
       </form>
-      <p className="mx-auto mt-1.5 max-w-2xl px-1 text-[10px] text-muted-foreground">
+      <p className="mx-auto mt-1.5 max-w-2xl px-1 text-[0.625rem] text-muted-foreground">
         DevTrack can create and edit issues in your workspace. Enter to send,
         Shift+Enter for a new line.
       </p>

@@ -9,6 +9,7 @@ import { api } from "@/convex/_generated/api";
 import { PlanLimitListener } from "@/components/billing/upgrade-prompt";
 import { CommandProvider } from "@/components/commands/command-provider";
 import { AppSidebar } from "./app-sidebar";
+import { MobileNav } from "./mobile-nav";
 
 function FullScreenLoader({ label }: { label: string }) {
   return (
@@ -87,9 +88,11 @@ export function WorkspaceShell({
     <CommandProvider>
       {/* Global upgrade prompt: catches free-plan limit errors toasted anywhere in the workspace. */}
       <PlanLimitListener />
-      <div className="flex h-dvh overflow-hidden">
+      {/* Phones: top bar + drawer. Tablet and up: fixed sidebar column. */}
+      <div className="flex h-dvh flex-col overflow-hidden md:flex-row">
+        <MobileNav />
         <AppSidebar />
-        <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           {children}
         </main>
       </div>

@@ -85,7 +85,7 @@ function UpgradeCard({
       <div className="flex items-center gap-2">
         <span className="text-sm font-semibold">{plan.name}</span>
         {plan.popular && (
-          <Badge className="h-4 rounded-full px-1.5 text-[10px]">
+          <Badge className="h-4 rounded-full px-1.5 text-[0.625rem]">
             Popular
           </Badge>
         )}
@@ -99,7 +99,7 @@ function UpgradeCard({
         </span>
       </div>
       {plan.priceNote && (
-        <p className="mt-0.5 text-[11px] text-muted-foreground">
+        <p className="mt-0.5 text-[0.6875rem] text-muted-foreground">
           {plan.priceNote}
         </p>
       )}

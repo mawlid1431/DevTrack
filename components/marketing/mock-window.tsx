@@ -48,7 +48,7 @@ export function MockWindowBar({
         <span className="size-2.5 rounded-full bg-foreground/15" />
       </div>
       {title ? (
-        <span className="font-mono text-[11px] text-muted-foreground">
+        <span className="font-mono text-[0.6875rem] text-muted-foreground">
           {title}
         </span>
       ) : null}
