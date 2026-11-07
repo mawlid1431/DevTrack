@@ -551,6 +551,39 @@ export const issuesMissingEmbeddings = internalQuery({
   },
 });
 
+/**
+ * One page of issues across all orgs, for the one-off re-embed migration
+ * (`agent/embeddings:reembedAllIssues`). Internal only — never exposed.
+ */
+export const issuesPageForReembed = internalQuery({
+  args: { cursor: v.union(v.string(), v.null()), numItems: v.number() },
+  returns: v.object({
+    items: v.array(
+      v.object({
+        issueId: v.id("issues"),
+        orgId: v.id("organizations"),
+        text: v.string(),
+      })
+    ),
+    continueCursor: v.string(),
+    isDone: v.boolean(),
+  }),
+  handler: async (ctx, args) => {
+    const page = await ctx.db
+      .query("issues")
+      .paginate({ cursor: args.cursor, numItems: args.numItems });
+    return {
+      items: page.page.map((issue) => ({
+        issueId: issue._id,
+        orgId: issue.orgId,
+        text: issueText(issue),
+      })),
+      continueCursor: page.continueCursor,
+      isDone: page.isDone,
+    };
+  },
+});
+
 export const saveIssueEmbeddings = internalMutation({
   args: {
     orgId: v.id("organizations"),
