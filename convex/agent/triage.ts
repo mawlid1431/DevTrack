@@ -9,7 +9,9 @@ import { embedText } from "./embeddings";
 import {
   AI_NOT_CONFIGURED_MESSAGE,
   chatModel,
+  classifyAiError,
   isAiConfigured,
+  userFacingAiError,
 } from "./models";
 
 /**
@@ -101,11 +103,8 @@ export const findDuplicates = action({
           .slice(0, 5),
       };
     } catch (error) {
-      console.error("Duplicate detection failed", error);
-      return {
-        ok: false as const,
-        error: "Could not check for duplicates. Please try again.",
-      };
+      console.error(`Duplicate detection failed [${classifyAiError(error).kind}]`, error);
+      return { ok: false as const, error: userFacingAiError(error) };
     }
   },
 });
@@ -190,11 +189,8 @@ export const suggestTriage = action({
         reasoning: output.reasoning,
       };
     } catch (error) {
-      console.error("Triage suggestion failed", error);
-      return {
-        ok: false as const,
-        error: "Could not generate triage suggestions. Please try again.",
-      };
+      console.error(`Triage suggestion failed [${classifyAiError(error).kind}]`, error);
+      return { ok: false as const, error: userFacingAiError(error) };
     }
   },
 });

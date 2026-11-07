@@ -25,9 +25,9 @@ import {
   threadUserKey,
 } from "./limiter";
 import {
-  AI_NOT_CONFIGURED_MESSAGE,
   assertAiConfigured,
-  isAiConfigured,
+  classifyAiError,
+  userFacingAiError,
 } from "./models";
 import { DEVTRACK_INSTRUCTIONS, devTrackAgent } from "./devTrackAgent";
 
@@ -228,6 +228,10 @@ export const streamResponse = internalAction({
     });
     try {
       assertAiConfigured();
+      // The AI SDK reports mid-stream failures (e.g. every model rate-limited)
+      // through onError instead of throwing, so capture and rethrow them to
+      // reach the classified, user-facing message below.
+      let streamError: unknown;
       await devTrackAgent.streamText(
         { ...ctx, orgId: args.orgId, requestUserId: args.userId },
         {
@@ -237,15 +241,21 @@ export const streamResponse = internalAction({
         {
           promptMessageId: args.promptMessageId,
           system: `${DEVTRACK_INSTRUCTIONS}\n\nWorkspace: ${actor.orgName}. Requesting user: ${actor.userName}. Today's date: ${new Date().toISOString().slice(0, 10)}.`,
+          onError: ({ error }) => {
+            streamError ??= error;
+          },
         },
         { saveStreamDeltas: true }
       );
+      if (streamError !== undefined) {
+        throw streamError;
+      }
     } catch (error) {
-      console.error("AI response generation failed", error);
-      // Fail gracefully: leave a visible assistant message in the thread.
-      const reason = isAiConfigured()
-        ? "Something went wrong while generating a response. Please try again."
-        : AI_NOT_CONFIGURED_MESSAGE;
+      const failure = classifyAiError(error);
+      console.error(`AI response generation failed [${failure.kind}]`, error);
+      // Fail gracefully: leave a visible assistant message that says WHY
+      // (all models rate-limited, providers down, misconfigured, ...).
+      const reason = userFacingAiError(error);
       await saveMessage(ctx, components.agent, {
         threadId: args.threadId,
         userId: threadUserKey(args.orgId, args.userId),
