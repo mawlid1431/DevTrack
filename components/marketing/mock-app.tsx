@@ -1,16 +1,4 @@
-import {
-  Bot,
-  Box,
-  ChevronDown,
-  Inbox,
-  LayoutGrid,
-  ListFilter,
-  Plus,
-  RefreshCcw,
-  Search,
-  Target,
-  UserRound,
-} from "lucide-react";
+import { LayoutGrid, ListFilter, Plus } from "lucide-react";
 import { LabelChip } from "@/components/shared/label-chip";
 import { PriorityIcon } from "@/components/shared/priority-icon";
 import { StatusIcon } from "@/components/shared/status-icon";
@@ -18,7 +6,7 @@ import { UserAvatar } from "@/components/shared/user-avatar";
 import { Kbd } from "@/components/marketing/kbd";
 import { HERO_ISSUE_GROUPS, type MockIssue } from "@/components/marketing/mock-data";
 import { MockFrame, MockWindowBar } from "@/components/marketing/mock-window";
-import { cn } from "@/lib/utils";
+import { MockSidebar } from "@/components/marketing/mock-sidebar";
 
 /**
  * The hero product mock: a full DevTrack workspace window (sidebar + grouped
@@ -69,71 +57,6 @@ export function MockApp({ className }: { className?: string }) {
         </div>
       </div>
     </MockFrame>
-  );
-}
-
-function MockSidebar() {
-  return (
-    <aside className="hidden w-52 shrink-0 flex-col border-r bg-muted/20 md:flex">
-      <div className="flex h-10 items-center gap-2 border-b px-3">
-        <span className="flex size-5 items-center justify-center rounded bg-foreground text-[0.625rem] font-bold text-background">
-          A
-        </span>
-        <span className="text-xs font-semibold">Acme Inc</span>
-        <ChevronDown className="size-3 text-muted-foreground" />
-      </div>
-      <nav className="flex flex-col gap-0.5 p-2 text-xs text-muted-foreground">
-        <SidebarItem icon={<Inbox className="size-3.5" />} label="Inbox" badge="3" />
-        <SidebarItem icon={<UserRound className="size-3.5" />} label="My issues" />
-        <SidebarItem icon={<Search className="size-3.5" />} label="Search" kbd="/" />
-        <p className="mt-3 mb-1 px-2 text-[0.625rem] font-medium tracking-wider uppercase">
-          Workspace
-        </p>
-        <SidebarItem icon={<Target className="size-3.5" />} label="Projects" />
-        <SidebarItem icon={<RefreshCcw className="size-3.5" />} label="Cycles" />
-        <SidebarItem icon={<Bot className="size-3.5" />} label="AI Agent" badge="Pro" />
-        <p className="mt-3 mb-1 px-2 text-[0.625rem] font-medium tracking-wider uppercase">
-          Teams
-        </p>
-        <SidebarItem
-          icon={<Box className="size-3.5" />}
-          label="Engineering"
-          active
-        />
-        <SidebarItem icon={<Box className="size-3.5" />} label="Design" />
-        <SidebarItem icon={<Box className="size-3.5" />} label="Growth" />
-      </nav>
-    </aside>
-  );
-}
-
-function SidebarItem({
-  icon,
-  label,
-  badge,
-  kbd,
-  active,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  badge?: string;
-  kbd?: string;
-  active?: boolean;
-}) {
-  return (
-    <span
-      className={cn(
-        "flex h-7 items-center gap-2 rounded-md px-2",
-        active && "bg-accent font-medium text-foreground"
-      )}
-    >
-      {icon}
-      {label}
-      {badge ? (
-        <span className="ml-auto rounded border px-1 text-[0.625rem]">{badge}</span>
-      ) : null}
-      {kbd ? <Kbd className="ml-auto h-4">{kbd}</Kbd> : null}
-    </span>
   );
 }
 
