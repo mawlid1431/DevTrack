@@ -11,7 +11,7 @@ LiveKit token that dispatches this worker (AGENT_NAME) into a fresh room.
     reports, templates, navigateTo to move the user's screen...), as the user
     who started the call, in their workspace only. Auth: AGENT_SHARED_SECRET.
   - If the user shares their screen, the voice LLM can see it.
-  - Optional Synthesia avatar when SYNTHESIA_API_KEY is set (falls back to
+  - Optional Synthesia avatar with DEVTRACK_AVATAR=synthesia (falls back to
     voice-only if the avatar can't start).
 
 Run locally:  python agent.py dev
@@ -61,7 +61,9 @@ LLM_MODEL = os.getenv("DEVTRACK_VOICE_LLM", "openai/gpt-4.1-mini")
 STT_MODEL = os.getenv("DEVTRACK_VOICE_STT", "cartesia/ink-2")
 TTS_MODEL = os.getenv("DEVTRACK_VOICE_TTS", "cartesia/sonic-3.6")
 TTS_VOICE = os.getenv("DEVTRACK_VOICE_ID", "db6b0ed5-d5d3-463d-ae85-518a07d3c2b4")
-AVATAR_MODE = os.getenv("DEVTRACK_AVATAR", "synthesia" if os.getenv("SYNTHESIA_API_KEY") else "off")
+# Avatar is opt-in (DEVTRACK_AVATAR=synthesia): when the avatar drops out
+# mid-call it takes the whole session down, so voice-only is the default.
+AVATAR_MODE = os.getenv("DEVTRACK_AVATAR", "off")
 AVATAR_ID = os.getenv("SYNTHESIA_AVATAR_ID", "4b638067-6319-46e1-b634-371a4bdfceb9")
 
 class DevTrackVoice(Agent):
@@ -147,5 +149,13 @@ async def entrypoint(ctx: JobContext) -> None:
 
 if __name__ == "__main__":
     cli.run_app(
-        WorkerOptions(entrypoint_fnc=entrypoint, prewarm_fnc=prewarm, agent_name=AGENT_NAME)
+        WorkerOptions(
+            entrypoint_fnc=entrypoint,
+            prewarm_fnc=prewarm,
+            agent_name=AGENT_NAME,
+            # Keep one process warm so a call starts right away, and give
+            # Windows enough time to spawn a new one (it timed out at 10 s).
+            num_idle_processes=1,
+            initialize_process_timeout=60.0,
+        )
     )

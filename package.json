@@ -11,7 +11,7 @@
   "homepage": "https://devmowlid.vercel.app/",
   "packageManager": "bun@1.3.14",
   "scripts": {
-    "dev": "bun run --parallel dev:frontend dev:backend",
+    "dev": "bun run --parallel dev:frontend dev:backend dev:voice",
     "dev:frontend": "bun scripts/lan-url.ts && next dev -H 0.0.0.0",
     "dev:backend": "convex dev",
     "dev:lan": "bun run dev",
@@ -20,7 +20,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test --config=e2e/playwright.config.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "dev:voice": "bun scripts/voice-agent.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.69",

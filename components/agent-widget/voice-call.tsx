@@ -7,11 +7,12 @@ import {
   StartAudio,
   TrackToggle,
   VideoTrack,
+  useConnectionState,
   useVoiceAssistant,
 } from "@livekit/components-react";
-import { Track } from "livekit-client";
+import { ConnectionState, Track } from "livekit-client";
 import { MicOff, PhoneOff } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 export type VoiceCallSession = { serverUrl: string; token: string; roomName: string };
@@ -112,7 +113,20 @@ function CallStage({
   onMicRetry: () => void;
   onMicError: (error: Error) => void;
 }) {
-  const { state, audioTrack, videoTrack } = useVoiceAssistant();
+  const { state, audioTrack, videoTrack, agent } = useVoiceAssistant();
+  const connection = useConnectionState();
+
+  // If no agent joins soon after we connect, say so instead of waiting
+  // forever (the voice worker is offline or still starting).
+  const [agentLate, setAgentLate] = useState(false);
+  useEffect(() => {
+    if (agent || connection !== ConnectionState.Connected) {
+      setAgentLate(false);
+      return;
+    }
+    const timer = setTimeout(() => setAgentLate(true), 15000);
+    return () => clearTimeout(timer);
+  }, [agent, connection]);
 
   return (
     <div className="flex flex-col gap-3 border-b bg-muted/40 px-3 py-3">
@@ -129,6 +143,13 @@ function CallStage({
             className="devtrack-voice-bars flex h-full items-center gap-1.5"
           />
         </div>
+      )}
+      {agentLate && (
+        <p role="alert" className="rounded-md bg-warning-fill/10 px-2 py-1.5 text-xs text-warning">
+          The voice agent hasn't joined yet. It may still be starting, or the
+          voice worker isn't running (start it with: bun run dev:voice). You can
+          keep waiting, or type below.
+        </p>
       )}
       {micProblem && (
         <p role="alert" className="flex items-start gap-1.5 rounded-md bg-destructive/10 px-2 py-1.5 text-xs text-destructive">
