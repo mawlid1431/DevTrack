@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { Kbd } from "@/components/marketing/kbd";
+import { Logo } from "@/components/brand/logo";
 import { cn } from "@/lib/utils";
 
 type Item = {
@@ -45,16 +46,26 @@ const STEP_MS = 1300;
 const CLICK_AT_MS = 750;
 
 /**
- * Hero mock sidebar with a live "teammate" cursor: it glides to each item in
+ * Hero mock sidebar (brand: navy cursor and tag; green only for the click
+ * and the selected team, the "action / done" color) with a live "teammate" cursor: it glides to each item in
  * turn, hovers it, clicks it, and a clicked team becomes the selected one.
  * Runs only while visible, and stays still with prefers-reduced-motion.
  */
-export function MockSidebar() {
+export type MockPage = (typeof TOUR)[number]["key"];
+
+export function MockSidebar({
+  selected,
+  onOpen,
+}: {
+  /** The page currently shown in the main area. */
+  selected: string;
+  /** Called when the cursor clicks an item: the main area switches page. */
+  onOpen: (key: string) => void;
+}) {
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<Record<string, HTMLSpanElement | null>>({});
   const [step, setStep] = useState(-1);
   const [clicking, setClicking] = useState(false);
-  const [activeTeam, setActiveTeam] = useState("eng");
   const [cursor, setCursor] = useState<{ x: number; y: number } | null>(null);
   const [running, setRunning] = useState(false);
 
@@ -93,19 +104,19 @@ export function MockSidebar() {
     setCursor({ x: box.left - base.left + Math.min(110, box.width * 0.55), y: box.top - base.top + box.height / 2 });
     const down = setTimeout(() => {
       setClicking(true);
-      if (item.team) setActiveTeam(item.key);
+      onOpen(item.key);
     }, CLICK_AT_MS);
     const up = setTimeout(() => setClicking(false), CLICK_AT_MS + 220);
     return () => {
       clearTimeout(down);
       clearTimeout(up);
     };
-  }, [step]);
+  }, [step, onOpen]);
 
   const hovered = step >= 0 ? TOUR[step].key : null;
 
   const row = (item: Item) => {
-    const isActive = item.team && item.key === activeTeam;
+    const isActive = item.key === selected;
     const isHover = hovered === item.key;
     return (
       <span
@@ -137,6 +148,7 @@ export function MockSidebar() {
   return (
     <aside className="hidden w-52 shrink-0 flex-col border-r bg-muted/20 md:flex">
       <div className="flex h-10 items-center gap-2 border-b px-3">
+        <Logo size={18} title="" />
         <span className="flex size-5 items-center justify-center rounded bg-[#1A3250] text-[0.625rem] font-bold text-white">
           A
         </span>
@@ -169,13 +181,16 @@ export function MockSidebar() {
             >
               <path
                 d="M1 1l13 7.2-5.6 1.5L5.6 16 1 1z"
-                fill="var(--primary)"
-                stroke="var(--primary-foreground)"
+                fill="var(--logo)"
+                stroke="var(--background)"
                 strokeWidth="1.2"
                 strokeLinejoin="round"
               />
             </svg>
-            <span className="ml-3 -mt-1 inline-block rounded-full bg-primary px-1.5 py-px text-[0.5625rem] font-semibold whitespace-nowrap text-primary-foreground">
+            <span
+              className="ml-3 -mt-1 block w-fit rounded-full px-1.5 py-px text-[0.5625rem] font-semibold whitespace-nowrap"
+              style={{ background: "var(--logo)", color: "var(--background)" }}
+            >
               Ada
             </span>
           </span>
