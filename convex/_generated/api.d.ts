@@ -24,6 +24,7 @@ import type * as agent_voice from "../agent/voice.js";
 import type * as agent_voiceToken from "../agent/voiceToken.js";
 import type * as attachments from "../attachments.js";
 import type * as clerkSync from "../clerkSync.js";
+import type * as clerkSyncData from "../clerkSyncData.js";
 import type * as comments from "../comments.js";
 import type * as crons from "../crons.js";
 import type * as cycles from "../cycles.js";
@@ -70,6 +71,7 @@ declare const fullApi: ApiFromModules<{
   "agent/voiceToken": typeof agent_voiceToken;
   attachments: typeof attachments;
   clerkSync: typeof clerkSync;
+  clerkSyncData: typeof clerkSyncData;
   comments: typeof comments;
   crons: typeof crons;
   cycles: typeof cycles;

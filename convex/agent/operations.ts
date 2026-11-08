@@ -27,6 +27,7 @@ import {
   workspaceTemplateContentValidator,
 } from "../templates";
 import { restoreFromTrash, trashIssue, trashProject } from "../trash";
+import { assertNoOverlap } from "../cycles";
 import {
   getOrgTeamByKey,
   issueSummaryValidator,
@@ -604,5 +605,109 @@ export const createTeam = internalMutation({
       nextIssueNumber: 1,
     });
     return { teamId, name, key };
+  },
+});
+
+// Cycles (agent tools createCycle / scheduleIssues)
+
+const DAY = 24 * 60 * 60 * 1000;
+
+/** Create a cycle for a team; defaults: starts after the team's last cycle, 14 days. */
+export const createCycle = internalMutation({
+  args: {
+    orgId: v.id("organizations"),
+    actorUserId: v.id("users"),
+    teamKey: v.string(),
+    name: v.optional(v.string()),
+    startDate: v.optional(v.string()),
+    lengthDays: v.optional(v.number()),
+  },
+  returns: v.object({ number: v.number(), name: v.string(), startDate: v.string(), endDate: v.string() }),
+  handler: async (ctx, args) => {
+    await requireMember(ctx, args.orgId, args.actorUserId);
+    const team = await getOrgTeamByKey(ctx, args.orgId, args.teamKey.toUpperCase());
+    const cycles = await ctx.db
+      .query("cycles")
+      .withIndex("by_team", (q) => q.eq("teamId", team._id))
+      .collect();
+    const days = Math.round(args.lengthDays ?? 14);
+    if (days < 1 || days > 90) throw new Error("Cycle length must be 1 to 90 days");
+    let start: number;
+    if (args.startDate) {
+      start = Date.parse(`${args.startDate}T00:00:00Z`);
+      if (Number.isNaN(start)) throw new Error("startDate must look like 2026-11-09");
+    } else {
+      const lastEnd = cycles.reduce((m, c) => Math.max(m, c.endDate), 0);
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+      start = Math.max(today.getTime(), lastEnd + 1);
+    }
+    const end = start + days * DAY - 1;
+    await assertNoOverlap(ctx, team._id, start, end);
+    const number = cycles.reduce((m, c) => Math.max(m, c.number), 0) + 1;
+    const name = args.name?.trim() || undefined;
+    await ctx.db.insert("cycles", { orgId: args.orgId, teamId: team._id, number, name, startDate: start, endDate: end });
+    return {
+      number,
+      name: name ?? `Cycle ${number}`,
+      startDate: new Date(start).toISOString().slice(0, 10),
+      endDate: new Date(end).toISOString().slice(0, 10),
+    };
+  },
+});
+
+/** Put issues into a team cycle: "current", "next", a cycle number, or "none" to unschedule. */
+export const scheduleIssues = internalMutation({
+  args: {
+    orgId: v.id("organizations"),
+    actorUserId: v.id("users"),
+    identifiers: v.array(v.string()),
+    cycle: v.string(),
+  },
+  returns: v.array(v.object({ identifier: v.string(), cycle: v.string() })),
+  handler: async (ctx, args) => {
+    await requireMember(ctx, args.orgId, args.actorUserId);
+    const now = Date.now();
+    const out: { identifier: string; cycle: string }[] = [];
+    for (const identifier of args.identifiers.slice(0, 50)) {
+      const { issue, team } = await getIssueByIdentifier(ctx, args.orgId, identifier);
+      const cycles = await ctx.db
+        .query("cycles")
+        .withIndex("by_team", (q) => q.eq("teamId", team._id))
+        .collect();
+      let target: (typeof cycles)[number] | undefined;
+      const want = args.cycle.trim().toLowerCase();
+      if (want === "none") {
+        target = undefined;
+      } else if (want === "current") {
+        target = cycles
+          .filter((c) => c.startDate <= now && now <= c.endDate)
+          .sort((a, b) => b.startDate - a.startDate)[0];
+        if (!target) throw new Error(`${team.key} has no current cycle. Create one first.`);
+      } else if (want === "next") {
+        target = cycles.filter((c) => c.startDate > now).sort((a, b) => a.startDate - b.startDate)[0];
+        if (!target) throw new Error(`${team.key} has no upcoming cycle. Create one first.`);
+      } else {
+        const n = Number(want.replace(/^cycle\s*/, ""));
+        target = cycles.find((c) => c.number === n);
+        if (!target) throw new Error(`${team.key} has no Cycle ${want}.`);
+      }
+      const oldCycle = issue.cycleId ? cycles.find((c) => c._id === issue.cycleId) : undefined;
+      await ctx.db.patch(issue._id, { cycleId: target?._id });
+      await logActivity(ctx, {
+        orgId: args.orgId,
+        issueId: issue._id,
+        actorId: args.actorUserId,
+        type: "cycle_changed",
+        field: "cycle",
+        oldValue: oldCycle ? (oldCycle.name ?? `Cycle ${oldCycle.number}`) : undefined,
+        newValue: target ? (target.name ?? `Cycle ${target.number}`) : undefined,
+      });
+      out.push({
+        identifier: `${team.key}-${issue.number}`,
+        cycle: target ? (target.name ?? `Cycle ${target.number}`) : "none",
+      });
+    }
+    return out;
   },
 });

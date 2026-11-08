@@ -72,6 +72,10 @@ export default defineSchema({
     name: v.string(),
     email: v.string(),
     imageUrl: v.optional(v.string()),
+    /** When the user finished or skipped the first-visit tour (shown once per account). */
+    tourCompletedAt: v.optional(v.number()),
+    /** Slug of the workspace they last opened, so sign-in returns them there. */
+    lastOrgSlug: v.optional(v.string()),
   }).index("by_clerk_id", ["clerkId"]),
 
   organizations: defineTable({
@@ -216,9 +220,12 @@ export default defineSchema({
     name: v.optional(v.string()),
     startDate: v.number(),
     endDate: v.number(),
+    /** Set once its unfinished issues have rolled into the next cycle. */
+    rolledOverAt: v.optional(v.number()),
   })
     .index("by_team", ["teamId"])
-    .index("by_team_and_number", ["teamId", "number"]),
+    .index("by_team_and_number", ["teamId", "number"])
+    .index("by_rolled_and_end", ["rolledOverAt", "endDate"]),
 
   attachments: defineTable({
     orgId: v.id("organizations"),

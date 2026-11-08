@@ -1,7 +1,7 @@
 "use client";
 
 import { useOrganizationList } from "@clerk/nextjs";
-import { useAction, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect } from "react";
@@ -89,9 +89,16 @@ export function WorkspaceShell({
 
   // Remember this workspace so the next sign-in lands here.
   const activeSlug = currentOrg?.slug;
+  const setLastWorkspace = useMutation(api.users.setLastWorkspace);
+  const refreshPlan = useAction(api.clerkSync.refreshPlan);
   useEffect(() => {
-    if (activeSlug && activeSlug === orgSlug) writeLastWorkspace(orgSlug);
-  }, [activeSlug, orgSlug]);
+    if (!activeSlug || activeSlug !== orgSlug) return;
+    writeLastWorkspace(orgSlug);
+    // Saved on the account too, so any device signs back in here.
+    setLastWorkspace({ slug: orgSlug }).catch(() => undefined);
+    // Confirm the plan with Clerk billing (fixes a missed webhook).
+    refreshPlan({}).catch(() => undefined);
+  }, [activeSlug, orgSlug, setLastWorkspace, refreshPlan]);
 
   if (!isLoaded || (needsSwitch && currentOrg === undefined)) {
     return <FullScreenLoader label="Loading workspace…" />;

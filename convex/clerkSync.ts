@@ -70,3 +70,47 @@ export const ensureSynced = action({
     return result;
   },
 });
+
+/**
+ * Keep the workspace's plan right even if a Clerk billing webhook was missed:
+ * read the org's live subscription from Clerk and replay it through the same
+ * webhook handler. Called once whenever a workspace opens (workspace-shell).
+ * Only for the caller's ACTIVE org, and only if they are a member of it.
+ */
+export const refreshPlan = action({
+  args: {},
+  returns: v.union(v.string(), v.null()),
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    const secret = process.env.CLERK_SECRET_KEY;
+    const orgId = (identity as unknown as { org_id?: string } | null)?.org_id;
+    if (!identity || !secret || !orgId) return null;
+
+    const member: boolean = await ctx.runQuery(internal.clerkSyncData.isMember, {
+      clerkUserId: identity.subject,
+      clerkOrgId: orgId,
+    });
+    if (!member) return null;
+
+    const sub = await clerkGet<{
+      id: string;
+      status?: string;
+      subscription_items?: { status?: string; plan?: { slug?: string } }[];
+    }>(`/organizations/${encodeURIComponent(orgId)}/billing/subscription`, secret);
+    if (!sub) return null;
+
+    await ctx.runMutation(internal.webhooks.handleClerkEvent, {
+      eventType: "subscription.updated",
+      data: {
+        id: sub.id,
+        status: sub.status,
+        payer: { organization_id: orgId },
+        items: (sub.subscription_items ?? []).map((i) => ({
+          status: i.status,
+          plan: { slug: i.plan?.slug },
+        })),
+      },
+    });
+    return sub.status ?? null;
+  },
+});

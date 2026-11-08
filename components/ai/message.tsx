@@ -25,6 +25,8 @@ const TOOL_LABELS: Record<string, string> = {
   signOut: "Logging out",
   showOnScreen: "Showing you where",
   createTeam: "Creating team",
+  createCycle: "Creating cycle",
+  scheduleIssues: "Scheduling into cycle",
   startSubscription: "Opening checkout",
   createWorkspace: "Creating workspace",
   applyWorkspaceTemplate: "Applying template",

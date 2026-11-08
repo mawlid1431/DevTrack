@@ -11,4 +11,7 @@ crons.daily(
   {}
 );
 
+// Cycles: roll unfinished issues of ended cycles into the next cycle.
+crons.hourly("roll over ended cycles", { minuteUTC: 5 }, internal.cycles.rollOverEnded, {});
+
 export default crons;

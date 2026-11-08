@@ -1082,7 +1082,59 @@ const showOnScreen = createTool({
   },
 });
 
+const createCycle = createTool({
+  description:
+    "Create a cycle (sprint) for a team. Defaults: starts the day after the team's last cycle (or today), 14 days long. startDate as YYYY-MM-DD. Cycles are numbered automatically and can't overlap. Runs immediately.",
+  inputSchema: jsonSchema<{ teamKey: string; name?: string; startDate?: string; lengthDays?: number }>({
+    type: "object",
+    properties: {
+      teamKey: { type: "string", description: "Team key, e.g. ENG" },
+      name: { type: "string", description: "Optional name, e.g. Launch sprint" },
+      startDate: { type: "string", description: "YYYY-MM-DD" },
+      lengthDays: { type: "number", description: "1 to 90, default 14" },
+    },
+    required: ["teamKey"],
+    additionalProperties: false,
+  }),
+  execute: async (
+    ctx: DevTrackToolCtx,
+    input
+  ): Promise<{ status: "done"; number: number; name: string; startDate: string; endDate: string }> => {
+    const r: { number: number; name: string; startDate: string; endDate: string } = await ctx.runMutation(
+      internal.agent.operations.createCycle,
+      { orgId: ctx.orgId, actorUserId: ctx.requestUserId, ...input }
+    );
+    return { status: "done", ...r };
+  },
+});
+
+const scheduleIssues = createTool({
+  description:
+    "Put issues into a cycle of their team: cycle = current, next, a cycle number like 3, or none to take them out. Runs immediately. Unfinished issues also roll into the next cycle automatically when a cycle ends.",
+  inputSchema: jsonSchema<{ identifiers: string[]; cycle: string }>({
+    type: "object",
+    properties: {
+      identifiers: { type: "array", items: { type: "string" }, description: "Issue identifiers like ENG-42" },
+      cycle: { type: "string", description: "current, next, a number, or none" },
+    },
+    required: ["identifiers", "cycle"],
+    additionalProperties: false,
+  }),
+  execute: async (
+    ctx: DevTrackToolCtx,
+    input
+  ): Promise<{ status: "done"; scheduled: { identifier: string; cycle: string }[] }> => {
+    const scheduled: { identifier: string; cycle: string }[] = await ctx.runMutation(
+      internal.agent.operations.scheduleIssues,
+      { orgId: ctx.orgId, actorUserId: ctx.requestUserId, ...input }
+    );
+    return { status: "done", scheduled };
+  },
+});
+
 export const devTrackTools = {
+  createCycle,
+  scheduleIssues,
   showOnScreen,
   createTeam,
   signOut,

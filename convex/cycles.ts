@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
-import { QueryCtx } from "./_generated/server";
+import { QueryCtx, internalMutation } from "./_generated/server";
 import { issueShape } from "./issues";
 import { orgMutation, orgQuery } from "./lib/customFunctions";
 import { progressShape } from "./projects";
@@ -15,6 +15,7 @@ export const cycleShape = {
   name: v.optional(v.string()),
   startDate: v.number(),
   endDate: v.number(),
+  rolledOverAt: v.optional(v.number()),
 };
 
 /** Verify a cycle belongs to the caller's org before any read/write. */
@@ -198,7 +199,7 @@ export const candidateIssues = orgQuery({
  * A team runs one cycle at a time. Reject a date range that overlaps any of
  * the team's other cycles (back-to-back cycles sharing a boundary are fine).
  */
-async function assertNoOverlap(
+export async function assertNoOverlap(
   ctx: { db: QueryCtx["db"] },
   teamId: Id<"teams">,
   startDate: number,
@@ -304,5 +305,77 @@ export const remove = orgMutation({
     // Recycle bin: issues are unscheduled now and re-scheduled on restore.
     await trashCycle(ctx, ctx.org._id, ctx.user._id, cycle);
     return null;
+  },
+});
+
+/**
+ * Rollover: when a cycle ends, its unfinished issues (anything not done or
+ * canceled) move into the team's next cycle. If the team has no next cycle,
+ * one of the same length is created to start right after. Runs hourly
+ * (crons.ts); each ended cycle is processed once (rolledOverAt).
+ *
+ * Cycles that ended long before this feature existed are only marked, not
+ * rolled, so old history never suddenly moves (ROLLOVER_WINDOW_MS).
+ */
+const ROLLOVER_WINDOW_MS = 2 * 24 * 60 * 60 * 1000;
+const ROLLOVER_BATCH = 50;
+
+export const rollOverEnded = internalMutation({
+  args: {},
+  returns: v.object({ cycles: v.number(), issuesMoved: v.number(), cyclesCreated: v.number() }),
+  handler: async (ctx) => {
+    const now = Date.now();
+    const ended = await ctx.db
+      .query("cycles")
+      .withIndex("by_rolled_and_end", (q) => q.eq("rolledOverAt", undefined).lt("endDate", now))
+      .take(ROLLOVER_BATCH);
+
+    let issuesMoved = 0;
+    let cyclesCreated = 0;
+    for (const cycle of ended) {
+      await ctx.db.patch(cycle._id, { rolledOverAt: now });
+      if (now - cycle.endDate > ROLLOVER_WINDOW_MS) {
+        continue;
+      }
+      const unfinished = (
+        await ctx.db
+          .query("issues")
+          .withIndex("by_cycle", (q) => q.eq("cycleId", cycle._id))
+          .collect()
+      ).filter((i) => i.orgId === cycle.orgId && i.status !== "done" && i.status !== "canceled");
+      if (unfinished.length === 0) {
+        continue;
+      }
+
+      // The team's next cycle: the earliest one starting at or after this end.
+      const teamCycles = await ctx.db
+        .query("cycles")
+        .withIndex("by_team", (q) => q.eq("teamId", cycle.teamId))
+        .collect();
+      let next = teamCycles
+        .filter((c) => c._id !== cycle._id && c.startDate >= cycle.endDate)
+        .sort((a, b) => a.startDate - b.startDate)[0];
+
+      if (!next) {
+        const latest = teamCycles.reduce((max, c) => Math.max(max, c.number), 0);
+        const length = cycle.endDate - cycle.startDate;
+        const startDate = cycle.endDate + 1;
+        const nextId = await ctx.db.insert("cycles", {
+          orgId: cycle.orgId,
+          teamId: cycle.teamId,
+          number: latest + 1,
+          startDate,
+          endDate: startDate + length,
+        });
+        next = (await ctx.db.get(nextId))!;
+        cyclesCreated += 1;
+      }
+
+      for (const issue of unfinished) {
+        await ctx.db.patch(issue._id, { cycleId: next._id });
+        issuesMoved += 1;
+      }
+    }
+    return { cycles: ended.length, issuesMoved, cyclesCreated };
   },
 });

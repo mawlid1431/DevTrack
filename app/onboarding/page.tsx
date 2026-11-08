@@ -1,6 +1,8 @@
 "use client";
 
 import { useOrganizationList, useUser } from "@clerk/nextjs";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
@@ -25,6 +27,8 @@ function isAutoCreated(slug: string | null, name: string): boolean {
 export default function OnboardingPage() {
   const router = useRouter();
   const { user, isLoaded: userLoaded } = useUser();
+  // Account-saved last workspace (any device); undefined while loading.
+  const account = useQuery(api.users.current);
   const { isLoaded, userMemberships, createOrganization, setActive } =
     useOrganizationList({ userMemberships: { infinite: true } });
 
@@ -34,9 +38,9 @@ export default function OnboardingPage() {
 
   // Returning user: pick the right existing workspace and go.
   const target = (() => {
-    if (!membershipsReady || memberships.length === 0) return null;
+    if (!membershipsReady || memberships.length === 0 || account === undefined) return null;
     const orgs = memberships.map((m) => m.organization);
-    const last = readLastWorkspace();
+    const last = readLastWorkspace() ?? account?.lastOrgSlug;
     return (
       orgs.find((o) => o.slug === last) ??
       orgs.find((o) => !isAutoCreated(o.slug, o.name)) ??
@@ -51,7 +55,8 @@ export default function OnboardingPage() {
     });
   }, [target, setActive, router]);
 
-  if (!userLoaded || !membershipsReady || target) {
+  const waitingForAccount = memberships.length > 0 && account === undefined;
+  if (!userLoaded || !membershipsReady || waitingForAccount || target) {
     return (
       <main className="flex min-h-dvh items-center justify-center gap-2 text-sm text-muted-foreground">
         <Loader2 className="size-4 animate-spin" />

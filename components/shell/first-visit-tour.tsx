@@ -1,6 +1,8 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { X } from "lucide-react";
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -59,36 +61,47 @@ function storageKey(userId: string) {
 /**
  * First-visit product tour: a welcome card with Explore / Skip, then one
  * highlighted part of the screen per step with Next / Back / Skip. Shown
- * once per user per browser; finishing or skipping stores that.
+ * once per ACCOUNT: finishing or skipping is saved on the user in Convex
+ * (users.tourCompletedAt), so it never returns on another browser, device or
+ * after signing out. localStorage is only a fast local cache of that.
  */
 export function FirstVisitTour() {
   const { user } = useUser();
+  const account = useQuery(api.users.current);
+  const completeTour = useMutation(api.users.completeTour);
   const [step, setStep] = useState<number | null>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
 
+  const seenOnAccount = account?.tourCompletedAt !== undefined;
   useEffect(() => {
-    if (!user) return;
-    let done = true;
+    // Wait for the account; never show to someone who already saw it.
+    if (!user || !account || seenOnAccount) return;
+    let done = false;
     try {
       done = localStorage.getItem(storageKey(user.id)) === "1";
     } catch {
-      // Storage blocked: don't nag on every visit.
+      // Storage blocked: rely on the account flag.
     }
-    if (done) return;
+    if (done) {
+      // Seen in this browser before the account flag existed: save it now.
+      void completeTour({}).catch(() => undefined);
+      return;
+    }
     // Let the workspace render before starting.
     const timer = setTimeout(() => setStep(0), 600);
     return () => clearTimeout(timer);
-  }, [user]);
+  }, [user, account, seenOnAccount, completeTour]);
 
   const finish = useCallback(() => {
     setStep(null);
+    void completeTour({}).catch(() => undefined);
     if (!user) return;
     try {
       localStorage.setItem(storageKey(user.id), "1");
     } catch {
       // Not saved; the tour may show again next visit.
     }
-  }, [user]);
+  }, [user, completeTour]);
 
   // Find the current step's element; skip steps whose target isn't visible.
   const target = step !== null ? STEPS[step].target : undefined;
