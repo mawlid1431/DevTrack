@@ -4,6 +4,7 @@ import { optimisticallySendMessage } from "@convex-dev/agent/react";
 import { useAction, useMutation } from "convex/react";
 import {
   Maximize2,
+  PhoneOff,
   Phone,
   Plus,
   Sparkles,
@@ -67,6 +68,10 @@ export function AgentWidget() {
   const { orgSlug } = useParams<{ orgSlug: string }>();
   const { isLoaded, hasAccess } = useAiAccess();
   const [open, setOpen] = useState(false);
+  // A live voice call outlives the panel: closing or minimising it, or moving
+  // to any page (the full AI page too), keeps talking. It ends only with the
+  // End button, or when the tab/browser closes.
+  const [liveCall, setLiveCall] = useState<LiveCall | null>(null);
 
   // Ctrl/⌘ + J toggles the agent from anywhere.
   useEffect(() => {
@@ -80,8 +85,9 @@ export function AgentWidget() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // The full AI page already is the agent.
-  if (pathname === `/${orgSlug}/ai`) return null;
+  // The full AI page already is the agent: hide the launcher there, but keep
+  // this component mounted so a running call is never cut off.
+  const onAiPage = pathname === `/${orgSlug}/ai`;
 
   return (
     <>
@@ -98,16 +104,21 @@ export function AgentWidget() {
         )}
       >
         {isLoaded && hasAccess ? (
-          <AgentPanel orgSlug={orgSlug} onClose={() => setOpen(false)} />
+          <AgentPanel orgSlug={orgSlug} onClose={() => setOpen(false)} onCallChange={setLiveCall} />
         ) : (
           <LockedPanel orgSlug={orgSlug} onClose={() => setOpen(false)} />
         )}
       </section>
 
+      {liveCall && !open ? (
+        <CallBar call={liveCall} onOpen={() => setOpen(true)} />
+      ) : null}
+
       <Tooltip>
         <TooltipTrigger asChild>
           <button
             type="button"
+            hidden={onAiPage || (liveCall !== null && !open)}
             onClick={() => setOpen((value) => !value)}
             aria-label={open ? "Close DevTrack AI" : "Open DevTrack AI"}
             data-tour="ai-button"
@@ -187,10 +198,68 @@ function LockedPanel({ orgSlug, onClose }: { orgSlug: string; onClose: () => voi
   );
 }
 
-function AgentPanel({ orgSlug, onClose }: { orgSlug: string; onClose: () => void }) {
+type LiveCall = { startedAt: number; end: () => void };
+
+/** Shown while a call is live and the panel is closed: timer, reopen, end. */
+function CallBar({ call, onOpen }: { call: LiveCall; onOpen: () => void }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+  const secs = Math.max(0, Math.floor((now - call.startedAt) / 1000));
+  const time = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`;
+  return (
+    <div
+      role="status"
+      aria-label={`On call with DevTrack, ${time}`}
+      className="fixed bottom-4 right-4 z-50 flex items-center gap-1 rounded-full border bg-background py-1 pl-1 pr-1 shadow-lg md:bottom-5 md:right-5"
+    >
+      <button
+        type="button"
+        onClick={onOpen}
+        className="flex h-9 items-center gap-2 rounded-full pl-3 pr-2 text-sm hover:bg-accent"
+        aria-label="Open the call"
+      >
+        <span className="relative flex size-2.5">
+          <span className="absolute inline-flex size-full animate-ping rounded-full bg-status-done opacity-60 motion-reduce:animate-none" />
+          <span className="relative inline-flex size-2.5 rounded-full bg-status-done" />
+        </span>
+        <span className="font-medium">On call with DevTrack</span>
+        <span className="font-mono text-xs text-muted-foreground tabular-nums">{time}</span>
+      </button>
+      <Button
+        type="button"
+        size="icon"
+        variant="destructive"
+        className="size-9 rounded-full"
+        aria-label="End call"
+        onClick={call.end}
+      >
+        <PhoneOff className="size-4" />
+      </Button>
+    </div>
+  );
+}
+
+function AgentPanel({
+  orgSlug,
+  onClose,
+  onCallChange,
+}: {
+  orgSlug: string;
+  onClose: () => void;
+  onCallChange: (call: LiveCall | null) => void;
+}) {
   const [threadId, setThreadIdState] = useState<string | null>(null);
   const [call, setCall] = useState<VoiceCallSession | null>(null);
   const [startingCall, setStartingCall] = useState(false);
+
+  // Tell the widget when a call starts/ends (for the mini call bar).
+  const callKey = call?.roomName;
+  useEffect(() => {
+    onCallChange(callKey ? { startedAt: Date.now(), end: () => setCall(null) } : null);
+  }, [callKey, onCallChange]);
 
   useEffect(() => {
     // restore from browser storage after mount.
