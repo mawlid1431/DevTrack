@@ -21,6 +21,13 @@ const TOOL_LABELS: Record<string, string> = {
   updateIssue: "Updating issue",
   cycleSummary: "Summarizing cycle",
   standupReport: "Gathering standup data",
+  navigateTo: "Opening page",
+  deleteIssue: "Moving issue to recycle bin",
+  createProject: "Creating project",
+  deleteProject: "Moving project to recycle bin",
+  listMyIssues: "Reading your issues",
+  prioritizeIssues: "Setting priorities",
+  sortIssues: "Sorting issues",
 };
 
 function ToolChip({

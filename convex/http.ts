@@ -51,4 +51,52 @@ http.route({
   }),
 });
 
+/** Constant-time string compare so the secret can't be guessed by timing. */
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+/**
+ * Called by the LiveKit voice worker (voice-agent/agent.py) for every spoken
+ * workspace request. Auth: `Authorization: Bearer <AGENT_SHARED_SECRET>`.
+ * The room name selects the (org, user) — the worker never picks them.
+ */
+http.route({
+  path: "/voice-agent/turn",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const secret = process.env.AGENT_SHARED_SECRET;
+    if (!secret) {
+      return Response.json({ error: "AGENT_SHARED_SECRET is not set" }, { status: 500 });
+    }
+    const auth = request.headers.get("authorization") ?? "";
+    if (!safeEqual(auth, `Bearer ${secret}`)) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    let body: { roomName?: unknown; text?: unknown };
+    try {
+      body = await request.json();
+    } catch {
+      return Response.json({ error: "Invalid JSON" }, { status: 400 });
+    }
+    if (typeof body.roomName !== "string" || typeof body.text !== "string") {
+      return Response.json({ error: "roomName and text are required" }, { status: 400 });
+    }
+    const live = await ctx.runQuery(internal.agent.voice.sessionIsLive, {
+      roomName: body.roomName,
+    });
+    if (!live) {
+      return Response.json({ error: "Voice session not found or expired" }, { status: 404 });
+    }
+    const result = await ctx.runAction(internal.agent.voice.runVoiceTurn, {
+      roomName: body.roomName,
+      text: body.text,
+    });
+    return Response.json(result);
+  }),
+});
+
 export default http;

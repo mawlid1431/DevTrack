@@ -5,16 +5,26 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { AiMessage } from "./message";
+import { useAgentNavigation } from "./use-agent-navigation";
 
 /** Streaming message list for one thread (delta-synced over the websocket). */
-export function AiConversation({ threadId }: { threadId: string }) {
+export function AiConversation({
+  threadId,
+  compact = false,
+}: {
+  threadId: string;
+  /** Tighter padding for the floating agent panel. */
+  compact?: boolean;
+}) {
   const { results, status, loadMore } = useUIMessages(
     api.agent.chat.listMessages,
     { threadId },
     { initialNumItems: 50, stream: true }
   );
   const messages = results as unknown as UIMessage[];
+  useAgentNavigation(messages, status !== "LoadingFirstPage");
 
   const containerRef = useRef<HTMLDivElement>(null);
   const pinnedToBottom = useRef(true);
@@ -54,7 +64,12 @@ export function AiConversation({ threadId }: { threadId: string }) {
       onScroll={onScroll}
       className="min-h-0 flex-1 overflow-y-auto"
     >
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-5 px-4 py-6">
+      <div
+        className={cn(
+          "mx-auto flex w-full max-w-2xl flex-col",
+          compact ? "gap-4 px-3 py-4" : "gap-5 px-4 py-6"
+        )}
+      >
         {status === "CanLoadMore" && (
           <Button
             variant="ghost"

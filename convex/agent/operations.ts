@@ -488,3 +488,80 @@ export const restoreItem = internalMutation({
     return { ...result, path: result.path ? `/${org.slug}${result.path}` : null };
   },
 });
+
+// ── Screen navigation (navigateTo tool) ────────────────────────────────────
+
+export const NAV_PAGES = [
+  "home",
+  "projects",
+  "cycles",
+  "ai",
+  "templates",
+  "trash",
+  "search",
+  "settings",
+  "members",
+  "billing",
+  "issue",
+  "project",
+  "team",
+  "teamBoard",
+] as const;
+export type NavPage = (typeof NAV_PAGES)[number];
+
+/**
+ * Resolve a page (+ optional human reference like "ENG-42", a team key or a
+ * project name) to a workspace-relative path. The client prefixes the org
+ * slug, so the agent can only ever move the user within their own workspace.
+ */
+export const resolveNavigation = internalQuery({
+  args: {
+    orgId: v.id("organizations"),
+    actorUserId: v.id("users"),
+    page: v.string(),
+    ref: v.optional(v.string()),
+  },
+  returns: v.object({ path: v.string(), label: v.string() }),
+  handler: async (ctx, args) => {
+    await requireMember(ctx, args.orgId, args.actorUserId);
+    const ref = args.ref?.trim();
+    const needRef = (what: string): string => {
+      if (!ref) throw new Error(`Pass ref with the ${what} to open this page.`);
+      return ref;
+    };
+    switch (args.page as NavPage) {
+      case "home":
+        return { path: "", label: "Workspace home" };
+      case "projects":
+      case "cycles":
+      case "ai":
+      case "templates":
+      case "trash":
+      case "search":
+      case "settings":
+        return { path: `/${args.page}`, label: args.page };
+      case "members":
+        return { path: "/settings/members", label: "Members" };
+      case "billing":
+        return { path: "/settings/billing", label: "Billing" };
+      case "issue": {
+        const { issue, team } = await getIssueByIdentifier(ctx, args.orgId, needRef("issue identifier, e.g. ENG-42"));
+        return { path: `/issue/${issue._id}`, label: `${team.key}-${issue.number}` };
+      }
+      case "project": {
+        const project = await getProjectByName(ctx, args.orgId, needRef("project name"));
+        return { path: `/projects/${project._id}`, label: project.name };
+      }
+      case "team":
+      case "teamBoard": {
+        const team = await getOrgTeamByKey(ctx, args.orgId, needRef("team key, e.g. ENG").toUpperCase());
+        return {
+          path: `/team/${team._id}${args.page === "teamBoard" ? "/board" : ""}`,
+          label: `${team.name}${args.page === "teamBoard" ? " board" : ""}`,
+        };
+      }
+      default:
+        throw new Error(`Unknown page "${args.page}". Use one of: ${NAV_PAGES.join(", ")}.`);
+    }
+  },
+});

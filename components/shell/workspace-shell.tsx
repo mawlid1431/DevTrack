@@ -1,13 +1,14 @@
 "use client";
 
 import { useOrganizationList } from "@clerk/nextjs";
-import { useQuery } from "convex/react";
+import { useAction, useQuery } from "convex/react";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect } from "react";
 import { api } from "@/convex/_generated/api";
 import { PlanLimitListener } from "@/components/billing/upgrade-prompt";
 import { CommandProvider } from "@/components/commands/command-provider";
+import { AgentWidget } from "@/components/agent-widget/agent-widget";
 import { AppSidebar } from "./app-sidebar";
 import { MobileNav } from "./mobile-nav";
 
@@ -66,6 +67,24 @@ export function WorkspaceShell({
   const currentUser = useQuery(api.users.current);
   const currentOrg = useQuery(api.organizations.current);
 
+  // Self-heal: if the webhook sync hasn't landed after a few seconds (missed
+  // or never-delivered Clerk webhook), pull our own records from Clerk.
+  // Retries a few times because the JWT's active org can lag setActive().
+  const ensureSynced = useAction(api.clerkSync.ensureSynced);
+  const waitingForSync = currentUser === null || currentOrg === null;
+  useEffect(() => {
+    if (!waitingForSync) return;
+    let attempts = 0;
+    const timer = setInterval(() => {
+      attempts += 1;
+      ensureSynced({}).catch(() => {
+        // Non-fatal: the webhook may still arrive on its own.
+      });
+      if (attempts >= 15) clearInterval(timer);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [waitingForSync, ensureSynced]);
+
   if (!isLoaded || (needsSwitch && currentOrg === undefined)) {
     return <FullScreenLoader label="Loading workspace…" />;
   }
@@ -96,6 +115,8 @@ export function WorkspaceShell({
           {children}
         </main>
       </div>
+      {/* Floating Notion-style AI agent on every workspace screen. */}
+      <AgentWidget />
     </CommandProvider>
   );
 }

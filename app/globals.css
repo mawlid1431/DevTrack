@@ -183,3 +183,17 @@
 body {
   overflow-x: clip;
 }
+
+/* Voice-call level bars (LiveKit BarVisualizer renders bare spans). */
+.devtrack-voice-bars > span {
+  width: 0.4rem;
+  min-height: 0.4rem;
+  border-radius: 9999px;
+  background: var(--muted-foreground);
+  opacity: 0.35;
+  transition: height 80ms linear, opacity 150ms;
+}
+.devtrack-voice-bars > span[data-lk-highlighted="true"] {
+  background: var(--primary);
+  opacity: 1;
+}

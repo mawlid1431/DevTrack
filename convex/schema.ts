@@ -276,4 +276,18 @@ export default defineSchema({
     /** JSON: ProjectTemplateContent | WorkspaceTemplateContent */
     content: v.string(),
   }).index("by_org", ["orgId"]),
+
+  /**
+   * Live voice calls with the agent (LiveKit). A row binds one LiveKit room
+   * to the (org, user, thread) that started it, so the voice worker can only
+   * ever act as that user, in that workspace, while the session is live.
+   */
+  voiceSessions: defineTable({
+    orgId: v.id("organizations"),
+    userId: v.id("users"),
+    threadId: v.string(),
+    roomName: v.string(),
+    expiresAt: v.number(),
+    tokenIssued: v.boolean(),
+  }).index("by_room", ["roomName"]),
 });

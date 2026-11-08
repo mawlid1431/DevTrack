@@ -916,7 +916,47 @@ const restoreFromRecycleBin = createTool({
   },
 });
 
+
+// ── Screen control ────────────────────────────────────────────────────────
+
+const NAV_PAGE_LIST = [
+  "home", "projects", "cycles", "ai", "templates", "trash", "search",
+  "settings", "members", "billing", "issue", "project", "team", "teamBoard",
+] as const;
+
+/**
+ * Moves the user's screen. The browser watches for this tool's result
+ * (`clientAction.navigate`) and routes there — see components/ai/use-agent-navigation.ts.
+ */
+const navigateTo = createTool({
+  description:
+    "Open a page on the user's screen. Use whenever the user says open/show/go to/take me to something, and after creating something they will want to look at. page: home, projects, cycles, ai, templates, trash, search, settings, members, billing, issue (ref = identifier like ENG-42), project (ref = exact project name), team or teamBoard (ref = team key like ENG). Runs immediately.",
+  inputSchema: jsonSchema<{ page: (typeof NAV_PAGE_LIST)[number]; ref?: string }>({
+    type: "object",
+    properties: {
+      page: { type: "string", enum: [...NAV_PAGE_LIST] },
+      ref: {
+        type: "string",
+        description: "Issue identifier, project name or team key, when the page needs one",
+      },
+    },
+    required: ["page"],
+    additionalProperties: false,
+  }),
+  execute: async (
+    ctx: DevTrackToolCtx,
+    input
+  ): Promise<{ status: "done"; opened: string; clientAction: { navigate: string } }> => {
+    const target: { path: string; label: string } = await ctx.runQuery(
+      internal.agent.operations.resolveNavigation,
+      { orgId: ctx.orgId, actorUserId: ctx.requestUserId, page: input.page, ref: input.ref }
+    );
+    return { status: "done", opened: target.label, clientAction: { navigate: target.path } };
+  },
+});
+
 export const devTrackTools = {
+  navigateTo,
   listTeams,
   listMembers,
   projectStatus,

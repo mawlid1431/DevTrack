@@ -13,10 +13,13 @@ export function AiComposer({
   disabled,
   disabledReason,
   onSend,
+  compact = false,
 }: {
   disabled: boolean;
   disabledReason?: string;
   onSend: (prompt: string) => Promise<void>;
+  /** Floating-panel variant: tighter padding, no hint line. */
+  compact?: boolean;
 }) {
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
@@ -63,11 +66,12 @@ export function AiComposer({
   const busy = disabled || sending;
 
   return (
-    <div className="px-4 pb-4 pt-2">
+    <div className={compact ? "border-t p-2" : "px-4 pb-4 pt-2"}>
       <form
         onSubmit={onSubmit}
         className={cn(
-          "mx-auto flex w-full max-w-3xl items-end gap-1.5 rounded-xl border bg-background p-2 shadow-sm transition-shadow focus-within:shadow-md",
+          "mx-auto flex w-full max-w-3xl items-end gap-1.5 rounded-xl border bg-background p-2 transition-shadow",
+          compact ? "shadow-none" : "shadow-sm focus-within:shadow-md",
           voice.listening && "border-red-400/60 ring-2 ring-red-400/20"
         )}
       >
@@ -119,7 +123,7 @@ export function AiComposer({
           <ArrowUp className="size-4" />
         </Button>
       </form>
-      <p className="mx-auto mt-1.5 max-w-3xl px-1 text-[0.6875rem] text-muted-foreground">
+      <p hidden={compact} className="mx-auto mt-1.5 max-w-3xl px-1 text-[0.6875rem] text-muted-foreground">
         DevTrack acts right away on your workspace. Enter to send, Shift+Enter
         for a new line{voice.supported ? ", or use the mic to speak" : ""}.
       </p>
