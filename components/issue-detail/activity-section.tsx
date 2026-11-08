@@ -174,7 +174,7 @@ export function ActivitySection({ issue }: IssueDetailSlotProps) {
     }));
     if (filter === "all") {
       for (const entry of activity ?? []) {
-        // Comments render themselves — skip their "commented" log entries.
+        // Comments render themselves, skip their "commented" log entries.
         if (entry.type === "commented") {
           continue;
         }
@@ -220,7 +220,7 @@ export function ActivitySection({ issue }: IssueDetailSlotProps) {
         </div>
       ) : items.length === 0 ? (
         <p className="py-2 text-xs text-muted-foreground">
-          No comments yet — start the conversation.
+          No comments yet, start the conversation.
         </p>
       ) : (
         <div className="flex flex-col gap-3">

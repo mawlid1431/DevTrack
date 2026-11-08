@@ -38,7 +38,7 @@ export function Footer() {
             </Link>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               The issue tracker built for speed. Plan, track, and ship with
-              your whole team — and an AI agent — in one keyboard-first
+              your whole team, and an AI agent, in one keyboard-first
               workspace.
             </p>
           </div>
@@ -72,7 +72,7 @@ export function Footer() {
             >
               Mowlid
             </a>
-            . DevTrack — sole developer & owner.{" "}
+            . DevTrack, sole developer & owner.{" "}
             <a
               href="https://github.com/Mawlid1431"
               target="_blank"

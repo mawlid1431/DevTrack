@@ -44,7 +44,7 @@ export function AiComposer({
   };
 
   // Voice: the transcript streams into the box, and is sent as soon as the
-  // user stops talking — same path as typing + Enter.
+  // user stops talking, same path as typing + Enter.
   const voice = useSpeechInput({
     onTranscript: setText,
     onDone: (spoken) => void submit(spoken),
@@ -85,7 +85,7 @@ export function AiComposer({
               ? (disabledReason ?? "AI is unavailable")
               : voice.listening
                 ? "Listening… just speak"
-                : "Tell DevTrack what to do — type or tap the mic…"
+                : "Tell DevTrack what to do: type or tap the mic…"
           }
           disabled={busy}
           readOnly={voice.listening}
@@ -109,7 +109,7 @@ export function AiComposer({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              {voice.listening ? "Stop — sends what you said" : "Talk to the agent"}
+              {voice.listening ? "Stop and send what you said" : "Talk to the agent"}
             </TooltipContent>
           </Tooltip>
         )}

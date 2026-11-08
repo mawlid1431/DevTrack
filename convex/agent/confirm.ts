@@ -10,22 +10,23 @@ import type { DevTrackToolCtx } from "./tools";
  * 2. The agent shows the preview and asks the user.
  * 3. The tool only runs when called again with that code AND:
  *    - the code was issued for the user's PREVIOUS message (so a new user
- *      message has arrived since the preview — the model can't confirm on
+ *      message has arrived since the preview, the model can't confirm on
  *      its own within one turn), and
  *    - that new message is an explicit yes, and
  *    - the arguments are unchanged.
  *
  * Only workspace-wide actions go through this gate (see CONFIRM_REQUIRED).
- * Everything else — creating/deleting issues, projects and templates — runs
+ * Everything else, creating/deleting issues, projects and templates, runs
  * immediately: deletes are soft (recycle bin, restorable for 30 days), so
  * acting at once is safe and is what users expect from the agent.
  */
 
-/** Tools that still need an explicit "yes" before they run. */
-export const CONFIRM_REQUIRED: ReadonlySet<string> = new Set([
-  "applyWorkspaceTemplate",
-  "createWorkspace",
-]);
+/**
+ * Tools that still need an explicit "yes" before they run. Empty: the user
+ * asked for every agent action to happen immediately on command. Add a tool
+ * name here to put it back behind the confirmation step.
+ */
+export const CONFIRM_REQUIRED: ReadonlySet<string> = new Set<string>([]);
 
 export type NeedsConfirmation = {
   status: "needs_confirmation";

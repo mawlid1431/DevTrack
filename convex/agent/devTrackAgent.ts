@@ -21,8 +21,9 @@ You can also manage the workspace on the user's behalf: create and delete issues
 
 Guidelines:
 - Always discover real team keys, member emails and template ids with listTeams / listMembers / listTemplates instead of guessing.
-- ACT IMMEDIATELY: when the user tells you to do something, do it right away in this same turn — call the tools and report what you did. Do not ask "are you sure?" or ask them to reply yes. If a detail is missing, pick a sensible default (e.g. the user's only/most likely team, todo status, no priority) and mention the default you used. Only ask a question when the request is truly impossible to act on (e.g. several equally likely teams and nothing to choose by).
-- CONFIRMATION (only two tools): applyWorkspaceTemplate and createWorkspace return status "needs_confirmation" with a summary and a confirmationCode. For those two only, show the summary and ask the user to reply "yes"; after they say yes, call again with the SAME arguments plus the confirmationCode. Every other tool runs immediately. Never claim something was done until a tool returns status "done" or a success result.
+- ACT IMMEDIATELY: when the user tells you to do something, do it right away in this same turn, call the tools and report what you did. Do not ask "are you sure?" or ask them to reply yes. If a detail is missing, pick a sensible default (e.g. the user's only/most likely team, todo status, no priority) and mention the default you used. Only ask a question when the request is truly impossible to act on (e.g. several equally likely teams and nothing to choose by).
+- NO CONFIRMATION: every tool runs immediately, including creating workspaces and applying templates. Never claim something was done until a tool returns status "done" or a success result. If a tool ever returns status "needs_confirmation", show its summary and ask for a yes.
+- ACCOUNT ACTIONS: "create a workspace" -> createWorkspace (it switches their screen to it). "log me out" -> signOut. "subscribe / upgrade / buy a plan" -> startSubscription (opens checkout; the user pays themselves, you never handle payment details).
 - Deleting never destroys data: items go to the recycle bin and can be restored for 30 days. Say so when you delete something.
 - SCREEN CONTROL: you can move the user's screen with navigateTo. When they say open / show / go to / take me to, call it right away. After creating or finding a single issue or project, open it for them unless they're clearly mid-way through something else.
 - After acting, report exactly what changed in one or two short lines (with identifiers).
@@ -40,7 +41,7 @@ export const devTrackAgent = new Agent<DevTrackAgentCtx>(components.agent, {
   tools: devTrackTools,
   stopWhen: stepCountIs(12),
   contextOptions: {
-    // Recent thread history only — issue knowledge comes from tools.
+    // Recent thread history only, issue knowledge comes from tools.
     recentMessages: 30,
     searchOtherThreads: false,
   },

@@ -170,7 +170,7 @@ function AiWorkspace() {
           )}
           <AiComposer
             disabled={quotaExhausted}
-            disabledReason="Daily AI message limit reached — upgrade to Enterprise for unlimited messages"
+            disabledReason="Daily AI message limit reached. Upgrade to Enterprise for unlimited messages"
             onSend={send}
           />
         </main>
@@ -195,7 +195,7 @@ function EmptyState({
         <div className="flex flex-col gap-1">
           <h2 className="text-base font-semibold">Ask DevTrack</h2>
           <p className="text-sm text-muted-foreground">
-            DevTrack knows your teams, issues, projects and cycles — and can
+            DevTrack knows your teams, issues, projects and cycles, and can
             create or update issues for you.
           </p>
         </div>

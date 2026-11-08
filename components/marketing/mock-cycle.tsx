@@ -17,7 +17,7 @@ export function MockCycle({ className }: { className?: string }) {
       <div className="flex items-center gap-2">
         <RefreshCcw className="size-3.5 text-muted-foreground" />
         <span className="text-sm font-medium">Cycle 14</span>
-        <span className="text-xs text-muted-foreground">Jun 2 – Jun 16</span>
+        <span className="text-xs text-muted-foreground">Jun 2 to Jun 16</span>
         <span className="ml-auto font-mono text-xs text-emerald-500">
           {percent}%
         </span>

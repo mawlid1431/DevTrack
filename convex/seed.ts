@@ -85,7 +85,7 @@ const TEAMS: { name: string; key: string; description: string; cycles: ("prev" |
   {
     name: "Engineering",
     key: "ENG",
-    description: "Product engineering — app, API and infrastructure.",
+    description: "Product engineering, app, API and infrastructure.",
     cycles: ["prev", "current", "next"],
     issues: [
       { title: "Set up CI pipeline with preview deploys", status: "done", priority: "high", estimate: 3, assign: true, cycle: "prev", labels: ["Infra"] },
@@ -164,10 +164,10 @@ const TEAMS: { name: string; key: string; description: string; cycles: ("prev" |
 ];
 
 const COMMENTS: { issue: string; body: string; mention?: boolean }[] = [
-  { issue: "Issue list virtualization", body: "Windowing plays nicely with the drag overlay after the sensor fix — ready for review." },
+  { issue: "Issue list virtualization", body: "Windowing plays nicely with the drag overlay after the sensor fix, ready for review." },
   { issue: "Issue list virtualization", body: "Profiled on a 5k-issue workspace: scroll holds 60fps. 🎉" },
-  { issue: "Migrate auth tokens to httpOnly cookies", body: "Flagging the cookie domain config for staging — needs your sign-off before we ship.", mention: true },
-  { issue: "Onboarding flow redesign", body: "Latest mock is linked in the description — team creation is now a single screen." },
+  { issue: "Migrate auth tokens to httpOnly cookies", body: "Flagging the cookie domain config for staging, needs your sign-off before we ship.", mention: true },
+  { issue: "Onboarding flow redesign", body: "Latest mock is linked in the description, team creation is now a single screen." },
   { issue: "Product Hunt launch assets", body: "Waiting on the final logo lockup from design before cutting the gallery images." },
 ];
 
@@ -186,7 +186,7 @@ async function seedDemoWorkspace(
       .withIndex("by_org", (q) => q.eq("orgId", org._id))
       .collect();
     if (existingTeams.length > 0) {
-      throw new Error("This workspace already has teams — demo data can only seed an empty workspace.");
+      throw new Error("This workspace already has teams. Demo data can only seed an empty workspace.");
     }
 
     const now = Date.now();
@@ -366,7 +366,7 @@ export const demoData = orgAdminMutation({
   handler: async (ctx) => seedDemoWorkspace(ctx, ctx.org, ctx.user),
 });
 
-/** Dev/bootstrap helper — seeds demo data for an org by Clerk org id (no JWT). */
+/** Dev/bootstrap helper, seeds demo data for an org by Clerk org id (no JWT). */
 export const bootstrapDemoData = internalMutation({
   args: { clerkOrgId: v.string() },
   returns: demoDataReturns,

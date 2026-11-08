@@ -5,7 +5,7 @@ import { projectCycleCommands } from "@/components/projects/commands";
  * Command palette + keyboard shortcut registry.
  *
  * PARALLEL-TRACK REGISTRY FILE: tracks may append entries here (one-line
- * additions only — define your command objects in your own files and import
+ * additions only, define your command objects in your own files and import
  * them). Do not modify existing entries.
  */
 export type AppCommand = {
@@ -52,7 +52,7 @@ const builtinCommands: AppCommand[] = [
   },
 ];
 
-// ── Track registrations (append imports + spread below) ──────────────────
+// Track registrations (append imports + spread below)
 // Example: import { boardCommands } from "@/components/board/commands";
 import { boardViewCommands } from "@/components/board/commands";
 import { billingCommands } from "@/components/billing/commands";

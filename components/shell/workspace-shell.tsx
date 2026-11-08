@@ -9,7 +9,9 @@ import { api } from "@/convex/_generated/api";
 import { PlanLimitListener } from "@/components/billing/upgrade-prompt";
 import { CommandProvider } from "@/components/commands/command-provider";
 import { AgentWidget } from "@/components/agent-widget/agent-widget";
+import { writeLastWorkspace } from "@/lib/last-workspace";
 import { AppSidebar } from "./app-sidebar";
+import { FirstVisitTour } from "./first-visit-tour";
 import { MobileNav } from "./mobile-nav";
 
 function FullScreenLoader({ label }: { label: string }) {
@@ -85,11 +87,17 @@ export function WorkspaceShell({
     return () => clearInterval(timer);
   }, [waitingForSync, ensureSynced]);
 
+  // Remember this workspace so the next sign-in lands here.
+  const activeSlug = currentOrg?.slug;
+  useEffect(() => {
+    if (activeSlug && activeSlug === orgSlug) writeLastWorkspace(orgSlug);
+  }, [activeSlug, orgSlug]);
+
   if (!isLoaded || (needsSwitch && currentOrg === undefined)) {
     return <FullScreenLoader label="Loading workspace…" />;
   }
 
-  // Webhook sync still in flight — Convex queries are reactive, so this
+  // Webhook sync still in flight. Convex queries are reactive, so this
   // resolves by itself within a second or two of first sign-up.
   if (currentUser === null || currentOrg === null) {
     return <FullScreenLoader label="Setting up your workspace…" />;
@@ -117,6 +125,7 @@ export function WorkspaceShell({
       </div>
       {/* Floating Notion-style AI agent on every workspace screen. */}
       <AgentWidget />
+      <FirstVisitTour />
     </CommandProvider>
   );
 }

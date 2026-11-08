@@ -1,27 +1,22 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
+import { Loader2, Plus } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sparkles } from "lucide-react";
+import { CreateTeamDialog } from "@/components/teams/create-team-dialog";
 
 /**
- * Workspace home — redirects to the first team's issues, or shows the
- * empty state nudging team creation (the sidebar has the create button).
+ * Workspace home: opens the first team's issues, or shows a simple empty
+ * state with one clear next step (create a team).
  */
 export default function WorkspaceHomePage() {
   const params = useParams<{ orgSlug: string }>();
   const router = useRouter();
   const teams = useQuery(api.teams.list);
-  const { has } = useAuth();
-  const isAdmin = has?.({ role: "org:admin" }) ?? false;
-
-  const seedDemoData = useMutation(api.seed.demoData);
-  const [seeding, setSeeding] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
 
   useEffect(() => {
     if (teams && teams.length > 0) {
@@ -29,23 +24,7 @@ export default function WorkspaceHomePage() {
     }
   }, [teams, router, params.orgSlug]);
 
-  const handleSeed = async () => {
-    setSeeding(true);
-    try {
-      const result = await seedDemoData({});
-      toast.success(
-        `Demo workspace ready — ${result.teams} teams, ${result.issues} issues, ${result.projects} projects.`
-      );
-      // Keep the spinner on; the reactive teams query redirects to the first team.
-    } catch (error) {
-      setSeeding(false);
-      toast.error(
-        error instanceof Error ? error.message : "Seeding demo data failed."
-      );
-    }
-  };
-
-  if (teams === undefined) {
+  if (teams === undefined || teams.length > 0) {
     return (
       <div className="flex flex-1 items-center justify-center">
         <Loader2 className="size-4 animate-spin text-muted-foreground" />
@@ -53,36 +32,18 @@ export default function WorkspaceHomePage() {
     );
   }
 
-  if (teams.length === 0) {
-    return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
-        <h2 className="text-lg font-medium">Welcome to DevTrack</h2>
-        <p className="max-w-sm text-sm text-muted-foreground">
-          Create your first team from the sidebar to start tracking issues.
-        </p>
-        {isAdmin && (
-          <>
-            <Button
-              size="sm"
-              className="mt-3"
-              onClick={handleSeed}
-              disabled={seeding}
-            >
-              {seeding ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Sparkles className="size-4" />
-              )}
-              {seeding ? "Seeding…" : "Seed demo data"}
-            </Button>
-            <p className="text-xs text-muted-foreground">
-              Populates 3 teams with issues, projects, cycles and labels.
-            </p>
-          </>
-        )}
-      </div>
-    );
-  }
-
-  return null;
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-2 px-6 text-center">
+      <h2 className="text-lg font-medium">Welcome to DevTrack</h2>
+      <p className="max-w-sm text-sm text-muted-foreground">
+        Create your first team to start tracking issues. You can also ask the
+        AI agent to set everything up for you.
+      </p>
+      <Button size="sm" className="mt-3" onClick={() => setCreateOpen(true)}>
+        <Plus className="size-4" />
+        Create team
+      </Button>
+      <CreateTeamDialog open={createOpen} onOpenChange={setCreateOpen} />
+    </div>
+  );
 }

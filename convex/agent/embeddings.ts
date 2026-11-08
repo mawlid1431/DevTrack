@@ -13,7 +13,7 @@ function embeddingSource(): string {
 }
 
 /**
- * Embed one text snippet (1536 dims — `by_embedding` index) with the
+ * Embed one text snippet (1536 dims, `by_embedding` index) with the
  * configured embedding model. Throws if that model fails.
  */
 export async function embedText(text: string): Promise<number[]> {

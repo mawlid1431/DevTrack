@@ -185,7 +185,7 @@ const BUILTIN_WORKSPACES: Record<string, { name: string; description: string; co
   },
 };
 
-// ── Validation ────────────────────────────────────────────────────────────
+// Validation
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const TEAM_KEY = /^[A-Z][A-Z0-9]{0,4}$/;
@@ -236,7 +236,7 @@ export function validateWorkspaceContent(content: WorkspaceTemplateContent): Wor
   return { teams, labels, cycleLengthDays: days };
 }
 
-// ── Resolution & listing ──────────────────────────────────────────────────
+// Resolution & listing
 
 export async function resolveTemplate(
   ctx: QueryCtx | MutationCtx,
@@ -319,7 +319,7 @@ export async function listTemplatesForOrg(
   return kind ? result.filter((t) => t.kind === kind) : result;
 }
 
-// ── Apply ─────────────────────────────────────────────────────────────────
+// Apply
 
 /** Insert an issue exactly like issues.create does (number, order, activity). */
 async function insertIssue(
@@ -505,7 +505,7 @@ export async function createCustomTemplate(
   });
 }
 
-// ── Public API (Templates page) ───────────────────────────────────────────
+// Public API (Templates page)
 
 export const list = orgQuery({
   args: { kind: v.optional(templateKindValidator) },

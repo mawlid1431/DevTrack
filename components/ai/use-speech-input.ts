@@ -58,7 +58,8 @@ export function useSpeechInput({
   });
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only feature detection
+    // browser-only feature detection.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSupported(getRecognitionCtor() !== null);
     return () => recognitionRef.current?.abort();
   }, []);

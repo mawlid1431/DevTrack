@@ -3,7 +3,7 @@ import { Show } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 
 /**
- * Marketing layout — Track F owns the landing page content, Track E owns
+ * Marketing layout, Track F owns the landing page content, Track E owns
  * /pricing. Keep this nav minimal; don't add app logic here.
  */
 export default function MarketingLayout({

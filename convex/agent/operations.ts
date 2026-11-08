@@ -104,7 +104,7 @@ async function getProjectByName(
   return matches[0];
 }
 
-// ── Previews (read-only, used to describe an action before confirmation) ──
+// Previews (read-only, used to describe an action before confirmation)
 
 export const describeIssue = internalQuery({
   args: { orgId: v.id("organizations"), actorUserId: v.id("users"), identifier: v.string() },
@@ -146,7 +146,7 @@ export const describeTemplate = internalQuery({
   },
 });
 
-// ── Issues: delete, my issues, prioritize, sort ───────────────────────────
+// Issues: delete, my issues, prioritize, sort
 
 export const deleteIssue = internalMutation({
   args: { orgId: v.id("organizations"), actorUserId: v.id("users"), identifier: v.string() },
@@ -262,7 +262,7 @@ export const sortIssues = internalMutation({
   },
 });
 
-// ── Projects ──────────────────────────────────────────────────────────────
+// Projects
 
 export const createProject = internalMutation({
   args: {
@@ -303,7 +303,7 @@ export const deleteProject = internalMutation({
   },
 });
 
-// ── Templates ─────────────────────────────────────────────────────────────
+// Templates
 
 export const listTemplates = internalQuery({
   args: { orgId: v.id("organizations"), actorUserId: v.id("users"), kind: v.optional(templateKindValidator) },
@@ -377,7 +377,7 @@ export const applyWorkspaceTemplateToCurrent = internalMutation({
   },
 });
 
-// ── New workspace (Clerk organization) ────────────────────────────────────
+// New workspace (Clerk organization)
 
 export const clerkUserForActor = internalQuery({
   args: { orgId: v.id("organizations"), actorUserId: v.id("users") },
@@ -430,7 +430,7 @@ export const applyTemplateToNewWorkspace = internalMutation({
   },
 });
 
-// ── Recycle bin ───────────────────────────────────────────────────────────
+// Recycle bin
 
 export const listRecycleBin = internalQuery({
   args: { orgId: v.id("organizations"), actorUserId: v.id("users") },
@@ -489,7 +489,7 @@ export const restoreItem = internalMutation({
   },
 });
 
-// ── Screen navigation (navigateTo tool) ────────────────────────────────────
+// Screen navigation (navigateTo tool)
 
 export const NAV_PAGES = [
   "home",

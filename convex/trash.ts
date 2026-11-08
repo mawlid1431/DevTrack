@@ -86,7 +86,7 @@ async function issueIdentifier(ctx: MutationCtx, issue: Doc<"issues">): Promise<
   return `${team?.key ?? "?"}-${issue.number}`;
 }
 
-// ── Move to trash (called by every delete mutation) ───────────────────────
+// Move to trash (called by every delete mutation)
 
 export async function trashIssue(
   ctx: MutationCtx,
@@ -328,7 +328,7 @@ export async function trashTemplate(
   return trashId;
 }
 
-// ── Restore ───────────────────────────────────────────────────────────────
+// Restore
 
 async function existsInOrg<T extends "issues" | "projects" | "cycles" | "labels" | "teams">(
   ctx: MutationCtx,
@@ -592,7 +592,7 @@ async function purgeEntry(ctx: MutationCtx, entry: Doc<"trash">): Promise<void> 
   await ctx.db.delete(entry._id);
 }
 
-// ── Public API ────────────────────────────────────────────────────────────
+// Public API
 
 const trashItemValidator = v.object({
   trashId: v.id("trash"),

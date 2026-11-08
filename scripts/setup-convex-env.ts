@@ -49,7 +49,7 @@ for (const name of CONVEX_VARS) {
     console.log(`would set ${name}`);
     continue;
   }
-  // `bun x convex` via the running Bun binary — no shell, so values are
+  // `bun x convex` via the running Bun binary, no shell, so values are
   // passed verbatim and Windows needs no npx.cmd shim.
   const proc = spawnSync(
     process.execPath,

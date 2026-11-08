@@ -3,8 +3,8 @@
 import { useOrganization } from "@clerk/nextjs";
 import { CheckoutButton } from "@clerk/nextjs/experimental";
 import { Check } from "lucide-react";
-import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Doc } from "@/convex/_generated/dataModel";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +25,13 @@ import { BillingPeriodToggle } from "./billing-period-toggle";
  * buttons. Hidden entirely on Enterprise (nothing left to upgrade to).
  */
 export function UpgradeOptions({ org }: { org: Doc<"organizations"> }) {
-  const [period, setPeriod] = useState<BillingPeriod>("month");
+  // The AI agent's startSubscription tool links here with ?checkout=<plan>
+  // (&period=annual) to open that plan's checkout straight away.
+  const searchParams = useSearchParams();
+  const requested = searchParams.get("checkout");
+  const [period, setPeriod] = useState<BillingPeriod>(
+    searchParams.get("period") === "annual" ? "annual" : "month"
+  );
 
   const upgrades: PlanDefinition[] =
     org.plan === "free"
@@ -57,7 +63,12 @@ export function UpgradeOptions({ org }: { org: Doc<"organizations"> }) {
         )}
       >
         {upgrades.map((plan) => (
-          <UpgradeCard key={plan.slug} plan={plan} period={period} />
+          <UpgradeCard
+            key={plan.slug}
+            plan={plan}
+            period={period}
+            autoOpen={requested === plan.slug}
+          />
         ))}
       </div>
     </section>
@@ -67,13 +78,26 @@ export function UpgradeOptions({ org }: { org: Doc<"organizations"> }) {
 function UpgradeCard({
   plan,
   period,
+  autoOpen,
 }: {
   plan: PlanDefinition;
   period: BillingPeriod;
+  autoOpen: boolean;
 }) {
   const params = useParams<{ orgSlug: string }>();
   const { membership } = useOrganization();
   const isAdmin = membership?.role === "org:admin";
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const opened = useRef(false);
+
+  // Open the checkout once when the agent asked for this plan.
+  useEffect(() => {
+    if (!autoOpen || !isAdmin || opened.current) return;
+    opened.current = true;
+    buttonRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+    const timer = setTimeout(() => buttonRef.current?.click(), 400);
+    return () => clearTimeout(timer);
+  }, [autoOpen, isAdmin]);
 
   return (
     <div
@@ -128,9 +152,10 @@ function UpgradeCard({
           newSubscriptionRedirectUrl={`/${params.orgSlug}/settings/billing`}
         >
           <Button
+            ref={buttonRef}
             size="sm"
             variant={plan.popular ? "default" : "outline"}
-            className="w-full"
+            className={cn("w-full", autoOpen && "ring-2 ring-primary ring-offset-2 ring-offset-background")}
           >
             Upgrade to {plan.name}
           </Button>

@@ -11,7 +11,7 @@ import { action } from "./_generated/server";
  * app would spin on "Setting up your workspace…" forever. The shell calls
  * this after a short wait: it fetches the signed-in user, their ACTIVE org
  * (from the verified JWT) and that membership straight from the Clerk
- * Backend API — the source of truth — and replays them through the same
+ * Backend API, the source of truth, and replays them through the same
  * webhook handlers. Only the caller's own records can be synced.
  */
 const CLERK_API = "https://api.clerk.com/v1";

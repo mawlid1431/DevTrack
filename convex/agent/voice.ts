@@ -164,7 +164,7 @@ export const runVoiceTurn = internalAction({
         { threadId: recorded.threadId, userId: threadUserKey(recorded.orgId, recorded.userId) },
         {
           promptMessageId: recorded.messageId,
-          system: `${DEVTRACK_INSTRUCTIONS}\n\nThis request was SPOKEN in a live voice call; your reply will be read aloud. Act immediately, then answer in one to three short plain sentences — no markdown, lists or tables.\n\nWorkspace: ${actor.orgName}. Requesting user: ${actor.userName}. Today's date: ${new Date().toISOString().slice(0, 10)}.`,
+          system: `${DEVTRACK_INSTRUCTIONS}\n\nThis request was SPOKEN in a live voice call; your reply will be read aloud. Act immediately, then answer in one to three short plain sentences, no markdown, lists or tables.\n\nWorkspace: ${actor.orgName}. Requesting user: ${actor.userName}. Today's date: ${new Date().toISOString().slice(0, 10)}.`,
         }
       );
       return { reply: result.text || "Done." };

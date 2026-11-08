@@ -21,11 +21,11 @@ import {
  * Internal data layer for the AI agent (Track D).
  *
  * Every function takes an explicit, server-supplied `orgId` (resolved from the
- * authenticated context by the public entry points — NEVER from model output)
+ * authenticated context by the public entry points, NEVER from model output)
  * and re-verifies that every loaded document belongs to that org.
  */
 
-// ── Shared shapes ──────────────────────────────────────────────────────────
+// Shared shapes
 
 export const issueSummaryValidator = v.object({
   issueId: v.id("issues"),
@@ -116,7 +116,7 @@ function issueText(issue: { title: string; description?: string }): string {
     : issue.title;
 }
 
-// ── Authorization ──────────────────────────────────────────────────────────
+// Authorization
 
 /**
  * Resolve + gate the caller for AI actions. Uses the JWT-backed auth context
@@ -169,7 +169,7 @@ export const actorContext = internalQuery({
   },
 });
 
-// ── Workspace lookups (read-only tools) ────────────────────────────────────
+// Workspace lookups (read-only tools)
 
 export const listTeamsForOrg = internalQuery({
   args: { orgId: v.id("organizations") },
@@ -307,7 +307,7 @@ export const issueSummariesByIds = internalQuery({
     const summaries = [];
     for (const issueId of args.issueIds) {
       const issue = await ctx.db.get(issueId);
-      // Silently skip anything outside the caller's org (defense in depth —
+      // Silently skip anything outside the caller's org (defense in depth , 
       // vector search is already filtered by orgId).
       if (!issue || issue.orgId !== args.orgId) {
         continue;
@@ -318,7 +318,7 @@ export const issueSummariesByIds = internalQuery({
   },
 });
 
-// ── Issue writes (agent tools) ─────────────────────────────────────────────
+// Issue writes (agent tools)
 
 export const createIssueForAgent = internalMutation({
   args: {
@@ -513,7 +513,7 @@ export const updateIssueForAgent = internalMutation({
   },
 });
 
-// ── Embeddings support ─────────────────────────────────────────────────────
+// Embeddings support
 
 export const issueEmbeddingSource = internalQuery({
   args: { issueId: v.id("issues") },
@@ -553,7 +553,7 @@ export const issuesMissingEmbeddings = internalQuery({
 
 /**
  * One page of issues across all orgs, for the one-off re-embed migration
- * (`agent/embeddings:reembedAllIssues`). Internal only — never exposed.
+ * (`agent/embeddings:reembedAllIssues`). Internal only, never exposed.
  */
 export const issuesPageForReembed = internalQuery({
   args: { cursor: v.union(v.string(), v.null()), numItems: v.number() },
@@ -608,7 +608,7 @@ export const saveIssueEmbeddings = internalMutation({
   },
 });
 
-// ── Triage assist ──────────────────────────────────────────────────────────
+// Triage assist
 
 export const issueTriageContext = internalQuery({
   args: { orgId: v.id("organizations"), issueId: v.id("issues") },
@@ -661,7 +661,7 @@ export const issueTriageContext = internalQuery({
   },
 });
 
-// ── Reports ────────────────────────────────────────────────────────────────
+// Reports
 
 export const cycleSummaryForTeam = internalQuery({
   args: { orgId: v.id("organizations"), teamKey: v.string() },

@@ -1,4 +1,4 @@
-"""DevTrack voice agent — a LiveKit worker you can talk to.
+"""DevTrack voice agent, a LiveKit worker you can talk to.
 
 The browser's floating "DevTrack AI" panel starts a call: Convex mints a
 LiveKit token that dispatches this worker (AGENT_NAME) into a fresh room.
@@ -38,6 +38,14 @@ from livekit.agents import (
 )
 from livekit.plugins import silero
 
+# Plugins must be imported (registered) on the main thread at startup, not
+# inside a job, otherwise the avatar fails with "Plugins must be registered
+# on the main thread".
+try:
+    from livekit.plugins import synthesia
+except ImportError:  # optional dependency
+    synthesia = None
+
 from instructions import GREETING, INSTRUCTIONS
 
 # The app's .env.local holds every key, so the worker reads the same file.
@@ -56,7 +64,6 @@ TTS_VOICE = os.getenv("DEVTRACK_VOICE_ID", "db6b0ed5-d5d3-463d-ae85-518a07d3c2b4
 AVATAR_MODE = os.getenv("DEVTRACK_AVATAR", "synthesia" if os.getenv("SYNTHESIA_API_KEY") else "off")
 AVATAR_ID = os.getenv("SYNTHESIA_AVATAR_ID", "4b638067-6319-46e1-b634-371a4bdfceb9")
 
-
 class DevTrackVoice(Agent):
     def __init__(self, room_name: str, http: aiohttp.ClientSession) -> None:
         super().__init__(instructions=INSTRUCTIONS)
@@ -69,7 +76,8 @@ class DevTrackVoice(Agent):
 
         Use for every question or action about issues, projects, cycles,
         teams, members, templates, the recycle bin, reports and standups, and
-        for opening/showing any page on the user's screen.
+        for opening/showing any page on the user's screen, creating a new
+        workspace, logging the user out, and starting a subscription checkout.
 
         Args:
             request: The user's request in their own words, with any details
@@ -93,25 +101,20 @@ class DevTrackVoice(Agent):
             raise ToolError(body.get("error", "The request failed."))
         return body.get("reply", "Done.")
 
-
 def prewarm(proc) -> None:
     proc.userdata["vad"] = silero.VAD.load()
 
-
 async def start_avatar(session: AgentSession, ctx: JobContext) -> None:
-    if AVATAR_MODE != "synthesia":
+    if AVATAR_MODE != "synthesia" or synthesia is None:
         return
     try:
-        from livekit.plugins import synthesia
-
         avatar = synthesia.AvatarSession(
             synthesia.AvatarConfig(avatar_ids=[AVATAR_ID]),
             join_timeout=60.0,
         )
         await avatar.start(session, room=ctx.room)
-    except Exception as e:  # noqa: BLE001 — avatar is optional
+    except Exception as e:  # noqa: BLE001, avatar is optional
         logger.warning("Avatar unavailable, continuing voice-only: %s", e)
-
 
 async def entrypoint(ctx: JobContext) -> None:
     await ctx.connect()
@@ -141,7 +144,6 @@ async def entrypoint(ctx: JobContext) -> None:
         room_options=room_io.RoomOptions(video_input=True),
     )
     session.generate_reply(instructions=GREETING)
-
 
 if __name__ == "__main__":
     cli.run_app(

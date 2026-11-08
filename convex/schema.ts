@@ -2,7 +2,7 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 /**
- * Shared validators — import these from feature code instead of redefining.
+ * Shared validators, import these from feature code instead of redefining.
  * The schema is FROZEN for parallel track work: coordinate before editing this file.
  */
 export const issueStatusValidator = v.union(
@@ -66,7 +66,7 @@ export const templateKindValidator = v.union(
 );
 
 export default defineSchema({
-  // ── Synced from Clerk via webhooks ─────────────────────────────────────
+  // Synced from Clerk via webhooks
   users: defineTable({
     clerkId: v.string(),
     name: v.string(),
@@ -96,7 +96,7 @@ export default defineSchema({
     .index("by_org_and_user", ["orgId", "userId"])
     .index("by_clerk_membership_id", ["clerkMembershipId"]),
 
-  // ── Workspace structure ────────────────────────────────────────────────
+  // Workspace structure
   teams: defineTable({
     orgId: v.id("organizations"),
     name: v.string(),

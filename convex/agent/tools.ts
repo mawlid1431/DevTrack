@@ -12,7 +12,7 @@ import { embedText } from "./embeddings";
  *
  * SECURITY: every tool reads `orgId` / `requestUserId` from the custom action
  * context that our own internal action injects after authenticating the
- * caller. The model can never choose which org it operates on — tool inputs
+ * caller. The model can never choose which org it operates on, tool inputs
  * only carry user-meaningful identifiers (team keys, issue numbers, emails)
  * that are resolved inside the caller's org.
  *
@@ -196,7 +196,7 @@ const createIssue = createTool({
       confirmationCode: {
         type: "string",
         description:
-          "Only for applyWorkspaceTemplate/createWorkspace: pass the code from the preview after the user replied yes. Otherwise leave out.",
+          "Leave out. Only used if this action ever returns needs_confirmation.",
       },
     },
     required: ["teamKey", "title"],
@@ -364,14 +364,13 @@ const standupReport = createTool({
   },
 });
 
-
-// ── Management tools (only workspace-wide actions are confirmation-gated) ───────────────
+// Management tools (only workspace-wide actions are confirmation-gated)
 
 const confirmationCodeProp = {
   confirmationCode: {
     type: "string",
     description:
-      "Only for applyWorkspaceTemplate/createWorkspace: pass the code from the preview after the user replied yes. Otherwise leave out.",
+      "Leave out. Only used if this action ever returns needs_confirmation.",
   },
 } as const;
 
@@ -759,7 +758,7 @@ const createTemplate = createTool({
 
 const applyWorkspaceTemplate = createTool({
   description:
-    "Set up THIS workspace from a workspace template: creates its teams (skipping existing keys), labels (skipping existing names) and a first cycle per new team. Admins only. Requires the user's confirmation.",
+    "Set up THIS workspace from a workspace template: creates its teams (skipping existing keys), labels (skipping existing names) and a first cycle per new team. Admins only. Runs immediately.",
   inputSchema: jsonSchema<Gated<{ templateId: string }>>({
     type: "object",
     properties: { templateId: { type: "string" }, ...confirmationCodeProp },
@@ -795,7 +794,7 @@ const applyWorkspaceTemplate = createTool({
 
 const createWorkspace = createTool({
   description:
-    "Create a brand-new, separate workspace (organization) owned by the requesting user, optionally set up from a workspace template. Its data is fully separate from this workspace. Requires the user's confirmation.",
+    "Create a brand-new, separate workspace (organization) owned by the requesting user, optionally set up from a workspace template. Its data is fully separate from this workspace. Runs immediately and switches the user's screen to the new workspace. If the user gives no name, use "<their first name>'s Workspace".",
   inputSchema: jsonSchema<Gated<{ name: string; templateId?: string }>>({
     type: "object",
     properties: {
@@ -809,7 +808,9 @@ const createWorkspace = createTool({
   execute: async (
     ctx: DevTrackToolCtx,
     input
-  ): Promise<GateResult<{ name: string; url: string; templateNote: string }>> => {
+  ): Promise<
+    GateResult<{ name: string; url: string; templateNote: string; clientAction: { switchWorkspace: string } }>
+  > => {
     const args = withoutCode(input);
     const name = args.name.trim();
     if (!name || name.length > 80) {
@@ -875,6 +876,7 @@ const createWorkspace = createTool({
       templateNote: content
         ? "The template is applied automatically within a few seconds, once the workspace has synced."
         : "Empty workspace.",
+      clientAction: { switchWorkspace: created.slug },
     };
   },
 });
@@ -916,8 +918,7 @@ const restoreFromRecycleBin = createTool({
   },
 });
 
-
-// ── Screen control ────────────────────────────────────────────────────────
+// Screen control
 
 const NAV_PAGE_LIST = [
   "home", "projects", "cycles", "ai", "templates", "trash", "search",
@@ -926,7 +927,7 @@ const NAV_PAGE_LIST = [
 
 /**
  * Moves the user's screen. The browser watches for this tool's result
- * (`clientAction.navigate`) and routes there — see components/ai/use-agent-navigation.ts.
+ * (`clientAction.navigate`) and routes there, see components/ai/use-agent-navigation.ts.
  */
 const navigateTo = createTool({
   description:
@@ -955,7 +956,64 @@ const navigateTo = createTool({
   },
 });
 
+/**
+ * Signs the user out of DevTrack. The browser performs it when it sees
+ * `clientAction.signOut` (components/ai/use-agent-actions.ts).
+ */
+const signOut = createTool({
+  description:
+    "Log the user out of DevTrack. Use when they say log out, sign out or log me off. Runs immediately; say goodbye briefly.",
+  inputSchema: emptyInput,
+  execute: async (): Promise<{ status: "done"; clientAction: { signOut: true } }> => {
+    return { status: "done", clientAction: { signOut: true } };
+  },
+});
+
+/**
+ * Opens the plan checkout on the billing page. The USER completes payment in
+ * Clerk's checkout; the agent never sees or enters payment details.
+ */
+const startSubscription = createTool({
+  description:
+    "Start a new subscription or upgrade: opens the billing page with the checkout for the chosen plan, so the user can pay. Use for subscribe / upgrade / buy Pro / buy Enterprise / change plan. plan: pro or enterprise (default pro unless they're already on Pro). period: month or annual (default month). Only workspace admins can pay; the page tells others. You never handle payment details yourself.",
+  inputSchema: jsonSchema<{ plan?: "pro" | "enterprise"; period?: "month" | "annual" }>({
+    type: "object",
+    properties: {
+      plan: { type: "string", enum: ["pro", "enterprise"] },
+      period: { type: "string", enum: ["month", "annual"] },
+    },
+    additionalProperties: false,
+  }),
+  execute: async (
+    ctx: DevTrackToolCtx,
+    input
+  ): Promise<{ status: "done"; opened: string; note: string; clientAction: { navigate: string } }> => {
+    const actor: { plan: string } = await ctx.runQuery(internal.agent.data.actorContext, {
+      orgId: ctx.orgId,
+      userId: ctx.requestUserId,
+    });
+    const plan = input.plan ?? (actor.plan === "pro" ? "enterprise" : "pro");
+    if (actor.plan === plan || actor.plan === "enterprise") {
+      return {
+        status: "done",
+        opened: "billing",
+        note: `This workspace is already on ${actor.plan}. Opened billing so they can manage the subscription.`,
+        clientAction: { navigate: "/settings/billing" },
+      };
+    }
+    const period = input.period ?? "month";
+    return {
+      status: "done",
+      opened: `checkout for ${plan} (${period})`,
+      note: "The checkout is open on their screen; they enter payment details themselves.",
+      clientAction: { navigate: `/settings/billing?checkout=${plan}&period=${period}` },
+    };
+  },
+});
+
 export const devTrackTools = {
+  signOut,
+  startSubscription,
   navigateTo,
   listTeams,
   listMembers,

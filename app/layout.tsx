@@ -16,11 +16,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "DevTrack — Plan. Build. Ship.",
+    default: "DevTrack: Plan. Build. Ship.",
     template: "%s · DevTrack",
   },
   description:
-    "DevTrack is the issue tracker built for speed. Plan projects, run cycles, and ship with your team — with an AI agent on call.",
+    "DevTrack is the issue tracker built for speed. Plan projects, run cycles, and ship with your team, with an AI agent on call.",
   authors: [{ name: "Mowlid", url: "https://devmowlid.vercel.app/" }],
   creator: "Mowlid",
   metadataBase: new URL("https://devmowlid.vercel.app"),

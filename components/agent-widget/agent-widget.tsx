@@ -51,14 +51,14 @@ function writeThread(orgSlug: string, threadId: string | null) {
     if (threadId) localStorage.setItem(storageKey(orgSlug), threadId);
     else localStorage.removeItem(storageKey(orgSlug));
   } catch {
-    // Storage blocked (private mode) — the panel still works, just forgets.
+    // Storage blocked (private mode), the panel still works, just forgets.
   }
 }
 
 /**
  * Notion-AI-style floating agent, available on every workspace screen.
  * Bottom-right button (or Ctrl/⌘ + J) opens a panel to type, dictate, or hold
- * a live voice call with the DevTrack agent — which can read and change the
+ * a live voice call with the DevTrack agent, which can read and change the
  * workspace and move the user's screen (navigateTo).
  */
 export function AgentWidget() {
@@ -108,6 +108,7 @@ export function AgentWidget() {
             type="button"
             onClick={() => setOpen((value) => !value)}
             aria-label={open ? "Close DevTrack AI" : "Open DevTrack AI"}
+            data-tour="ai-button"
             aria-expanded={open}
             className={cn(
               "fixed bottom-4 right-4 z-50 flex size-12 items-center justify-center rounded-full border bg-background text-foreground shadow-lg transition-all hover:scale-105 hover:shadow-xl md:bottom-5 md:right-5",
@@ -190,7 +191,8 @@ function AgentPanel({ orgSlug, onClose }: { orgSlug: string; onClose: () => void
   const [startingCall, setStartingCall] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- restore from browser storage after mount
+    // restore from browser storage after mount.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setThreadIdState(readThread(orgSlug));
   }, [orgSlug]);
 
@@ -220,7 +222,7 @@ function AgentPanel({ orgSlug, onClose }: { orgSlug: string; onClose: () => void
       }
       await sendMessage({ threadId: id, prompt });
     } catch (error) {
-      // A stale stored thread (deleted elsewhere) — start fresh next time.
+      // A stale stored thread (deleted elsewhere), start fresh next time.
       if (String(error).includes("Thread not found")) setThreadId(null);
       toast.error(convexErrorMessage(error, "Failed to send message. Please try again."));
       throw error;

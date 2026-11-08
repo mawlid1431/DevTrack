@@ -19,7 +19,7 @@ import { APICallError, RetryError, embedMany, type LanguageModel } from "ai";
  * `runWithFailover` and `agent/diagnostics:checkModels`.
  *
  * Env vars:
- *   AI_MODEL_PROVIDER   "groq" | "openrouter" — whose model goes first (default groq)
+ *   AI_MODEL_PROVIDER   "groq" | "openrouter", whose model goes first (default groq)
  *   GROQ_MODEL_NAME     Groq chat model       (default openai/gpt-oss-120b)
  *   AI_MODEL_NAME       OpenRouter chat model (default google/gemma-4-31b-it:free)
  *   AI_FALLBACK_MODELS  comma-separated "provider:model" list tried after the
@@ -29,10 +29,10 @@ import { APICallError, RetryError, embedMany, type LanguageModel } from "ai";
  *   AI_PARALLEL_MODELS  how many models race per non-streaming call (default 2)
  *   AI_MODEL_TIMEOUT_MS max wait for a model to start answering (default 30000)
  *
- * Every chat model must support tool calling — the agent depends on it.
+ * Every chat model must support tool calling, the agent depends on it.
  */
 
-/** 1536 dimensions — matches the frozen `by_embedding` vector index on `issues`. */
+/** 1536 dimensions, matches the frozen `by_embedding` vector index on `issues`. */
 export const EMBEDDING_DIMENSIONS = 1536;
 
 type AIProvider = "groq" | "openrouter";
@@ -138,9 +138,9 @@ export const CHAT_MODEL_ID =
   chatModelChain.map((e) => `${e.provider}:${e.modelId}`).join(" → ") ||
   "not configured";
 
-// ── Error handling: classification ────────────────────────────────────────
+// Error handling: classification
 
-/** Why a model call failed — drives cooldowns, failover and user messages. */
+/** Why a model call failed, drives cooldowns, failover and user messages. */
 export type AiFailureKind =
   | "rate_limited"
   | "auth"
@@ -300,7 +300,7 @@ export function userFacingAiError(error: unknown): string {
   return "Something went wrong while generating a response. Please try again.";
 }
 
-// ── Error handling: health + cooldowns ────────────────────────────────────
+// Error handling: health + cooldowns
 
 /**
  * How long a failing model is sidelined. Rate limits honour Retry-After;
@@ -308,7 +308,7 @@ export function userFacingAiError(error: unknown): string {
  * Sidelined models are still tried LAST, so a request never fails while any
  * model might answer.
  *
- * State lives in module memory, i.e. per warm Convex isolate — a best-effort
+ * State lives in module memory, i.e. per warm Convex isolate, a best-effort
  * fast path. Correctness never depends on it.
  */
 const COOLDOWN_MS: Record<AiFailureKind, number> = {
@@ -365,7 +365,7 @@ function orderedCandidates<T extends ChainEntry>(chain: T[]): T[] {
   return [...healthy, ...sidelined];
 }
 
-// ── Parallel + failover execution ─────────────────────────────────────────
+// Parallel + failover execution
 
 /** How many models race at once for non-streaming calls (1 = no racing). */
 const PARALLEL_MODELS = Math.min(
@@ -379,7 +379,7 @@ type ModelCall<T> = (model: LanguageModelV3, signal: AbortSignal) => PromiseLike
 /**
  * Run one model call with its own AbortController: it aborts on the caller's
  * signal, on a race being won by another model, or on timeout. The timeout
- * only bounds the time until the call resolves — for streams that is the
+ * only bounds the time until the call resolves, for streams that is the
  * first response, so long answers keep streaming.
  */
 async function callModel<T>(
@@ -452,7 +452,7 @@ async function runWithFailover<T>(
   for (let i = 0; i < candidates.length; i += batchSize) {
     const batch = candidates.slice(i, i + batchSize);
     // One canceller per racer: when a model wins, ONLY the losers are
-    // cancelled — the winner's stream must keep flowing.
+    // cancelled, the winner's stream must keep flowing.
     const cancellers = batch.map(() => new AbortController());
     const attempts = batch.map(async (entry, index) => {
       const cancelled = cancellers[index].signal;
@@ -542,10 +542,10 @@ export const EXCLUDED_MODELS: Array<{ model: string; reason: string }> = [
   },
 ];
 
-// ── Embeddings ────────────────────────────────────────────────────────────
+// Embeddings
 
 /**
- * One embedding model only — vectors from different models live in different
+ * One embedding model only, vectors from different models live in different
  * spaces and cannot be compared, so there is deliberately no fallback chain.
  * After changing AI_EMBED_MODEL, run `agent/embeddings:reembedAllIssues`.
  */
@@ -562,7 +562,7 @@ function normalize(vec: number[]): number[] {
 /**
  * Embed texts into 1536-dim unit vectors with AI_EMBED_MODEL (OpenRouter,
  * `dimensions: 1536`), or locally when no embedding model is configured.
- * Throws if the configured model fails — callers must not mix in local
+ * Throws if the configured model fails, callers must not mix in local
  * vectors, which would corrupt similarity scores.
  */
 export async function embedTexts(texts: string[]): Promise<number[][]> {
@@ -597,7 +597,7 @@ export async function embedTexts(texts: string[]): Promise<number[][]> {
 }
 
 /**
- * Deterministic hashed 1536-dim vectors — the no-API fallback used when
+ * Deterministic hashed 1536-dim vectors, the no-API fallback used when
  * AI_EMBED_MODEL is not set, so duplicate detection still works.
  */
 export function embedTextLocally(text: string): number[] {
@@ -630,7 +630,7 @@ export function embedTextLocally(text: string): number[] {
   return normalize(vec);
 }
 
-// ── Configuration status ──────────────────────────────────────────────────
+// Configuration status
 
 export function isAiConfigured(): boolean {
   return chatModelChain.length > 0;

@@ -1,4 +1,4 @@
-# DevTrack — Linear-Style Project Management for Teams
+# DevTrack, Linear-Style Project Management for Teams
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Bun](https://img.shields.io/badge/Bun-1.3-black?logo=bun&logoColor=white)](https://bun.sh)
@@ -10,22 +10,20 @@
 
 **Author & maintainer:** [Mowlid](https://devmowlid.vercel.app/) · [GitHub @Mawlid1431](https://github.com/Mawlid1431)
 
-> DevTrack is designed, built, and maintained by Mowlid. Issues, ideas, and pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). If DevTrack helps you, a ⭐ helps others find it.
+> DevTrack is designed, built, and maintained by Mowlid. Issues, ideas, and pull requests are welcome, see [CONTRIBUTING.md](CONTRIBUTING.md). If DevTrack helps you, a ⭐ helps others find it.
 
 > **⚠️ Disclaimer:** This project is **not affiliated with, endorsed by, or connected to Linear, Jira, Asana, or any other project management platform**. All organization names, issues, and user data in the seed files are entirely fictional. Third-party service names (Clerk, Convex, Vercel, Next.js, Groq, Tailwind CSS, etc.) are trademarks of their respective owners and are used here solely to describe the technologies used in this project.
 
-A full-stack, real-time **Linear clone** — a B2B multi-tenant SaaS issue tracker where teams manage issues on Kanban boards, plan projects and cycles, collaborate with comments and mentions, and ship faster with a built-in **AI agent** that knows their entire workspace.
+A full-stack, real-time **Linear clone**: a B2B multi-tenant SaaS issue tracker where teams manage issues on Kanban boards, plan projects and cycles, collaborate with comments and mentions, and ship faster with a built-in **AI agent** that knows their entire workspace.
 
 > **Who is this for?**
-> Anyone who wants to learn how to build a production-grade, multi-tenant B2B SaaS using modern tools — or anyone looking for a serious starter template for their own project management product.
+> Anyone who wants to learn how to build a production-grade, multi-tenant B2B SaaS using modern tools, or anyone looking for a serious starter template for their own project management product.
 
 > **What makes it different?**
-> Every update is **real-time** (no page refreshes). Auth, organizations, AND billing are handled by **Clerk** — no Stripe wiring required. The backend is powered by **Convex** — a reactive database that pushes changes to every connected client instantly. And there's a fully working **AI agent** (Convex Agent + [Groq](https://groq.com/)) with org-scoped tools, triage assist, duplicate detection, and rate limiting.
+> Every update is **real-time** (no page refreshes). Auth, organizations, AND billing are handled by **Clerk**: no Stripe wiring required. The backend is powered by **Convex**: a reactive database that pushes changes to every connected client instantly. And there's a fully working **AI agent** (Convex Agent + [Groq](https://groq.com/)) with org-scoped tools, triage assist, duplicate detection, and rate limiting.
 
 > **Under the hood**
 > Bun · Next.js 16 App Router · Convex reactive backend · Clerk auth + organizations + B2B billing · Convex Agent + Groq · @dnd-kit drag & drop · shadcn/ui · Tailwind CSS v4 · TypeScript strict mode
-
----
 
 ## 👇🏼 DO THIS Before You Get Started
 
@@ -38,11 +36,9 @@ You'll need free accounts on these services to run the app. **Set them up before
 | **Groq**                | Powers the AI agent, triage assist, and duplicate detection  | [Get a free API key →](https://groq.com/)                                 |
 | **Vercel** _(optional)_ | Deployment & hosting                                         | [vercel.com →](https://vercel.com)                                       |
 
----
-
 ## 🤔 What Is This App?
 
-Think of DevTrack as **your own mini Linear** — a modern issue tracker built from scratch as a learning project, with the same keyboard-first, dense, dark-mode-default aesthetic.
+Think of DevTrack as **your own mini Linear**: a modern issue tracker built from scratch as a learning project, with the same keyboard-first, dense, dark-mode-default aesthetic.
 
 It's a multi-tenant workspace app. Every organization gets its own isolated workspace, and members collaborate inside it in real time:
 
@@ -59,7 +55,7 @@ It's a multi-tenant workspace app. Every organization gets its own isolated work
 
 - Organize work into **teams** (each with its own issue prefix like `ENG-123`), **projects**, and **cycles** (sprints)
 - Invite members and manage roles
-- Upgrade the workspace and manage billing — checkout, plan changes, and invoices all handled by Clerk
+- Upgrade the workspace and manage billing, checkout, plan changes, and invoices all handled by Clerk
 - Unlock the **AI agent** on paid plans
 
 **The AI agent** (Pro/Enterprise) can:
@@ -71,11 +67,9 @@ It's a multi-tenant workspace app. Every organization gets its own isolated work
 
 **Popular use cases:**
 
-- 🎓 **Portfolio project** — show off a real multi-tenant B2B SaaS to employers
-- 🚀 **SaaS starter** — fork it and turn it into your own productivity tool
-- 📚 **Learn the modern stack** — see exactly how Convex, Clerk billing, and AI agents fit together
-
----
+- 🎓 **Portfolio project**: show off a real multi-tenant B2B SaaS to employers
+- 🚀 **SaaS starter**: fork it and turn it into your own productivity tool
+- 📚 **Learn the modern stack**: see exactly how Convex, Clerk billing, and AI agents fit together
 
 ## 👨‍💻 About the Developer
 
@@ -89,56 +83,54 @@ It's a multi-tenant workspace app. Every organization gets its own isolated work
 
 DevTrack was created by Mowlid. Third-party packages (Convex, Clerk, Next.js, etc.) are dependencies. Community contributions are credited in the commit history.
 
----
-
 ## ✨ Features
 
 ### Issues & Boards
 
-- 📝 **Full issue tracking** — Statuses (Backlog → Todo → In Progress → In Review → Done / Canceled), five priority levels, assignees, estimates, due dates, and color-coded labels
-- 🔢 **Team-scoped issue keys** — Every team gets a prefix, so issues read like `ENG-42` or `DESIGN-7`
-- 🗂️ **Kanban board** — Drag & drop with @dnd-kit and fractional sort ordering; every move syncs to all clients instantly
-- 🔍 **Full-text search** — Convex search indexes across issue titles and descriptions, scoped to your workspace
-- 💾 **Saved views** — Save filter combinations as personal or shared views
-- ⌨️ **Command palette** — ⌘K for everything, plus single-key shortcuts (Linear style)
+- 📝 **Full issue tracking**: Statuses (Backlog → Todo → In Progress → In Review → Done / Canceled), five priority levels, assignees, estimates, due dates, and color-coded labels
+- 🔢 **Team-scoped issue keys**: Every team gets a prefix, so issues read like `ENG-42` or `DESIGN-7`
+- 🗂️ **Kanban board**: Drag & drop with @dnd-kit and fractional sort ordering; every move syncs to all clients instantly
+- 🔍 **Full-text search**: Convex search indexes across issue titles and descriptions, scoped to your workspace
+- 💾 **Saved views**: Save filter combinations as personal or shared views
+- ⌨️ **Command palette**: ⌘K for everything, plus single-key shortcuts (Linear style)
 
 ### Collaboration
 
-- 💬 **Comments with @mentions** — Mention teammates by name in issue discussions
-- 📜 **Activity feed** — Every status change, assignment, and label is logged and rendered on the issue
-- 🌳 **Sub-issues & relations** — Break work down with parent/child issues; link issues as _blocks_, _blocked by_, _related_, or _duplicate of_
-- 📎 **Attachments** — Upload files to issues using Convex file storage
-- 🟢 **Live presence** — See who's viewing the same issue in real time
+- 💬 **Comments with @mentions**: Mention teammates by name in issue discussions
+- 📜 **Activity feed**: Every status change, assignment, and label is logged and rendered on the issue
+- 🌳 **Sub-issues & relations**: Break work down with parent/child issues; link issues as _blocks_, _blocked by_, _related_, or _duplicate of_
+- 📎 **Attachments**: Upload files to issues using Convex file storage
+- 🟢 **Live presence**: See who's viewing the same issue in real time
 
 ### Projects & Cycles
 
-- 📊 **Projects** — Group issues across teams with statuses, leads, target dates, and live progress (issue counts by status)
-- 🔄 **Cycles** — Time-boxed sprints per team, auto-numbered, with current-cycle tracking
-- 🏗️ **Multi-team workspaces** — Unlimited teams per organization, each with its own board and cycles
-- 🧩 **Templates** — Project templates (a project + starter issues) and workspace templates (teams, labels, first cycle). Four built-in project templates, three built-in workspace templates, plus your own custom ones (private to the workspace)
-- ♻️ **Recycle bin** — Everything you delete (issues with their comments and files, projects, cycles, comments, attachments, saved views, templates) goes to the bin and can be restored for 30 days; then it's purged automatically
+- 📊 **Projects**: Group issues across teams with statuses, leads, target dates, and live progress (issue counts by status)
+- 🔄 **Cycles**: Time-boxed sprints per team, auto-numbered, with current-cycle tracking
+- 🏗️ **Multi-team workspaces**: Unlimited teams per organization, each with its own board and cycles
+- 🧩 **Templates**: Project templates (a project + starter issues) and workspace templates (teams, labels, first cycle). Four built-in project templates, three built-in workspace templates, plus your own custom ones (private to the workspace)
+- ♻️ **Recycle bin**: Everything you delete (issues with their comments and files, projects, cycles, comments, attachments, saved views, templates) goes to the bin and can be restored for 30 days; then it's purged automatically
 
 ### AI Agent (Pro & Enterprise)
 
-- 🤖 **Workspace-aware chat** — A Convex Agent assistant with org-scoped tools: create/update/search issues, summarize cycles, report project status, list members
-- 🔀 **Multi-model, multi-provider** — One shared model pool (Groq + OpenRouter) serves every AI feature: chat, triage and duplicate detection
-- ⚡ **Parallel + failover** — One-shot calls race the two best models and keep the first answer; streaming chat fails over instantly. Rate-limited, down, retired or misconfigured models are classified and sidelined for a cooldown
-- 🩹 **Clear failure messages** — When every model is unavailable, users are told why (usage limit, provider outage, or misconfiguration) instead of a generic error
-- 🛠️ **Full workspace management** — On request the agent creates and deletes issues and projects, creates projects from templates, saves new templates, sets up the workspace from a workspace template, creates brand-new workspaces, and restores items from the recycle bin
-- ✋ **Asks before it acts** — The agent asks clarifying questions when a request is vague, and every create/delete is confirmation-gated on the server: nothing happens until you reply "yes" in a new message
-- 🗂️ **Sorts and prioritizes your tasks** — "Prioritize my tasks" / "put ENG-4 first" sets priorities and the exact order on your lists and boards
-- 🩺 **Live diagnostics** — `npx convex run agent/diagnostics:checkModels` tests every model in parallel and reports a plain-language reason for any that isn't ready
-- 🧠 **Duplicate detection** — Issues are embedded (1536-dim vectors) on create; the agent finds similar issues before you file the same bug twice
-- 🩺 **Triage assist** — AI-suggested priority and labels for new issues
-- 📋 **Standup & cycle reports** — Generate summaries of what shipped and what's blocked
-- ⏱️ **Rate limiting** — 50 messages/user/day on Pro, unlimited on Enterprise (`@convex-dev/rate-limiter`)
+- 🤖 **Workspace-aware chat**: A Convex Agent assistant with org-scoped tools: create/update/search issues, summarize cycles, report project status, list members
+- 🔀 **Multi-model, multi-provider**: One shared model pool (Groq + OpenRouter) serves every AI feature: chat, triage and duplicate detection
+- ⚡ **Parallel + failover**: One-shot calls race the two best models and keep the first answer; streaming chat fails over instantly. Rate-limited, down, retired or misconfigured models are classified and sidelined for a cooldown
+- 🩹 **Clear failure messages**: When every model is unavailable, users are told why (usage limit, provider outage, or misconfiguration) instead of a generic error
+- 🛠️ **Full workspace management**: On request the agent creates and deletes issues and projects, creates projects from templates, saves new templates, sets up the workspace from a workspace template, creates brand-new workspaces, and restores items from the recycle bin
+- ✋ **Asks before it acts**: The agent asks clarifying questions when a request is vague, and every create/delete is confirmation-gated on the server: nothing happens until you reply "yes" in a new message
+- 🗂️ **Sorts and prioritizes your tasks**: "Prioritize my tasks" / "put ENG-4 first" sets priorities and the exact order on your lists and boards
+- 🩺 **Live diagnostics**: `npx convex run agent/diagnostics:checkModels` tests every model in parallel and reports a plain-language reason for any that isn't ready
+- 🧠 **Duplicate detection**: Issues are embedded (1536-dim vectors) on create; the agent finds similar issues before you file the same bug twice
+- 🩺 **Triage assist**: AI-suggested priority and labels for new issues
+- 📋 **Standup & cycle reports**: Generate summaries of what shipped and what's blocked
+- ⏱️ **Rate limiting**: 50 messages/user/day on Pro, unlimited on Enterprise (`@convex-dev/rate-limiter`)
 
 ### Billing & Multi-Tenancy
 
-- 🏢 **Clerk Organizations** — Every workspace is a Clerk organization; memberships and roles sync to Convex via webhooks
-- 💳 **Clerk B2B Billing** — Custom-designed pricing page with checkout, plan management, and invoices handled entirely by Clerk (no Stripe integration to write)
-- 🔐 **Plan gating, done right** — UI gates with `has({ plan })` / `has({ feature })` are cosmetic; Convex mutations are the real enforcement
-- 🚦 **Free-tier limits** — Seats, projects, and issue caps enforced server-side with friendly upgrade prompts in the UI
+- 🏢 **Clerk Organizations**: Every workspace is a Clerk organization; memberships and roles sync to Convex via webhooks
+- 💳 **Clerk B2B Billing**: Custom-designed pricing page with checkout, plan management, and invoices handled entirely by Clerk (no Stripe integration to write)
+- 🔐 **Plan gating, done right**: UI gates with `has({ plan })` / `has({ feature })` are cosmetic; Convex mutations are the real enforcement
+- 🚦 **Free-tier limits**: Seats, projects, and issue caps enforced server-side with friendly upgrade prompts in the UI
 
 ### Pricing Tiers
 
@@ -147,25 +139,23 @@ DevTrack was created by Mowlid. Third-party packages (Convex, Clerk, Next.js, et
 | **Members**          | 3    | 10 (seat-based, +$10/seat after first) | Unlimited           |
 | **Projects**         | 2    | Unlimited                              | Unlimited           |
 | **Issues**           | 100  | Unlimited                              | Unlimited           |
-| **AI agent**         | —    | ✅ 50 msgs/user/day                    | ✅ Unlimited        |
-| **Priority support** | —    | —                                      | ✅                  |
+| **AI agent**         | None | ✅ 50 msgs/user/day                    | ✅ Unlimited        |
+| **Priority support** | None | None | ✅                  |
 
 _Annual billing: Pro $16/mo-equivalent, Enterprise $79/mo-equivalent._
 
 ### Technical Features (The Smart Stuff)
 
-- ⚛️ **Next.js 16 App Router** — Route groups for marketing vs. app shell, dynamic `[orgSlug]` workspace routes, `proxy.ts` middleware
-- 🔄 **Convex reactive backend** — No polling, no refetching. Queries are live subscriptions
-- 🛡️ **Custom function wrappers** — `orgQuery` / `orgMutation` resolve the user, org, and membership from the Clerk JWT and enforce org scoping on every single function (Convex's answer to RLS)
-- 🔐 **Clerk webhooks → Convex** — Users, organizations, memberships, and subscriptions sync via Svix-verified webhooks; Clerk stays the source of truth
-- 🧩 **Convex components** — `@convex-dev/agent` (AI), `@convex-dev/presence` (live presence), `@convex-dev/rate-limiter` (AI quotas)
-- 🔎 **Search + vector indexes** — Full-text search indexes and a 1536-dimension vector index, both defined in the schema
-- 🖱️ **@dnd-kit drag & drop** — With fractional `sortOrder` ranking so reorders are O(1) writes
-- 🧩 **shadcn/ui + Tailwind CSS v4** — Linear-style density, dark theme by default, light mode via `next-themes`
-- ✅ **Validators everywhere** — Every public Convex function validates args AND return values
-- 📱🖥️ **Responsive from 320px phones to 4K and curved ultrawides** — Drawer navigation on phones, stacked panels on tablets, and height-aware UI scaling on 1440p, ultrawide and 4K screens (see [Responsive Design](#-responsive-design))
-
----
+- ⚛️ **Next.js 16 App Router**: Route groups for marketing vs. app shell, dynamic `[orgSlug]` workspace routes, `proxy.ts` middleware
+- 🔄 **Convex reactive backend**: No polling, no refetching. Queries are live subscriptions
+- 🛡️ **Custom function wrappers**: `orgQuery` / `orgMutation` resolve the user, org, and membership from the Clerk JWT and enforce org scoping on every single function (Convex's answer to RLS)
+- 🔐 **Clerk webhooks → Convex**: Users, organizations, memberships, and subscriptions sync via Svix-verified webhooks; Clerk stays the source of truth
+- 🧩 **Convex components**: `@convex-dev/agent` (AI), `@convex-dev/presence` (live presence), `@convex-dev/rate-limiter` (AI quotas)
+- 🔎 **Search + vector indexes**: Full-text search indexes and a 1536-dimension vector index, both defined in the schema
+- 🖱️ **@dnd-kit drag & drop**: With fractional `sortOrder` ranking so reorders are O(1) writes
+- 🧩 **shadcn/ui + Tailwind CSS v4**: Linear-style density, dark theme by default, light mode via `next-themes`
+- ✅ **Validators everywhere**: Every public Convex function validates args AND return values
+- 📱🖥️ **Responsive from 320px phones to 4K and curved ultrawides**: Drawer navigation on phones, stacked panels on tablets, and height-aware UI scaling on 1440p, ultrawide and 4K screens (see [Responsive Design](#-responsive-design))
 
 ## 🔄 How It Works
 
@@ -301,9 +291,9 @@ flowchart LR
 
 | Who | Sees in the bin | Can restore / delete forever | Can empty the bin |
 | --- | --- | --- | --- |
-| Member | Only what they deleted | Their own items | — |
+| Member | Only what they deleted | Their own items | None |
 | Admin | Everything deleted in the workspace | Any item in the workspace | ✅ |
-| Other workspaces | Nothing | Nothing | — |
+| Other workspaces | Nothing | Nothing | None |
 
 Restore keeps the original issue number when it's still free, re-attaches sub-issues, skips links to things that were deleted meanwhile, and respects free-plan limits.
 
@@ -313,7 +303,7 @@ Restore keeps the original issue number when it's still free, re-attaches sub-is
 - **Per user:** AI conversations are owned by one user in one workspace; recycle-bin entries are visible only to the person who deleted them (and workspace admins).
 - **Agent scoping:** the agent's tools receive the workspace and user from the authenticated session, never from the model, and re-check membership (and admin role for workspace setup) on every call.
 
-### Model Selection & Failover Workflow
+### Model Selection and Failover Workflow
 
 Every AI feature (chat, triage assist, duplicate detection) goes through the same pool in `convex/agent/models.ts`.
 
@@ -358,8 +348,6 @@ flowchart LR
 
 Only one embedding model is active at a time: vectors from different models can't be compared. After changing `AI_EMBED_MODEL`, run `npx convex run agent/embeddings:reembedAllIssues`.
 
----
-
 ## 📱 Responsive Design
 
 DevTrack is built to fit everything from a 320px phone to a 4K monitor or a curved ultrawide.
@@ -384,8 +372,6 @@ How it works:
 - **Mobile navigation:** `components/shell/mobile-nav.tsx` reuses the same `AppSidebar` inside a drawer that closes on navigation or when the screen grows past 768px.
 
 The landing, pricing and sign-in pages were measured with zero horizontal overflow at 320×568, 375×812, 768×1024, 1280×800, 1920×1080, 2560×1440, 3440×1440, 5120×1440 and 3840×2160. The signed-in workspace layouts follow the same breakpoints.
-
----
 
 ## 🏁 Getting Started
 
@@ -417,7 +403,7 @@ bun install
 Create a `.env.local` file in the project root:
 
 ```env
-# Clerk — https://clerk.com
+# Clerk, https://clerk.com
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
 NEXT_PUBLIC_CLERK_FRONTEND_API_URL=https://your-instance.clerk.accounts.dev
@@ -430,12 +416,12 @@ NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/onboarding
 NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/onboarding
 
-# Convex — https://convex.dev
+# Convex, https://convex.dev
 CONVEX_DEPLOYMENT=dev:your-deployment
 NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
 NEXT_PUBLIC_CONVEX_SITE_URL=https://your-deployment.convex.site
 
-# AI — read by Convex functions, pushed with scripts/setup-convex-env.ts
+# AI, read by Convex functions, pushed with scripts/setup-convex-env.ts
 GROQ_API_KEY=gsk_...
 OPENROUTER_API_KEY=sk-or-v1-...
 AI_MODEL_PROVIDER=groq
@@ -445,7 +431,7 @@ AI_FALLBACK_MODELS=groq:openai/gpt-oss-20b,openrouter:recursive/flint-v1.0:free,
 AI_EMBED_MODEL=nvidia/nemotron-3.5-embed-8b:free
 ```
 
-> 🔒 **Security:** Never commit `.env.local` to git. The `NEXT_PUBLIC_` prefix means the value is exposed to the browser — only use it for public keys like `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`.
+> 🔒 **Security:** Never commit `.env.local` to git. The `NEXT_PUBLIC_` prefix means the value is exposed to the browser, only use it for public keys like `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`.
 
 ### 4. Set up Clerk
 
@@ -463,15 +449,15 @@ AI_EMBED_MODEL=nvidia/nemotron-3.5-embed-8b:free
 ```
 
 5. Set up **Billing** (Configure → Billing) with three plans for **organizations**:
-   - `free_org` — Free
-   - `pro` — $20/mo base + $10/seat after the first (annual: $16/mo-equivalent), max 10 members
-   - `enterprise` — $99/mo flat (annual: $79/mo-equivalent)
+   - `free_org`: Free
+   - `pro`: $20/mo base + $10/seat after the first (annual: $16/mo-equivalent), max 10 members
+   - `enterprise`: $99/mo flat (annual: $79/mo-equivalent)
 6. Attach **features** to the paid plans: `ai_agent`, `unlimited_projects`, `unlimited_issues`, `unlimited_seats`, `unlimited_ai`, `priority_support`
 7. Copy your plan IDs into [`lib/plans.ts`](lib/plans.ts) (they're referenced there, never inline in components)
 
 ### 5. Set up Convex
 
-1. Run `npx convex dev` — this will prompt you to create a new project or link an existing one, and fills in `CONVEX_DEPLOYMENT` / `NEXT_PUBLIC_CONVEX_URL` for you
+1. Run `npx convex dev`: this will prompt you to create a new project or link an existing one, and fills in `CONVEX_DEPLOYMENT` / `NEXT_PUBLIC_CONVEX_URL` for you
 2. Push the server-side variables from `.env.local` to the Convex deployment in one go (values are never printed):
 
 ```bash
@@ -483,7 +469,7 @@ It sets `CLERK_FRONTEND_API_URL`, `CLERK_WEBHOOK_SECRET`, `GROQ_API_KEY`, `OPENR
 
 #### AI models
 
-The agent reads its models from Convex env vars (`convex/agent/models.ts`). See [Model Selection & Failover Workflow](#model-selection--failover-workflow) for how they're used. Every chat model must support tool calling.
+The agent reads its models from Convex env vars (`convex/agent/models.ts`). See [Model Selection and Failover Workflow](#model-selection-and-failover-workflow) for how they're used. Every chat model must support tool calling.
 
 | Variable | Purpose | Default |
 | --- | --- | --- |
@@ -550,8 +536,6 @@ This runs the Next.js frontend and the Convex backend in parallel. Open [http://
 - [ ] `bun dev` runs without errors
 - [ ] You can sign up, create an org, and create your first issue
 
----
-
 ## 🗄️ Database Schema Overview
 
 DevTrack uses **Convex** as its database with a flat, relational schema design. All tables are defined in [`convex/schema.ts`](convex/schema.ts).
@@ -576,14 +560,12 @@ DevTrack uses **Convex** as its database with a flat, relational schema design. 
 
 ### Design Decisions
 
-- **Flat, relational design** — No deep nesting. Tables reference each other by ID, following Convex best practices.
-- **Clerk is the source of truth** — `users`, `organizations`, and `members` are only ever written by webhooks. Feature code never touches them.
-- **Org scoping everywhere** — Almost every table carries `orgId`, and every Convex function runs through `orgQuery` / `orgMutation` wrappers that verify membership before touching data.
-- **Per-team issue sequences** — `teams.nextIssueNumber` powers `ENG-1`, `ENG-2`, … without global counters.
-- **Fractional `sortOrder`** — Board reorders write one document instead of renumbering a whole column.
-- **Search + vector indexes in the schema** — Full-text indexes on title/description, plus a 1536-dim vector index on `embedding` for AI duplicate detection.
-
----
+- **Flat, relational design**: No deep nesting. Tables reference each other by ID, following Convex best practices.
+- **Clerk is the source of truth**: `users`, `organizations`, and `members` are only ever written by webhooks. Feature code never touches them.
+- **Org scoping everywhere**: Almost every table carries `orgId`, and every Convex function runs through `orgQuery` / `orgMutation` wrappers that verify membership before touching data.
+- **Per-team issue sequences**: `teams.nextIssueNumber` powers `ENG-1`, `ENG-2`, … without global counters.
+- **Fractional `sortOrder`**: Board reorders write one document instead of renumbering a whole column.
+- **Search + vector indexes in the schema**: Full-text indexes on title/description, plus a 1536-dim vector index on `embedding` for AI duplicate detection.
 
 ## 🚀 Deployment
 
@@ -620,8 +602,6 @@ This deploys your Convex functions and schema to a production deployment. Set `C
 - [ ] Clerk production API keys used (not development keys)
 - [ ] Clerk Organizations, JWT template, and Billing configured on the production instance
 - [ ] Test sign-up → create org → create issue → upgrade plan → AI chat, end-to-end
-
----
 
 ## 🐛 Common Issues & Solutions
 
@@ -665,45 +645,39 @@ This deploys your Convex functions and schema to a production deployment. Set `C
 | "Index not found" error                | Run `npx convex dev` to push your schema. Indexes are defined in `convex/schema.ts`.         |
 | Schema validation errors after changes | If you change field types, you may need to clear and re-seed data from the Convex dashboard. |
 
----
-
-## 🏆 Take It Further — Challenge Time!
+## 🏆 Take It Further, Challenge Time!
 
 Already have the base app running? Here are some ideas to make it your own:
 
 ### Advanced Features
 
-- 📥 **Inbox & notifications** — In-app notification feed for mentions, assignments, and status changes
-- 🗺️ **Roadmap view** — Timeline/Gantt visualization of projects and target dates
-- 📊 **Cycle analytics** — Burndown charts, velocity, and scope-change tracking
-- 🔁 **Issue templates & recurring issues** — Standardize bug reports and rituals
+- 📥 **Inbox & notifications**: In-app notification feed for mentions, assignments, and status changes
+- 🗺️ **Roadmap view**: Timeline/Gantt visualization of projects and target dates
+- 📊 **Cycle analytics**: Burndown charts, velocity, and scope-change tracking
+- 🔁 **Issue templates & recurring issues**: Standardize bug reports and rituals
 
 ### AI Improvements
 
-- ✍️ **AI issue drafting** — Turn a one-line idea into a fully specced issue with acceptance criteria
-- 🧹 **Backlog grooming agent** — Let the AI suggest stale issues to close and duplicates to merge
-- 🗣️ **Voice standup** — Speech-to-text standup notes summarized into a cycle report
-- 🔗 **GitHub integration** — Link PRs to issues and let the agent update statuses on merge
+- ✍️ **AI issue drafting**: Turn a one-line idea into a fully specced issue with acceptance criteria
+- 🧹 **Backlog grooming agent**: Let the AI suggest stale issues to close and duplicates to merge
+- 🗣️ **Voice standup**: Speech-to-text standup notes summarized into a cycle report
+- 🔗 **GitHub integration**: Link PRs to issues and let the agent update statuses on merge
 
 ### Infrastructure & Scaling
 
-- 📈 **Pagination** — Cursor-based pagination for orgs with tens of thousands of issues
-- 🌐 **Public issue sharing** — Read-only public links for individual issues
-- 📦 **Import/export** — Bring in issues from CSV, Jira, or the real Linear's export format
+- 📈 **Pagination**: Cursor-based pagination for orgs with tens of thousands of issues
+- 🌐 **Public issue sharing**: Read-only public links for individual issues
+- 📦 **Import/export**: Bring in issues from CSV, Jira, or the real Linear's export format
 
 ### Monetization
 
-- 💺 **Per-seat metering** — Track active seats and surface usage on the billing page
-- 🏷️ **Add-on features** — Sell the AI agent as a standalone add-on with Clerk features
-- 🎁 **Trials** — Time-boxed Pro trials for new organizations
-
----
+- 💺 **Per-seat metering**: Track active seats and surface usage on the billing page
+- 🏷️ **Add-on features**: Sell the AI agent as a standalone add-on with Clerk features
+- 🎁 **Trials**: Time-boxed Pro trials for new organizations
 
 ## 🤝 Contributing
 
 Bug reports, feature ideas, and pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup and the checks every PR must pass. Good first areas are the items in the roadmap above.
-
----
 
 ## 📜 License & Disclaimer
 
@@ -727,8 +701,6 @@ Copyright © 2026 [Mowlid](https://devmowlid.vercel.app/). All rights reserved u
 This project is **not affiliated with, endorsed by, or connected to Linear, Atlassian (Jira), Asana, or any other project management platform or company**. All third-party names and logos (Clerk, Convex, Vercel, Next.js, React, Groq, Tailwind CSS, TypeScript, etc.) are trademarks of their respective owners.
 
 See the full [LICENSE](LICENSE) for details.
-
----
 
 ## 📋 Quick Reference
 
@@ -758,7 +730,7 @@ See the full [LICENSE](LICENSE) for details.
 | `app/(app)/[orgSlug]/`                                                | The workspace: team views, board, issues, projects, cycles, search, AI, settings |
 | `app/onboarding/`                                                     | Create-or-join-organization flow after sign-up                                   |
 | `app/sign-in/`, `app/sign-up/`                                        | Clerk auth pages                                                                 |
-| `convex/schema.ts`                                                    | Database schema — tables, indexes, search & vector indexes                       |
+| `convex/schema.ts`                                                    | Database schema, tables, indexes, search & vector indexes                       |
 | `convex/http.ts` + `convex/webhooks.ts`                               | Clerk webhook endpoint and sync logic                                            |
 | `convex/lib/customFunctions.ts`                                       | `orgQuery` / `orgMutation` wrappers (auth + org scoping)                         |
 | `convex/lib/limits.ts`                                                | Free-plan limit enforcement (`assertCanCreateIssue`, etc.)                       |
@@ -781,9 +753,9 @@ See the full [LICENSE](LICENSE) for details.
 
 ### Important Concepts
 
-- **Route Groups** — `(marketing)` is the public site; `(app)` is the authenticated workspace. Each has its own layout.
-- **Org-Scoped Routes** — Everything in the workspace lives under `/[orgSlug]/...`. The shell guarantees the user and org are synced before pages render.
-- **Custom Convex Functions** — `orgQuery` / `orgMutation` resolve `ctx.user`, `ctx.org`, and `ctx.membership` from the Clerk JWT and reject non-members. This is Convex's alternative to Row Level Security.
-- **Clerk as Source of Truth** — Users, orgs, memberships, and subscriptions live in Clerk and are mirrored into Convex via webhooks. Feature code never writes to those tables.
-- **Two-Layer Plan Gating** — `has({ plan })` / `has({ feature })` in the UI is cosmetic; the Convex helpers in `convex/lib/limits.ts` are the real enforcement.
-- **`proxy.ts` Middleware** — Replaces traditional `middleware.ts` in Next.js 16. Protects the app routes while keeping marketing pages public.
+- **Route Groups**: `(marketing)` is the public site; `(app)` is the authenticated workspace. Each has its own layout.
+- **Org-Scoped Routes**: Everything in the workspace lives under `/[orgSlug]/...`. The shell guarantees the user and org are synced before pages render.
+- **Custom Convex Functions**: `orgQuery` / `orgMutation` resolve `ctx.user`, `ctx.org`, and `ctx.membership` from the Clerk JWT and reject non-members. This is Convex's alternative to Row Level Security.
+- **Clerk as Source of Truth**: Users, orgs, memberships, and subscriptions live in Clerk and are mirrored into Convex via webhooks. Feature code never writes to those tables.
+- **Two-Layer Plan Gating**: `has({ plan })` / `has({ feature })` in the UI is cosmetic; the Convex helpers in `convex/lib/limits.ts` are the real enforcement.
+- **`proxy.ts` Middleware**: Replaces traditional `middleware.ts` in Next.js 16. Protects the app routes while keeping marketing pages public.

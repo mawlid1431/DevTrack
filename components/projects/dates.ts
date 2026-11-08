@@ -20,7 +20,7 @@ export function formatDayWithYear(ms: number): string {
 export function formatDateRange(start: number, end: number): string {
   const endsThisYear =
     new Date(end).getFullYear() === new Date().getFullYear();
-  return `${formatDay(start)} – ${endsThisYear ? formatDay(end) : formatDayWithYear(end)}`;
+  return `${formatDay(start)} to ${endsThisYear ? formatDay(end) : formatDayWithYear(end)}`;
 }
 
 /** ms since epoch → "yyyy-mm-dd" in the local timezone (for <input type="date">). */

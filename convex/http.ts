@@ -62,7 +62,7 @@ function safeEqual(a: string, b: string): boolean {
 /**
  * Called by the LiveKit voice worker (voice-agent/agent.py) for every spoken
  * workspace request. Auth: `Authorization: Bearer <AGENT_SHARED_SECRET>`.
- * The room name selects the (org, user) — the worker never picks them.
+ * The room name selects the (org, user), the worker never picks them.
  */
 http.route({
   path: "/voice-agent/turn",

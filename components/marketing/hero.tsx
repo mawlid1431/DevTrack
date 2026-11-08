@@ -34,7 +34,7 @@ export function Hero() {
           The issue tracker built for speed
         </h1>
         <p className="mt-6 max-w-xl text-base text-balance text-muted-foreground md:text-lg">
-          DevTrack is how fast product teams plan, track, and ship — issues,
+          DevTrack is how fast product teams plan, track, and ship, issues,
           boards, and cycles in a keyboard-first workspace, with an AI agent
           that handles the busywork.
         </p>
@@ -42,7 +42,7 @@ export function Hero() {
         <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
           <Button size="lg" className="h-10 px-5" asChild>
             <Link href="/sign-up">
-              Start building — free
+              Start building, free
               <ArrowRight className="size-4" />
             </Link>
           </Button>

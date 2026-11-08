@@ -7,7 +7,7 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AiMessage } from "./message";
-import { useAgentNavigation } from "./use-agent-navigation";
+import { useAgentActions } from "./use-agent-actions";
 
 /** Streaming message list for one thread (delta-synced over the websocket). */
 export function AiConversation({
@@ -24,7 +24,7 @@ export function AiConversation({
     { initialNumItems: 50, stream: true }
   );
   const messages = results as unknown as UIMessage[];
-  useAgentNavigation(messages, status !== "LoadingFirstPage");
+  useAgentActions(messages, status !== "LoadingFirstPage");
 
   const containerRef = useRef<HTMLDivElement>(null);
   const pinnedToBottom = useRef(true);

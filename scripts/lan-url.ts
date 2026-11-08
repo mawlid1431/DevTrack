@@ -46,11 +46,11 @@ const ip = getLanIp();
 
 console.log("");
 console.log("  DevTrack on your network");
-console.log("  ─────────────────────────");
+console.log("  ");
 console.log(`  Local:    http://localhost:${port}`);
 if (ip) {
   console.log(`  Network:  http://${ip}:${port}`);
 } else {
-  console.log("  Network:  (could not detect — run ipconfig)");
+  console.log("  Network:  (could not detect; run ipconfig)");
 }
 console.log("");

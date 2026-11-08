@@ -152,7 +152,7 @@ export function issueMatchesFilters(
   return true;
 }
 
-// ── Saved view (de)serialization for the `views` table ────────────────────
+// Saved view (de)serialization for the `views` table
 
 export type SavedViewPayload = {
   v: 1;
