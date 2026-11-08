@@ -8,14 +8,17 @@ import {
   TrackToggle,
   VideoTrack,
   useConnectionState,
+  useRoomContext,
   useVoiceAssistant,
 } from "@livekit/components-react";
-import { ConnectionState, Track } from "livekit-client";
+import { ConnectionState, LocalAudioTrack, Track } from "livekit-client";
 import { MicOff, PhoneOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
-export type VoiceCallSession = { serverUrl: string; token: string; roomName: string };
+import { describeMicError, type VoiceCallSession } from "./voice-mic";
+
+export type { VoiceCallSession };
 
 const STATE_LABEL: Record<string, string> = {
   disconnected: "Disconnected",
@@ -45,7 +48,7 @@ export function VoiceCall({
 }) {
   // A broken/busy microphone must not end the call: stay connected, explain,
   // and let the user retry the mic (or keep listening to the agent).
-  const [micProblem, setMicProblem] = useState<string | null>(null);
+  const [micProblem, setMicProblem] = useState<string | null>(session.micError ?? null);
 
   return (
     <LiveKitRoom
@@ -53,30 +56,34 @@ export function VoiceCall({
       serverUrl={session.serverUrl}
       token={session.token}
       connect
-      audio
+      // The mic track was captured during the tap (iOS needs that); it is
+      // published by <PublishMic>. Only fall back to LiveKit's own capture
+      // when we have no track at all.
+      audio={false}
       video={false}
       onDisconnected={onEnd}
       onError={(error) => {
         // Our own hang-up surfaces as a "cancelled" ConnectionError, not a failure.
         if (/client initiated disconnect|cancel/i.test(error.message)) return;
         if (isMicError(error)) {
-          setMicProblem(micMessage(error));
+          setMicProblem(describeMicError(error));
           return;
         }
         onError(error.message || "The call dropped.");
       }}
-      onMediaDeviceFailure={(_failure, kind) => {
+      onMediaDeviceFailure={(failure, kind) => {
         if (kind === undefined || kind === "audioinput") {
-          setMicProblem(micMessage());
+          setMicProblem(describeMicError(failure));
         }
       }}
       className="relative"
     >
+      <PublishMic track={session.micTrack} onError={(m) => setMicProblem(m)} />
       <CallStage
         onEnd={onEnd}
         micProblem={micProblem}
         onMicRetry={() => setMicProblem(null)}
-        onMicError={(error) => setMicProblem(micMessage(error))}
+        onMicError={(error) => setMicProblem(describeMicError(error))}
       />
       <RoomAudioRenderer />
       <StartAudio
@@ -87,20 +94,44 @@ export function VoiceCall({
   );
 }
 
+/** Publish the microphone track captured during the user's tap. */
+function PublishMic({
+  track,
+  onError,
+}: {
+  track?: MediaStreamTrack;
+  onError: (message: string) => void;
+}) {
+  const room = useRoomContext();
+  const connection = useConnectionState();
+  useEffect(() => {
+    if (connection !== ConnectionState.Connected) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        if (track && track.readyState === "live") {
+          const local = new LocalAudioTrack(track, undefined, true);
+          if (!cancelled) await room.localParticipant.publishTrack(local, { source: Track.Source.Microphone });
+        } else {
+          // No pre-captured track (desktop retry): let LiveKit capture it.
+          await room.localParticipant.setMicrophoneEnabled(true);
+        }
+      } catch (error) {
+        if (!cancelled) onError(describeMicError(error));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [connection, room, track, onError]);
+  useEffect(() => () => track?.stop(), [track]);
+  return null;
+}
+
 function isMicError(error: Error): boolean {
   return /NotReadable|NotAllowed|NotFound|audio source|Permission|device/i.test(`${error.name} ${error.message}`);
 }
 
-function micMessage(error?: Error): string {
-  const text = error ? `${error.name} ${error.message}` : "";
-  if (/NotAllowed|Permission/i.test(text)) {
-    return "Microphone access is blocked for this site. Allow it in the address bar, then tap the mic.";
-  }
-  if (/NotFound/i.test(text)) {
-    return "No microphone found. Plug one in or pick one in Windows sound settings, then tap the mic.";
-  }
-  return "Your microphone is busy or unavailable. Close other apps or tabs using it (Zoom, Teams, another call), then tap the mic. You can still type below.";
-}
 
 function CallStage({
   onEnd,

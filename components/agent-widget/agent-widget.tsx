@@ -23,7 +23,7 @@ import { AiConversation } from "@/components/ai/conversation";
 import { useAiAccess } from "@/components/ai/use-ai-access";
 import { cn } from "@/lib/utils";
 import { captureScreenContext } from "./screen-guide";
-import type { VoiceCallSession } from "./voice-call";
+import { describeMicError, type VoiceCallSession } from "./voice-mic";
 
 // LiveKit is browser-only and heavy; load it when a call starts.
 const VoiceCall = dynamic(() => import("./voice-call").then((m) => m.VoiceCall), {
@@ -251,6 +251,19 @@ function AgentPanel({ orgSlug, onClose }: { orgSlug: string; onClose: () => void
 
   const startCall = async () => {
     setStartingCall(true);
+    // iPhone/iPad Safari only grants the microphone during the tap itself,
+    // so ask for it FIRST, before any network call. The same track is then
+    // published into the call (no second request that iOS would refuse).
+    let micTrack: MediaStreamTrack | undefined;
+    let micError: string | undefined;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      });
+      micTrack = stream.getAudioTracks()[0];
+    } catch (error) {
+      micError = describeMicError(error);
+    }
     try {
       const session = await startVoiceSession({ threadId: threadId ?? undefined });
       setThreadId(session.threadId);
@@ -259,10 +272,12 @@ function AgentPanel({ orgSlug, onClose }: { orgSlug: string; onClose: () => void
         toast.error(token.reason);
         return;
       }
-      setCall({ serverUrl: token.serverUrl, token: token.token, roomName: session.roomName });
+      setCall({ serverUrl: token.serverUrl, token: token.token, roomName: session.roomName, micTrack, micError });
+      micTrack = undefined; // now owned by the call
     } catch (error) {
       toast.error(convexErrorMessage(error, "Couldn't start the call."));
     } finally {
+      micTrack?.stop();
       setStartingCall(false);
     }
   };
