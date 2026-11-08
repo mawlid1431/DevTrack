@@ -1,0 +1,32 @@
+[
+  {
+    "id": "01-checkpoint",
+    "name": "Checkpoint",
+    "meaning": "Task done.",
+    "note": "The angled D you liked, with a check mark cutting through it and breaking out the right side. Work gets finished and moves on."
+  },
+  {
+    "id": "02-commit",
+    "name": "Commit",
+    "meaning": "Branch, commit, merge.",
+    "note": "The D is a real git graph: the stem is main, the curve is a feature branch that leaves and merges back. The green node is the commit being tracked."
+  },
+  {
+    "id": "03-board",
+    "name": "Board",
+    "meaning": "To do, doing, done.",
+    "note": "A heavy D holding three kanban columns that rise left to right. The last column, done, is green."
+  },
+  {
+    "id": "04-forward",
+    "name": "Forward",
+    "meaning": "Ship it.",
+    "note": "The Dunya Decoded overlap with D and T: a solid D tucked behind a bold T whose bar turns into an arrow. DevTrack keeps the team moving forward."
+  },
+  {
+    "id": "05-prompt",
+    "name": "Prompt",
+    "meaning": "Built for developers.",
+    "note": "A D with a terminal prompt (>_) inside. Anyone who codes reads it at a glance, and it stays clear at favicon size."
+  }
+]

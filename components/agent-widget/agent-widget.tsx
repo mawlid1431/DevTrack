@@ -22,6 +22,7 @@ import { convexErrorMessage } from "@/components/ai/convex-error";
 import { AiConversation } from "@/components/ai/conversation";
 import { useAiAccess } from "@/components/ai/use-ai-access";
 import { cn } from "@/lib/utils";
+import { captureScreenContext } from "./screen-guide";
 import type { VoiceCallSession } from "./voice-call";
 
 // LiveKit is browser-only and heavy; load it when a call starts.
@@ -86,6 +87,7 @@ export function AgentWidget() {
     <>
       <section
         role="dialog"
+        data-agent-panel
         aria-label="DevTrack AI"
         aria-hidden={!open}
         inert={!open}
@@ -204,6 +206,24 @@ function AgentPanel({ orgSlug, onClose }: { orgSlug: string; onClose: () => void
   const createThread = useMutation(api.agent.chat.createThread);
   const startVoiceSession = useMutation(api.agent.voice.startVoiceSession);
   const createVoiceToken = useAction(api.agent.voiceToken.createVoiceToken);
+  const updateVoiceScreen = useMutation(api.agent.voice.updateVoiceScreen);
+
+  // During a call, keep the agent's view of the screen fresh (no sharing needed).
+  const callRoom = call?.roomName;
+  useEffect(() => {
+    if (!callRoom) return;
+    let last = "";
+    const push = () => {
+      const screen = captureScreenContext();
+      if (screen && screen !== last) {
+        last = screen;
+        updateVoiceScreen({ roomName: callRoom, screen }).catch(() => undefined);
+      }
+    };
+    push();
+    const timer = setInterval(push, 1500);
+    return () => clearInterval(timer);
+  }, [callRoom, updateVoiceScreen]);
   const sendMessage = useMutation(api.agent.chat.sendMessage).withOptimisticUpdate(
     (store, args) => {
       optimisticallySendMessage(api.agent.chat.listMessages)(store, {
@@ -220,7 +240,7 @@ function AgentPanel({ orgSlug, onClose }: { orgSlug: string; onClose: () => void
         id = await createThread({});
         setThreadId(id);
       }
-      await sendMessage({ threadId: id, prompt });
+      await sendMessage({ threadId: id, prompt, screen: captureScreenContext() });
     } catch (error) {
       // A stale stored thread (deleted elsewhere), start fresh next time.
       if (String(error).includes("Thread not found")) setThreadId(null);

@@ -116,7 +116,7 @@ export function WorkspaceShell({
       {/* Global upgrade prompt: catches free-plan limit errors toasted anywhere in the workspace. */}
       <PlanLimitListener />
       {/* Phones: top bar + drawer. Tablet and up: fixed sidebar column. */}
-      <div className="flex h-dvh flex-col overflow-hidden md:flex-row">
+      <div data-app-root className="flex h-dvh flex-col overflow-hidden md:flex-row">
         <MobileNav />
         <AppSidebar />
         <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">

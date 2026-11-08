@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" rx="230" fill="#0B1B2E"/>
+  <g transform="translate(192 192) scale(6.4)"><defs><mask id="m-04-forward" maskUnits="userSpaceOnUse" x="-20" y="-20" width="140" height="140">
+  <rect x="-20" y="-20" width="140" height="140" fill="#fff"/><path d="M40 10 H80 V2 L98 18 L80 34 V26 H74 V92 H60 V26 H40 Z" fill="#000" stroke="#000" stroke-width="11" stroke-linejoin="miter"/></mask></defs>
+        <path mask="url(#m-04-forward)" fill="#16C784" d="M4 34 H32 A29 29 0 0 1 32 92 H4 Z"/>
+        <path fill="#FFFFFF" d="M40 10 H80 V2 L98 18 L80 34 V26 H74 V92 H60 V26 H40 Z"/></g></svg>

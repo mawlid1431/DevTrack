@@ -289,5 +289,7 @@ export default defineSchema({
     roomName: v.string(),
     expiresAt: v.number(),
     tokenIssued: v.boolean(),
+    /** Latest snapshot of the user's DevTrack screen during the call. */
+    screen: v.optional(v.string()),
   }).index("by_room", ["roomName"]),
 });

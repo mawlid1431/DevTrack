@@ -197,3 +197,37 @@ body {
   background: var(--primary);
   opacity: 1;
 }
+
+/* Agent screen guide (components/agent-widget/screen-guide.ts). */
+.devtrack-guide {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+}
+.devtrack-guide-ring {
+  position: fixed;
+  border-radius: 10px;
+  box-shadow:
+    0 0 0 3px var(--primary),
+    0 0 0 9999px rgb(0 0 0 / 0.35);
+  animation: devtrack-guide-pulse 1.2s ease-in-out infinite;
+}
+.devtrack-guide-note {
+  position: fixed;
+  width: 280px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+}
+@keyframes devtrack-guide-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px var(--primary), 0 0 0 9999px rgb(0 0 0 / 0.35); }
+  50% { box-shadow: 0 0 0 7px rgb(35 131 226 / 0.45), 0 0 0 9999px rgb(0 0 0 / 0.35); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .devtrack-guide-ring { animation: none; }
+}

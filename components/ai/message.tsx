@@ -23,6 +23,8 @@ const TOOL_LABELS: Record<string, string> = {
   standupReport: "Gathering standup data",
   navigateTo: "Opening page",
   signOut: "Logging out",
+  showOnScreen: "Showing you where",
+  createTeam: "Creating team",
   startSubscription: "Opening checkout",
   createWorkspace: "Creating workspace",
   applyWorkspaceTemplate: "Applying template",
@@ -72,7 +74,10 @@ function AssistantText({
   text: string;
   streaming: boolean;
 }) {
-  const [visibleText] = useSmoothText(text, { startStreaming: streaming });
+  // No dashes as punctuation in what users read (house style).
+  const [visibleText] = useSmoothText(text.replace(/\s*[—–]\s*/g, ", "), {
+    startStreaming: streaming,
+  });
   return (
     <Streamdown className="text-sm leading-relaxed [&_a]:underline [&_code]:text-xs">
       {visibleText}

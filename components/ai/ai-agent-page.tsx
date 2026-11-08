@@ -13,6 +13,7 @@ import {
   SheetDescription,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { captureScreenContext } from "@/components/agent-widget/screen-guide";
 import { AiComposer } from "./composer";
 import { convexErrorMessage } from "./convex-error";
 import { AiConversation } from "./conversation";
@@ -87,7 +88,7 @@ function AiWorkspace() {
         threadId = await createThread({});
         setSelectedThreadId(threadId);
       }
-      await sendMessage({ threadId, prompt });
+      await sendMessage({ threadId, prompt, screen: captureScreenContext() });
     } catch (error) {
       toast.error(
         convexErrorMessage(error, "Failed to send message. Please try again.")

@@ -4,6 +4,7 @@ import { components, internal } from "../_generated/api";
 import { internalAction, internalMutation, internalQuery } from "../_generated/server";
 import { orgMutation } from "../lib/customFunctions";
 import { hasAiAccess } from "../lib/limits";
+import { screenBlock } from "./chat";
 import { DEVTRACK_INSTRUCTIONS, devTrackAgent } from "./devTrackAgent";
 import {
   PRO_DAILY_MESSAGE_LIMIT,
@@ -27,6 +28,21 @@ import { assertAiConfigured, userFacingAiError } from "./models";
  *    Everything is saved to the thread, so the floating panel shows the
  *    transcript and `navigateTo` moves the user's screen.
  */
+
+/** Replies are read aloud: drop markdown symbols the voice would pronounce. */
+function toSpeech(text: string): string {
+  return text
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/`([^`]*)`/g, "$1")
+    .replace(/\*\*([^*]+)\*\*|__([^_]+)__/g, "$1$2")
+    .replace(/[*_]([^*_]+)[*_]/g, "$1")
+    .replace(/^\s*[-*•]\s+/gm, "")
+    .replace(/^#+\s*/gm, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/\s*[—–]\s*/g, ", ")
+    .replace(/\n{2,}/g, "\n")
+    .trim();
+}
 
 const SESSION_TTL_MS = 2 * 60 * 60 * 1000;
 const VOICE_THREAD_TITLE = "Voice conversation";
@@ -64,6 +80,25 @@ export const startVoiceSession = orgMutation({
   },
 });
 
+/** The browser keeps the call's screen snapshot fresh (owner only). */
+export const updateVoiceScreen = orgMutation({
+  args: { roomName: v.string(), screen: v.string() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const session = await ctx.db
+      .query("voiceSessions")
+      .withIndex("by_room", (q) => q.eq("roomName", args.roomName))
+      .unique();
+    if (!session || session.userId !== ctx.user._id || session.orgId !== ctx.org._id) {
+      return null;
+    }
+    if (session.screen !== args.screen) {
+      await ctx.db.patch(session._id, { screen: args.screen.slice(0, 6000) });
+    }
+    return null;
+  },
+});
+
 /** Used by voiceToken.ts to check the caller owns the room before minting. */
 export const claimSessionForToken = internalMutation({
   args: { roomName: v.string(), clerkId: v.string() },
@@ -98,6 +133,7 @@ export const recordVoiceMessage = internalMutation({
       threadId: v.string(),
       orgId: v.id("organizations"),
       userId: v.id("users"),
+      screen: v.optional(v.string()),
     }),
     v.object({ ok: v.literal(false), reply: v.string() })
   ),
@@ -135,6 +171,7 @@ export const recordVoiceMessage = internalMutation({
       threadId: session.threadId,
       orgId: session.orgId,
       userId: session.userId,
+      screen: session.screen,
     };
   },
 });
@@ -164,10 +201,10 @@ export const runVoiceTurn = internalAction({
         { threadId: recorded.threadId, userId: threadUserKey(recorded.orgId, recorded.userId) },
         {
           promptMessageId: recorded.messageId,
-          system: `${DEVTRACK_INSTRUCTIONS}\n\nThis request was SPOKEN in a live voice call; your reply will be read aloud. Act immediately, then answer in one to three short plain sentences, no markdown, lists or tables.\n\nWorkspace: ${actor.orgName}. Requesting user: ${actor.userName}. Today's date: ${new Date().toISOString().slice(0, 10)}.`,
+          system: `${DEVTRACK_INSTRUCTIONS}\n\nThis request was SPOKEN in a live voice call; your reply will be read aloud. Act immediately, then answer in one to three short plain sentences, no markdown, lists or tables.\n\nWorkspace: ${actor.orgName}. Requesting user: ${actor.userName}. Today's date: ${new Date().toISOString().slice(0, 10)}.${screenBlock(recorded.screen)}`,
         }
       );
-      return { reply: result.text || "Done." };
+      return { reply: toSpeech(result.text) || "Done." };
     } catch (error) {
       console.error("Voice turn failed", error);
       const reason = userFacingAiError(error);

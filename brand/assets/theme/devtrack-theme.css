@@ -1,0 +1,96 @@
+/* DevTrack brand theme. Paste into app/globals.css, replacing the :root and .dark blocks.
+   Dark mode is built on Deep Navy. Never use pure black (#000). */
+:root {
+  --background: #FFFFFF;
+  --foreground: #0B1B2E;
+  --card: #FFFFFF;
+  --card-foreground: #0B1B2E;
+  --popover: #FFFFFF;
+  --popover-foreground: #0B1B2E;
+  --primary: #16C784;
+  --primary-foreground: #0B1B2E;
+  --secondary: #EEF3F8;
+  --secondary-foreground: #0B1B2E;
+  --muted: #F2F6F4;
+  --muted-foreground: #4B637D;
+  --accent: #EEF3F8;
+  --accent-foreground: #0B1B2E;
+  --destructive: #D13438;
+  --border: #D9E3EE;
+  --input: #B4C5D8;
+  --ring: #16C784;
+  --chart-1: #16C784;
+  --chart-2: #2F7DF6;
+  --chart-3: #F5A524;
+  --chart-4: #4B637D;
+  --chart-5: #D13438;
+  --sidebar: #F2F6F4;
+  --sidebar-foreground: #12263D;
+  --sidebar-primary: #16C784;
+  --sidebar-primary-foreground: #0B1B2E;
+  --sidebar-accent: #E3ECE8;
+  --sidebar-accent-foreground: #0B1B2E;
+  --sidebar-border: #DCE5E0;
+  --sidebar-ring: #16C784;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: #0B1B2E;
+  --foreground: #EEF3F8;
+  --card: #12263D;
+  --card-foreground: #EEF3F8;
+  --popover: #1A3250;
+  --popover-foreground: #EEF3F8;
+  --primary: #16C784;
+  --primary-foreground: #0B1B2E;
+  --secondary: #1A3250;
+  --secondary-foreground: #EEF3F8;
+  --muted: #12263D;
+  --muted-foreground: #8FA3B8;
+  --accent: #1A3250;
+  --accent-foreground: #EEF3F8;
+  --destructive: #FF6B6E;
+  --border: #24405F;
+  --input: #24405F;
+  --ring: #16C784;
+  --chart-1: #2BD08F;
+  --chart-2: #6AA6FF;
+  --chart-3: #F7B84B;
+  --chart-4: #8FA3B8;
+  --chart-5: #FF6B6E;
+  --sidebar: #06111F;
+  --sidebar-foreground: #B4C5D8;
+  --sidebar-primary: #16C784;
+  --sidebar-primary-foreground: #0B1B2E;
+  --sidebar-accent: #12263D;
+  --sidebar-accent-foreground: #EEF3F8;
+  --sidebar-border: #12263D;
+  --sidebar-ring: #16C784;
+}
+
+/* Brand scales (optional helpers) */
+:root {
+  --navy-50: #EEF3F8;
+  --navy-100: #D9E3EE;
+  --navy-200: #B4C5D8;
+  --navy-300: #8FA3B8;
+  --navy-400: #6A819A;
+  --navy-500: #4B637D;
+  --navy-600: #24405F;
+  --navy-700: #1A3250;
+  --navy-800: #12263D;
+  --navy-900: #0B1B2E;
+  --navy-950: #06111F;
+  --green-50: #E8FAF2;
+  --green-100: #C6F3DE;
+  --green-200: #8EE8C1;
+  --green-300: #52DBA2;
+  --green-400: #2BD08F;
+  --green-500: #16C784;
+  --green-600: #0FA56C;
+  --green-700: #0B8457;
+  --green-800: #0A6646;
+  --green-900: #084D36;
+  --mist: #F2F6F4;
+}

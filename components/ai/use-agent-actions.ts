@@ -5,6 +5,7 @@ import type { UIMessage } from "@convex-dev/agent/react";
 import { isToolUIPart } from "ai";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { showOnScreen } from "@/components/agent-widget/screen-guide";
 
 type ClientAction = {
   /** Workspace-relative path to open, e.g. "/projects" ("" = home). */
@@ -13,6 +14,8 @@ type ClientAction = {
   switchWorkspace?: unknown;
   /** Log the user out. */
   signOut?: unknown;
+  /** Zoom in on and spotlight a place on screen. */
+  highlight?: { target?: unknown; message?: unknown };
 };
 
 const SLUG = /^[a-z0-9][a-z0-9-]*$/;
@@ -73,6 +76,14 @@ export function useAgentActions(messages: UIMessage[], ready: boolean) {
     const path = nav?.action.navigate as string | undefined;
     if (path !== undefined && (path === "" || /^\/[\w\-/?=&.]*$/.test(path))) {
       router.push(`/${orgSlug}${path}`);
+    }
+    // Point at a place (after any page change above; the guide waits for it).
+    const guide = fresh.findLast((a) => typeof a.action.highlight?.target === "string");
+    if (guide) {
+      const { target, message } = guide.action.highlight as { target: string; message?: unknown };
+      void showOnScreen(target, typeof message === "string" ? message : undefined).then((found) => {
+        if (!found) console.warn(`DevTrack AI couldn't find "${target}" on screen`);
+      });
     }
   }, [messages, ready, router, orgSlug, signOut]);
 }

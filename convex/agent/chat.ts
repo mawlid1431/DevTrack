@@ -152,8 +152,20 @@ export const listMessages = orgQuery({
   },
 });
 
+/** Screen snapshots from the browser are capped so prompts stay small. */
+const MAX_SCREEN_CHARS = 6000;
+
+/** Shared system-prompt block describing what the user sees right now. */
+export function screenBlock(screen: string | undefined): string {
+  if (!screen) return "";
+  return `
+
+WHAT THE USER SEES ON THEIR SCREEN RIGHT NOW (captured live from the DevTrack app a moment ago, no screen sharing needed). This snapshot is the ground truth for the current screen and overrides anything said earlier in the conversation (they may have navigated, signed back in, or opened something new). Use it for "this", "here", "what's on my screen" and what's open:
+${screen.slice(0, MAX_SCREEN_CHARS)}`;
+}
+
 export const sendMessage = orgMutation({
-  args: { threadId: v.string(), prompt: v.string() },
+  args: { threadId: v.string(), prompt: v.string(), screen: v.optional(v.string()) },
   returns: v.null(),
   handler: async (ctx, args): Promise<null> => {
     assertAiAccess(ctx.org);
@@ -203,6 +215,7 @@ export const sendMessage = orgMutation({
       promptMessageId: messageId,
       orgId: ctx.org._id,
       userId: ctx.user._id,
+      screen: args.screen?.slice(0, MAX_SCREEN_CHARS),
     });
     return null;
   },
@@ -219,6 +232,7 @@ export const streamResponse = internalAction({
     promptMessageId: v.string(),
     orgId: v.id("organizations"),
     userId: v.id("users"),
+    screen: v.optional(v.string()),
   },
   returns: v.null(),
   handler: async (ctx, args): Promise<null> => {
@@ -240,7 +254,7 @@ export const streamResponse = internalAction({
         },
         {
           promptMessageId: args.promptMessageId,
-          system: `${DEVTRACK_INSTRUCTIONS}\n\nWorkspace: ${actor.orgName}. Requesting user: ${actor.userName}. Today's date: ${new Date().toISOString().slice(0, 10)}.`,
+          system: `${DEVTRACK_INSTRUCTIONS}\n\nWorkspace: ${actor.orgName}. Requesting user: ${actor.userName}. Today's date: ${new Date().toISOString().slice(0, 10)}.${screenBlock(args.screen)}`,
           onError: ({ error }) => {
             streamError ??= error;
           },

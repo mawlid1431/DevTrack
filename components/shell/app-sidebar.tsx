@@ -13,6 +13,7 @@ import {
   Plus,
   RefreshCcw,
   Search,
+  Settings,
   SquarePen,
   Trash2,
 } from "lucide-react";
@@ -348,6 +349,7 @@ export function AppSidebar({
             )}
 
             <nav className={cn("flex flex-col gap-px", collapsed ? "mt-3" : "mt-4")}>
+              <NavLink href={`${base}/settings/billing`} icon={<Settings />} label="Settings" />
               <NavLink href={`${base}/trash`} icon={<Trash2 />} label="Recycle bin" />
             </nav>
           </div>
@@ -359,8 +361,16 @@ export function AppSidebar({
             collapsed ? "flex-col items-center gap-2 py-3" : "h-12 items-center justify-between px-3"
           )}
         >
-          <UserButton />
-          <ThemeToggle />
+          <div
+            data-agent-target="account-menu"
+            data-agent-label="Account menu (your profile, and Sign out to log out)"
+            className="flex"
+          >
+            <UserButton />
+          </div>
+          <div data-agent-target="theme-toggle" data-agent-label="Light / dark theme" className="flex">
+            <ThemeToggle />
+          </div>
         </div>
 
         <CreateTeamDialog open={createTeamOpen} onOpenChange={setCreateTeamOpen} />

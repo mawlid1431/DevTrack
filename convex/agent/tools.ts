@@ -794,7 +794,7 @@ const applyWorkspaceTemplate = createTool({
 
 const createWorkspace = createTool({
   description:
-    "Create a brand-new, separate workspace (organization) owned by the requesting user, optionally set up from a workspace template. Its data is fully separate from this workspace. Runs immediately and switches the user's screen to the new workspace. If the user gives no name, use "<their first name>'s Workspace".",
+    "Create a brand-new, separate workspace (organization) owned by the requesting user, optionally set up from a workspace template. Its data is fully separate from this workspace. Runs immediately and switches the user's screen to the new workspace. If the user gives no name, use their first name plus 's Workspace'.",
   inputSchema: jsonSchema<Gated<{ name: string; templateId?: string }>>({
     type: "object",
     properties: {
@@ -1011,7 +1011,80 @@ const startSubscription = createTool({
   },
 });
 
+const createTeam = createTool({
+  description:
+    "Create a team in this workspace (admins only). key: 1-5 letters/digits starting with a letter, used in issue ids like ENG-1; derive it from the name if the user doesn't give one (Engineering -> ENG). Runs immediately. Create a team first when the workspace has none and the user wants issues.",
+  inputSchema: jsonSchema<{ name: string; key: string; description?: string }>({
+    type: "object",
+    properties: {
+      name: { type: "string" },
+      key: { type: "string", description: "Team key, e.g. ENG" },
+      description: { type: "string" },
+    },
+    required: ["name", "key"],
+    additionalProperties: false,
+  }),
+  execute: async (
+    ctx: DevTrackToolCtx,
+    input
+  ): Promise<{ status: "done"; name: string; key: string }> => {
+    const result: { name: string; key: string } = await ctx.runMutation(
+      internal.agent.operations.createTeam,
+      { orgId: ctx.orgId, actorUserId: ctx.requestUserId, ...input }
+    );
+    return { status: "done", name: result.name, key: result.key };
+  },
+});
+
+/**
+ * Loom-style pointer: zooms the user's screen toward a place and spotlights
+ * it with a short note (components/agent-widget/screen-guide.ts). Optionally
+ * opens another page first.
+ */
+const showOnScreen = createTool({
+  description:
+    "Show the user WHERE something is: their screen zooms in on it, highlights it with a pulsing ring and your short note. Use for 'where is / show me / how do I / help me find' questions (e.g. where to log out -> target 'account-menu' with note 'Click your avatar, then Sign out'). target: a target id or label from the 'Places you can point at' list in the screen snapshot. If it lives on another page, also pass page (+ ref) like navigateTo and it opens that page first. Runs immediately.",
+  inputSchema: jsonSchema<{ target: string; message: string; page?: (typeof NAV_PAGE_LIST)[number]; ref?: string }>({
+    type: "object",
+    properties: {
+      target: { type: "string", description: "Target id or label to highlight" },
+      message: { type: "string", description: "One short instruction shown next to it" },
+      page: { type: "string", enum: [...NAV_PAGE_LIST] },
+      ref: { type: "string" },
+    },
+    required: ["target", "message"],
+    additionalProperties: false,
+  }),
+  execute: async (
+    ctx: DevTrackToolCtx,
+    input
+  ): Promise<{
+    status: "done";
+    shown: string;
+    clientAction: { navigate?: string; highlight: { target: string; message: string } };
+  }> => {
+    let navigate: string | undefined;
+    if (input.page) {
+      const target: { path: string } = await ctx.runQuery(internal.agent.operations.resolveNavigation, {
+        orgId: ctx.orgId,
+        actorUserId: ctx.requestUserId,
+        page: input.page,
+        ref: input.ref,
+      });
+      navigate = target.path;
+    }
+    const message = input.message.slice(0, 160);
+    return {
+      status: "done",
+      shown: input.target,
+      clientAction: { navigate, highlight: { target: input.target.slice(0, 80), message } },
+    };
+  },
+});
+
 export const devTrackTools = {
+  showOnScreen,
+  createTeam,
   signOut,
   startSubscription,
   navigateTo,

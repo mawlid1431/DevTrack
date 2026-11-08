@@ -565,3 +565,44 @@ export const resolveNavigation = internalQuery({
     }
   },
 });
+
+/** Create a team (admins only, same rules as the UI's create-team dialog). */
+export const createTeam = internalMutation({
+  args: {
+    orgId: v.id("organizations"),
+    actorUserId: v.id("users"),
+    name: v.string(),
+    key: v.string(),
+    description: v.optional(v.string()),
+  },
+  returns: v.object({ teamId: v.id("teams"), name: v.string(), key: v.string() }),
+  handler: async (ctx, args) => {
+    const { membership } = await requireMember(ctx, args.orgId, args.actorUserId);
+    if (membership.role !== "admin") {
+      throw new Error("Only workspace admins can create teams");
+    }
+    const name = args.name.trim();
+    if (!name || name.length > 64) {
+      throw new Error("Team name must be 1-64 characters");
+    }
+    const key = args.key.trim().toUpperCase();
+    if (!/^[A-Z][A-Z0-9]{0,4}$/.test(key)) {
+      throw new Error("Team key must be 1-5 letters or digits, starting with a letter");
+    }
+    const existing = await ctx.db
+      .query("teams")
+      .withIndex("by_org_and_key", (q) => q.eq("orgId", args.orgId).eq("key", key))
+      .unique();
+    if (existing) {
+      throw new Error(`Team key "${key}" is already in use`);
+    }
+    const teamId = await ctx.db.insert("teams", {
+      orgId: args.orgId,
+      name,
+      key,
+      description: args.description,
+      nextIssueNumber: 1,
+    });
+    return { teamId, name, key };
+  },
+});

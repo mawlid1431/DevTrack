@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><g transform="translate(112 112) scale(8)"><defs><mask id="m-02-commit" maskUnits="userSpaceOnUse" x="-20" y="-20" width="140" height="140">
+  <rect x="-20" y="-20" width="140" height="140" fill="#fff"/><circle cx="76" cy="50" r="18" fill="#000"/></mask></defs>
+      <g transform="translate(-1 0)">
+      <g mask="url(#m-02-commit)">
+        <path fill="none" stroke="#0B1B2E" stroke-width="11" d="M24 20 V80 M24 80 H46 A30 30 0 0 0 46 20 H24"/>
+        <circle cx="24" cy="20" r="11" fill="#0B1B2E"/><circle cx="24" cy="80" r="11" fill="#0B1B2E"/></g>
+      <circle cx="76" cy="50" r="12" fill="#16C784"/></g></g></svg>
