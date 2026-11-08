@@ -1,31 +1,66 @@
+"use client";
+
 import { RefreshCcw } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { CYCLE_BARS } from "@/components/marketing/mock-data";
+import { useMockDoneExtra } from "@/components/marketing/mock-progress";
 import { cn } from "@/lib/utils";
 
 /**
- * Compact cycle progress card: header, progress bar, scope stats, and a
- * tiny burnup chart drawn with plain divs.
+ * Compact cycle progress card: header, progress bar, scope stats and a small
+ * burnup chart. It is live: bars rise when it scrolls into view, and every
+ * card the board mock drops into Done ticks Completed up, fills the progress
+ * bar and grows today's bar.
  */
 export function MockCycle({ className }: { className?: string }) {
   const scope = 38;
-  const completed = CYCLE_BARS[CYCLE_BARS.length - 1];
+  const extra = useMockDoneExtra();
+  const completed = CYCLE_BARS[CYCLE_BARS.length - 1] + extra;
   const percent = Math.round((completed / scope) * 100);
-  const max = Math.max(...CYCLE_BARS);
+  const bars = [...CYCLE_BARS.slice(0, -1), completed];
+  const max = Math.max(...CYCLE_BARS) + 2;
+
+  // Grow the bars from zero the first time the card is seen.
+  const ref = useRef<HTMLDivElement>(null);
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShown(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.4 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   return (
-    <div className={cn("rounded-xl border bg-card p-4 shadow-sm", className)}>
+    <div ref={ref} className={cn("rounded-xl border bg-card p-4 shadow-sm", className)}>
       <div className="flex items-center gap-2">
-        <RefreshCcw className="size-3.5 text-muted-foreground" />
+        <RefreshCcw
+          className={cn(
+            "size-3.5 text-muted-foreground",
+            shown && "animate-[spin_1.2s_ease-out_1] motion-reduce:animate-none"
+          )}
+        />
         <span className="text-sm font-medium">Cycle 14</span>
         <span className="text-xs text-muted-foreground">Jun 2 to Jun 16</span>
-        <span className="ml-auto font-mono text-xs text-success">
+        <span
+          key={percent}
+          className="ml-auto animate-in font-mono text-xs text-success zoom-in-75 duration-300"
+        >
           {percent}%
         </span>
       </div>
       <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
         <div
-          className="h-full rounded-full bg-status-done"
-          style={{ width: `${percent}%` }}
+          className="h-full rounded-full bg-status-done transition-[width] duration-700 ease-out motion-reduce:transition-none"
+          style={{ width: `${shown ? percent : 0}%` }}
         />
       </div>
       <div className="mt-3 flex items-center gap-4 text-[0.6875rem] text-muted-foreground">
@@ -35,23 +70,28 @@ export function MockCycle({ className }: { className?: string }) {
         </span>
         <span className="flex items-center gap-1.5">
           <span className="size-1.5 rounded-full bg-status-in-progress" />
-          Started 7
+          Started {Math.max(0, 7 - extra)}
         </span>
         <span className="flex items-center gap-1.5">
           <span className="size-1.5 rounded-full bg-status-done" />
-          Completed {completed}
+          Completed{" "}
+          <span key={completed} className="animate-in font-medium text-foreground zoom-in-75 duration-300">
+            {completed}
+          </span>
         </span>
       </div>
       <div className="mt-4 flex h-12 items-end gap-1" aria-hidden>
-        {CYCLE_BARS.map((value, index) => (
+        {bars.map((value, index) => (
           <div
             key={index}
-            className={
-              index === CYCLE_BARS.length - 1
-                ? "flex-1 rounded-sm bg-status-done"
-                : "flex-1 rounded-sm bg-foreground/10"
-            }
-            style={{ height: `${Math.max(8, (value / max) * 100)}%` }}
+            className={cn(
+              "flex-1 rounded-sm transition-[height] duration-700 ease-out motion-reduce:transition-none",
+              index === bars.length - 1 ? "bg-status-done" : "bg-foreground/10"
+            )}
+            style={{
+              height: shown ? `${Math.max(8, (value / max) * 100)}%` : "8%",
+              transitionDelay: shown ? `${index * 35}ms` : undefined,
+            }}
           />
         ))}
       </div>

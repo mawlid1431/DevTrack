@@ -60,7 +60,7 @@ export function MockSidebar({
   /** The page currently shown in the main area. */
   selected: string;
   /** Called when the cursor clicks an item: the main area switches page. */
-  onOpen: (key: string) => void;
+  onOpen?: (key: string) => void;
 }) {
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<Record<string, HTMLSpanElement | null>>({});
@@ -104,7 +104,7 @@ export function MockSidebar({
     setCursor({ x: box.left - base.left + Math.min(110, box.width * 0.55), y: box.top - base.top + box.height / 2 });
     const down = setTimeout(() => {
       setClicking(true);
-      onOpen(item.key);
+      onOpen?.(item.key);
     }, CLICK_AT_MS);
     const up = setTimeout(() => setClicking(false), CLICK_AT_MS + 220);
     return () => {
