@@ -118,15 +118,14 @@ function CallStage({
 
   // If no agent joins soon after we connect, say so instead of waiting
   // forever (the voice worker is offline or still starting).
-  const [agentLate, setAgentLate] = useState(false);
+  const [waitedLong, setWaitedLong] = useState(false);
+  const connected = connection === ConnectionState.Connected;
   useEffect(() => {
-    if (agent || connection !== ConnectionState.Connected) {
-      setAgentLate(false);
-      return;
-    }
-    const timer = setTimeout(() => setAgentLate(true), 15000);
+    if (!connected) return;
+    const timer = setTimeout(() => setWaitedLong(true), 15000);
     return () => clearTimeout(timer);
-  }, [agent, connection]);
+  }, [connected]);
+  const agentLate = waitedLong && connected && !agent;
 
   return (
     <div className="flex flex-col gap-3 border-b bg-muted/40 px-3 py-3">
@@ -146,9 +145,9 @@ function CallStage({
       )}
       {agentLate && (
         <p role="alert" className="rounded-md bg-warning-fill/10 px-2 py-1.5 text-xs text-warning">
-          The voice agent hasn't joined yet. It may still be starting, or the
-          voice worker isn't running (start it with: bun run dev:voice). You can
-          keep waiting, or type below.
+          The voice agent has not joined yet. It may still be starting, or the
+          voice worker is not running (start it with: bun run dev:voice). You
+          can keep waiting, or type below.
         </p>
       )}
       {micProblem && (

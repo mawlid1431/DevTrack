@@ -1,15 +1,15 @@
 /**
  * Starts the DevTrack voice worker (voice-agent/agent.py) with its own
  * virtualenv, on Windows or macOS/Linux. Used by `bun run dev:voice` and
- * `bun run dev`. First time: create the venv and install requirements:
+ * `bun run dev` (run from the project root). First-time setup:
  *   python -m venv voice-agent/.venv
- *   voice-agent/.venv/Scripts/python -m pip install -r voice-agent/requirements.txt   (Windows)
- *   voice-agent/.venv/bin/python -m pip install -r voice-agent/requirements.txt       (macOS/Linux)
+ *   then install voice-agent/requirements.txt with that venv's python -m pip
  */
+import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
-const dir = join(import.meta.dir, "..", "voice-agent");
+const dir = join(process.cwd(), "voice-agent");
 const python =
   process.platform === "win32"
     ? join(dir, ".venv", "Scripts", "python.exe")
@@ -22,11 +22,8 @@ if (!existsSync(python)) {
   process.exit(0);
 }
 
-const child = Bun.spawn([python, "agent.py", "dev"], {
-  cwd: dir,
-  stdout: "inherit",
-  stderr: "inherit",
-});
-process.on("SIGINT", () => child.kill());
-process.on("SIGTERM", () => child.kill());
-process.exit(await child.exited);
+const child = spawn(python, ["agent.py", "dev"], { cwd: dir, stdio: "inherit" });
+const stop = () => child.kill();
+process.on("SIGINT", stop);
+process.on("SIGTERM", stop);
+child.on("exit", (code) => process.exit(code ?? 0));
