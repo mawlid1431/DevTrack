@@ -15,8 +15,17 @@ import type { DevTrackToolCtx } from "./tools";
  *    - that new message is an explicit yes, and
  *    - the arguments are unchanged.
  *
- * Small edits (priority, sorting, status) don't go through this gate.
+ * Only workspace-wide actions go through this gate (see CONFIRM_REQUIRED).
+ * Everything else — creating/deleting issues, projects and templates — runs
+ * immediately: deletes are soft (recycle bin, restorable for 30 days), so
+ * acting at once is safe and is what users expect from the agent.
  */
+
+/** Tools that still need an explicit "yes" before they run. */
+export const CONFIRM_REQUIRED: ReadonlySet<string> = new Set([
+  "applyWorkspaceTemplate",
+  "createWorkspace",
+]);
 
 export type NeedsConfirmation = {
   status: "needs_confirmation";
@@ -96,6 +105,9 @@ export async function requireConfirmation(
   summary: string,
   confirmationCode: string | undefined
 ): Promise<NeedsConfirmation | null> {
+  if (!CONFIRM_REQUIRED.has(toolName)) {
+    return null;
+  }
   const [latest, previous] = await recentUserMessages(ctx);
   const actionKey = `${toolName}|${stableStringify(args)}`;
 

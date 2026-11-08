@@ -161,7 +161,7 @@ const findSimilarIssues = createTool({
 
 const createIssue = createTool({
   description:
-    "Create a new issue in a team. Requires the user's confirmation: call once without confirmationCode to get a preview, show it, and call again with the code after they reply yes. Check for duplicates with findSimilarIssues first when it makes sense.",
+    "Create a new issue in a team. Runs immediately. Check for duplicates with findSimilarIssues first when it makes sense.",
   inputSchema: jsonSchema<{
     teamKey: string;
     title: string;
@@ -196,7 +196,7 @@ const createIssue = createTool({
       confirmationCode: {
         type: "string",
         description:
-          "Leave out on the first call. Only pass the code returned by the preview after the user replied yes.",
+          "Only for applyWorkspaceTemplate/createWorkspace: pass the code from the preview after the user replied yes. Otherwise leave out.",
       },
     },
     required: ["teamKey", "title"],
@@ -365,13 +365,13 @@ const standupReport = createTool({
 });
 
 
-// ── Management tools (create/delete are confirmation-gated) ───────────────
+// ── Management tools (only workspace-wide actions are confirmation-gated) ───────────────
 
 const confirmationCodeProp = {
   confirmationCode: {
     type: "string",
     description:
-      "Leave out on the first call. Only pass the code returned by the preview after the user replied yes.",
+      "Only for applyWorkspaceTemplate/createWorkspace: pass the code from the preview after the user replied yes. Otherwise leave out.",
   },
 } as const;
 
@@ -386,7 +386,7 @@ function withoutCode<T extends { confirmationCode?: string }>(input: T): Omit<T,
 
 const deleteIssue = createTool({
   description:
-    "Move an issue (with its comments and attachments) to the recycle bin. Restorable for 30 days. Requires the user's confirmation: call once without confirmationCode to get a preview.",
+    "Move an issue (with its comments and attachments) to the recycle bin. Restorable for 30 days. Runs immediately.",
   inputSchema: jsonSchema<Gated<{ identifier: string }>>({
     type: "object",
     properties: {
@@ -509,7 +509,7 @@ const sortIssues = createTool({
 
 const createProject = createTool({
   description:
-    "Create an empty project. Requires the user's confirmation (call once without confirmationCode for a preview). To create a project with starter issues, use createProjectFromTemplate instead.",
+    "Create an empty project. Runs immediately. To create a project with starter issues, use createProjectFromTemplate instead.",
   inputSchema: jsonSchema<
     Gated<{
       name: string;
@@ -556,7 +556,7 @@ const createProject = createTool({
 
 const deleteProject = createTool({
   description:
-    "Move a project to the recycle bin (its issues are kept, just detached). Requires the user's confirmation.",
+    "Move a project to the recycle bin (its issues are kept, just detached). Runs immediately.",
   inputSchema: jsonSchema<Gated<{ name: string }>>({
     type: "object",
     properties: {
@@ -625,7 +625,7 @@ const listTemplates = createTool({
 
 const createProjectFromTemplate = createTool({
   description:
-    "Create a project plus its starter issues from a project template, in one team. Requires the user's confirmation. Get templateId from listTemplates and teamKey from listTeams.",
+    "Create a project plus its starter issues from a project template, in one team. Runs immediately. Get templateId from listTemplates and teamKey from listTeams.",
   inputSchema: jsonSchema<Gated<{ templateId: string; teamKey: string; projectName?: string }>>({
     type: "object",
     properties: {
@@ -673,7 +673,7 @@ type TemplateIssue = {
 
 const createTemplate = createTool({
   description:
-    "Save a new custom template for this workspace. kind 'project' needs issues (1-50); kind 'workspace' needs teams (key 1-5 letters) and/or labels (hex colors like #ef4444). Ask clarifying questions first if the user's request is vague. Requires the user's confirmation.",
+    "Save a new custom template for this workspace. kind 'project' needs issues (1-50); kind 'workspace' needs teams (key 1-5 letters) and/or labels (hex colors like #ef4444). Runs immediately; fill in sensible defaults instead of asking.",
   inputSchema: jsonSchema<
     Gated<{
       kind: "project" | "workspace";
