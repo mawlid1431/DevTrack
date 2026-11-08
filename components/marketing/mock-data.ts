@@ -12,11 +12,11 @@ import type {
 export type MockLabel = { name: string; color: string };
 
 export const MOCK_LABELS = {
-  bug: { name: "Bug", color: "#f97316" },
-  feature: { name: "Feature", color: "#8b5cf6" },
-  performance: { name: "Performance", color: "#10b981" },
-  design: { name: "Design", color: "#3b82f6" },
-  infra: { name: "Infra", color: "#eab308" },
+  bug: { name: "Bug", color: "#E8642B" },
+  feature: { name: "Feature", color: "#4B637D" },
+  performance: { name: "Performance", color: "#16C784" },
+  design: { name: "Design", color: "#2F7DF6" },
+  infra: { name: "Infra", color: "#F5A524" },
 } satisfies Record<string, MockLabel>;
 
 export type MockIssue = {

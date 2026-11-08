@@ -7,15 +7,11 @@ export function FeaturesAi() {
   return (
     <Section id="ai" className="overflow-hidden">
       {/* A single restrained glow distinguishes the AI section. */}
-      <div
-        aria-hidden
-        className="absolute inset-x-0 top-0 -z-10 h-full bg-[radial-gradient(ellipse_50%_40%_at_70%_20%,color-mix(in_oklch,var(--foreground),transparent_95%),transparent)]"
-      />
       <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
         <MockAiChat className="order-last lg:order-first" />
         <div>
           <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[0.6875rem] font-medium text-muted-foreground">
-            <span className="size-1.5 rounded-full bg-emerald-500" />
+            <span className="size-1.5 rounded-full bg-status-done" />
             Included in Pro & Enterprise
           </div>
           <SectionHeading

@@ -86,7 +86,7 @@ export function MockAiChat({ className }: { className?: string }) {
 function ToolChip({ name }: { name: string }) {
   return (
     <span className="inline-flex items-center gap-1 rounded-md border bg-muted/50 px-1.5 py-0.5 font-mono text-[0.625rem] text-muted-foreground">
-      <Check className="size-2.5 text-emerald-500" />
+      <Check className="size-2.5 text-success" />
       {name}
     </span>
   );

@@ -134,7 +134,7 @@ function UpgradeCard({
             key={highlight}
             className="flex items-center gap-2 text-xs text-muted-foreground"
           >
-            <Check className="size-3.5 shrink-0 text-primary" />
+            <Check className="size-3.5 shrink-0 text-brand" />
             {highlight}
           </li>
         ))}

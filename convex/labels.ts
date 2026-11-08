@@ -38,7 +38,7 @@ export const create = orgMutation({
       );
     }
     if (!HEX_COLOR.test(args.color)) {
-      throw new Error("Label color must be a hex value like #5e6ad2");
+      throw new Error("Label color must be a hex value like #4B637D");
     }
 
     const existing = await ctx.db

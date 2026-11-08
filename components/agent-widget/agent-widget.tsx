@@ -117,7 +117,7 @@ export function AgentWidget() {
               open && "max-md:hidden"
             )}
           >
-            {open ? <X className="size-5" /> : <Sparkles className="size-5 text-primary" />}
+            {open ? <X className="size-5" /> : <Sparkles className="size-5 text-brand" />}
           </button>
         </TooltipTrigger>
         <TooltipContent side="left">Ask DevTrack AI (Ctrl+J)</TooltipContent>
@@ -137,7 +137,7 @@ function PanelHeader({
 }) {
   return (
     <header className="flex h-11 shrink-0 items-center gap-1 border-b px-3">
-      <Sparkles className="size-4 text-primary" />
+      <Sparkles className="size-4 text-brand" />
       <h2 className="ml-1 text-sm font-medium">DevTrack AI</h2>
       <div className="ml-auto flex items-center gap-0.5">
         {onNew && (
@@ -173,7 +173,7 @@ function LockedPanel({ orgSlug, onClose }: { orgSlug: string; onClose: () => voi
     <>
       <PanelHeader orgSlug={orgSlug} onClose={onClose} />
       <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center">
-        <Sparkles className="size-6 text-primary" />
+        <Sparkles className="size-6 text-brand" />
         <p className="text-sm text-muted-foreground">
           The AI agent is part of the Pro and Enterprise plans.
         </p>

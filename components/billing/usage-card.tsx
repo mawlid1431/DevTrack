@@ -49,7 +49,7 @@ function UsageRow({
           <div
             className={cn(
               "h-full rounded-full bg-primary transition-[width]",
-              ratio >= 0.8 && "bg-amber-500",
+              ratio >= 0.8 && "bg-warning-fill",
               ratio >= 1 && "bg-destructive"
             )}
             style={{ width: `${Math.min(100, Math.round(ratio * 100))}%` }}
@@ -145,7 +145,7 @@ export function UsageCard({ org }: { org: Doc<"organizations"> }) {
         )}
 
         {(seatLimitReached || issueLimitReached) && isFree && (
-          <div className="flex items-start gap-2 rounded-md border border-amber-500/30 bg-amber-500/10 p-2.5 text-xs text-amber-600 dark:text-amber-400">
+          <div className="flex items-start gap-2 rounded-md border border-warning-fill/40 bg-warning-fill/10 p-2.5 text-xs text-warning">
             <TriangleAlert className="mt-0.5 size-3.5 shrink-0" />
             <span>
               {issueLimitReached && seatLimitReached

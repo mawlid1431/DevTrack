@@ -43,7 +43,7 @@ function PresenceFacepile({
   return (
     <section className="mb-5">
       <h3 className="flex h-6 items-center gap-1.5 text-xs font-medium text-muted-foreground">
-        <span className="size-1.5 rounded-full bg-emerald-500" />
+        <span className="size-1.5 rounded-full bg-status-done" />
         Viewing now
       </h3>
       <TooltipProvider>

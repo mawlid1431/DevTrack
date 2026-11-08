@@ -49,7 +49,7 @@ export function CommentBody({
         segment.mention ? (
           <span
             key={index}
-            className="rounded bg-primary/10 px-0.5 font-medium text-primary"
+            className="rounded bg-primary/10 px-0.5 font-medium text-brand"
           >
             {segment.text}
           </span>

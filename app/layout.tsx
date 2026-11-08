@@ -1,12 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
+// Brand type: Inter for the interface and the "DevTrack" name (400 text,
+// 500 labels, 600 headings); Geist Mono for issue IDs, shortcuts, numbers.
 const geistSans = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
@@ -24,6 +27,26 @@ export const metadata: Metadata = {
   authors: [{ name: "Mowlid", url: "https://devmowlid.vercel.app/" }],
   creator: "Mowlid",
   metadataBase: new URL("https://devmowlid.vercel.app"),
+  // Brand favicon set (brand/assets/favicon, head-snippet.html).
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+    other: [{ rel: "mask-icon", url: "/safari-pinned-tab.svg", color: "#0B1B2E" }],
+  },
+  manifest: "/site.webmanifest",
+  applicationName: "DevTrack",
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: dark)", color: "#0B1B2E" },
+  ],
 };
 
 export default function RootLayout({

@@ -672,7 +672,7 @@ type TemplateIssue = {
 
 const createTemplate = createTool({
   description:
-    "Save a new custom template for this workspace. kind 'project' needs issues (1-50); kind 'workspace' needs teams (key 1-5 letters) and/or labels (hex colors like #ef4444). Runs immediately; fill in sensible defaults instead of asking.",
+    "Save a new custom template for this workspace. kind 'project' needs issues (1-50); kind 'workspace' needs teams (key 1-5 letters) and/or labels (hex colors like #D13438). Runs immediately; fill in sensible defaults instead of asking.",
   inputSchema: jsonSchema<
     Gated<{
       kind: "project" | "workspace";

@@ -8,6 +8,31 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-brand: var(--brand-text);
+  --color-brand-green: var(--brand-green);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-pressed: var(--primary-pressed);
+  --color-icon: var(--icon);
+  --color-icon-hover: var(--icon-hover);
+  --color-success: var(--success-text);
+  --color-success-fill: var(--success);
+  --color-warning-fill: var(--warning);
+  --color-danger-fill: var(--danger);
+  --color-info-fill: var(--info);
+  --color-warning: var(--warning-text);
+  --color-danger: var(--danger-text);
+  --color-info: var(--info-text);
+  --color-status-backlog: var(--status-backlog);
+  --color-status-todo: var(--status-todo);
+  --color-status-in-progress: var(--status-in-progress);
+  --color-status-in-review: var(--status-in-review);
+  --color-status-done: var(--status-done);
+  --color-status-canceled: var(--status-canceled);
+  --color-priority-urgent: var(--priority-urgent);
+  --color-priority-high: var(--priority-high);
+  --color-priority-medium: var(--priority-medium);
+  --color-priority-low: var(--priority-low);
+  --color-priority-none: var(--priority-none);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -52,76 +77,134 @@
 }
 
 /*
- * Notion-inspired palette: warm off-white sidebar, warm grey text
- * (rgb 55 53 47), soft hover fills, Notion blue for primary actions.
+ * DevTrack brand theme (brand/DevTrack-Brand-Guidelines.pdf, sections 03 to 06;
+ * values from brand/assets/theme/devtrack-theme.css).
+ * Light: white canvas, Mist sidebar, Deep Navy text. Dark: Deep Navy, never
+ * black; surfaces get lighter as they rise (900 canvas, 800 cards, 700 menus).
+ * Done Green is the one primary action, always with navy text (7.9:1).
  */
 :root {
-  --background: #ffffff;
-  --foreground: rgb(55 53 47);
-  --card: #ffffff;
-  --card-foreground: rgb(55 53 47);
-  --popover: #ffffff;
-  --popover-foreground: rgb(55 53 47);
-  --primary: #2383e2;
-  --primary-foreground: #ffffff;
-  --secondary: rgb(55 53 47 / 0.06);
-  --secondary-foreground: rgb(55 53 47);
-  --muted: rgb(55 53 47 / 0.05);
-  --muted-foreground: rgb(55 53 47 / 0.65);
-  --accent: rgb(55 53 47 / 0.08);
-  --accent-foreground: rgb(55 53 47);
-  --destructive: #eb5757;
-  --border: rgb(55 53 47 / 0.12);
-  --input: rgb(55 53 47 / 0.16);
-  --ring: rgb(35 131 226 / 0.55);
-  --chart-1: #2383e2;
-  --chart-2: #0f7b6c;
-  --chart-3: #d9730d;
-  --chart-4: #9065b0;
-  --chart-5: #e03e3e;
+  --background: #FFFFFF;
+  --foreground: #0B1B2E;
+  --card: #FFFFFF;
+  --card-foreground: #0B1B2E;
+  --popover: #FFFFFF;
+  --popover-foreground: #0B1B2E;
+  --primary: #16C784;
+  --primary-foreground: #0B1B2E;
+  --secondary: #EEF3F8;
+  --secondary-foreground: #0B1B2E;
+  --muted: #F2F6F4;
+  --muted-foreground: #4B637D;
+  --accent: #EEF3F8;
+  --accent-foreground: #0B1B2E;
+  --destructive: #D13438;
+  --border: #D9E3EE;
+  --input: #B4C5D8;
+  --ring: #16C784;
+  --chart-1: #16C784;
+  --chart-2: #2F7DF6;
+  --chart-3: #F5A524;
+  --chart-4: #4B637D;
+  --chart-5: #D13438;
   --radius: 0.5rem;
-  --sidebar: #f7f7f5;
-  --sidebar-foreground: rgb(55 53 47 / 0.85);
-  --sidebar-primary: #2383e2;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgb(55 53 47 / 0.08);
-  --sidebar-accent-foreground: rgb(55 53 47);
-  --sidebar-border: rgb(55 53 47 / 0.09);
-  --sidebar-ring: rgb(35 131 226 / 0.55);
+  --sidebar: #F2F6F4;
+  --sidebar-foreground: #12263D;
+  --sidebar-primary: #16C784;
+  --sidebar-primary-foreground: #0B1B2E;
+  --sidebar-accent: #E3ECE8;
+  --sidebar-accent-foreground: #0B1B2E;
+  --sidebar-border: #DCE5E0;
+  --sidebar-ring: #16C784;
+
+  /* Brand extras */
+  --logo: #0B1B2E;
+  --input-fill: #FFFFFF;
+  --brand-green: #16C784;
+  /* Green as TEXT or a small icon: Green 700 on light (4.7:1); 500 fails. */
+  --brand-text: #0B8457;
+  --primary-hover: #2BD08F;
+  --primary-pressed: #0FA56C;
+  --icon: #4B637D;
+  --icon-hover: #0B1B2E;
+  --success: #0FA56C;
+  --success-text: #0B8457;
+  --warning: #F5A524;
+  --warning-text: #9A5B00;
+  --danger: #D13438;
+  --danger-text: #B42A2E;
+  --info: #2F7DF6;
+  --info-text: #1F5FC4;
+  --status-backlog: #8FA3B8;
+  --status-todo: #4B637D;
+  --status-in-progress: #F5A524;
+  --status-in-review: #2F7DF6;
+  --status-done: #16C784;
+  --status-canceled: #6A819A;
+  --priority-urgent: #D13438;
+  --priority-high: #E8642B;
+  --priority-medium: #F5A524;
+  --priority-low: #6A819A;
+  --priority-none: #8FA3B8;
 }
 
 .dark {
-  --background: #191919;
-  --foreground: rgb(255 255 255 / 0.87);
-  --card: #202020;
-  --card-foreground: rgb(255 255 255 / 0.87);
-  --popover: #252525;
-  --popover-foreground: rgb(255 255 255 / 0.87);
-  --primary: #2383e2;
-  --primary-foreground: #ffffff;
-  --secondary: rgb(255 255 255 / 0.06);
-  --secondary-foreground: rgb(255 255 255 / 0.87);
-  --muted: rgb(255 255 255 / 0.05);
-  --muted-foreground: rgb(255 255 255 / 0.5);
-  --accent: rgb(255 255 255 / 0.07);
-  --accent-foreground: rgb(255 255 255 / 0.87);
-  --destructive: #eb5757;
-  --border: rgb(255 255 255 / 0.09);
-  --input: rgb(255 255 255 / 0.14);
-  --ring: rgb(35 131 226 / 0.6);
-  --chart-1: #529cca;
-  --chart-2: #4dab9a;
-  --chart-3: #ffa344;
-  --chart-4: #9a6dd7;
-  --chart-5: #ff7369;
-  --sidebar: #202020;
-  --sidebar-foreground: rgb(255 255 255 / 0.75);
-  --sidebar-primary: #2383e2;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgb(255 255 255 / 0.06);
-  --sidebar-accent-foreground: rgb(255 255 255 / 0.87);
-  --sidebar-border: rgb(255 255 255 / 0.06);
-  --sidebar-ring: rgb(35 131 226 / 0.6);
+  --background: #0B1B2E;
+  --foreground: #EEF3F8;
+  --card: #12263D;
+  --card-foreground: #EEF3F8;
+  --popover: #1A3250;
+  --popover-foreground: #EEF3F8;
+  --primary: #16C784;
+  --primary-foreground: #0B1B2E;
+  --secondary: #1A3250;
+  --secondary-foreground: #EEF3F8;
+  --muted: #12263D;
+  --muted-foreground: #8FA3B8;
+  --accent: #1A3250;
+  --accent-foreground: #EEF3F8;
+  --destructive: #FF6B6E;
+  --border: #24405F;
+  --input: #24405F;
+  --ring: #16C784;
+  --chart-1: #2BD08F;
+  --chart-2: #6AA6FF;
+  --chart-3: #F7B84B;
+  --chart-4: #8FA3B8;
+  --chart-5: #FF6B6E;
+  --sidebar: #06111F;
+  --sidebar-foreground: #B4C5D8;
+  --sidebar-primary: #16C784;
+  --sidebar-primary-foreground: #0B1B2E;
+  --sidebar-accent: #12263D;
+  --sidebar-accent-foreground: #EEF3F8;
+  --sidebar-border: #12263D;
+  --sidebar-ring: #16C784;
+
+  --logo: #FFFFFF;
+  --input-fill: #12263D;
+  --brand-text: #2BD08F;
+  --icon: #8FA3B8;
+  --icon-hover: #EEF3F8;
+  --success: #2BD08F;
+  --success-text: #2BD08F;
+  --warning: #F7B84B;
+  --warning-text: #F7B84B;
+  --danger: #FF6B6E;
+  --danger-text: #FF6B6E;
+  --info: #6AA6FF;
+  --info-text: #6AA6FF;
+  --status-backlog: #6A819A;
+  --status-todo: #B4C5D8;
+  --status-in-progress: #F7B84B;
+  --status-in-review: #6AA6FF;
+  --status-done: #2BD08F;
+  --status-canceled: #6A819A;
+  --priority-urgent: #FF6B6E;
+  --priority-high: #FF8A50;
+  --priority-medium: #F7B84B;
+  --priority-low: #8FA3B8;
+  --priority-none: #4B637D;
 }
 
 @layer base {
@@ -135,7 +218,16 @@
     @apply font-sans antialiased;
   }
   ::selection {
-    background: rgb(35 131 226 / 0.28);
+    background: rgb(22 199 132 / 0.3);
+  }
+  /* Brand focus: always visible, 2 px Done Green ring with a 2 px offset. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  /* Lucide icons: 1.75 px stroke, round caps and joins. */
+  svg.lucide {
+    stroke-width: 1.75;
   }
 }
 /*
@@ -226,8 +318,9 @@ body {
 }
 @keyframes devtrack-guide-pulse {
   0%, 100% { box-shadow: 0 0 0 3px var(--primary), 0 0 0 9999px rgb(0 0 0 / 0.35); }
-  50% { box-shadow: 0 0 0 7px rgb(35 131 226 / 0.45), 0 0 0 9999px rgb(0 0 0 / 0.35); }
+  50% { box-shadow: 0 0 0 7px rgb(22 199 132 / 0.45), 0 0 0 9999px rgb(0 0 0 / 0.35); }
 }
 @media (prefers-reduced-motion: reduce) {
   .devtrack-guide-ring { animation: none; }
 }
+

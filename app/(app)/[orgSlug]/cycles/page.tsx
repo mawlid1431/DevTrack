@@ -112,7 +112,7 @@ function CyclesPageInner() {
           {teamsWithCycles?.map((team) => (
             <section key={team._id}>
               <div className="flex h-9 items-center gap-2 bg-muted/50 px-4 text-sm">
-                <span className="flex size-4 items-center justify-center rounded bg-primary/15 text-[0.5625rem] font-semibold text-primary">
+                <span className="flex size-4 items-center justify-center rounded bg-foreground/10 text-[0.5625rem] font-semibold text-foreground">
                   {team.key.slice(0, 2)}
                 </span>
                 <span className="font-medium">{team.name}</span>

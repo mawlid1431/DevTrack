@@ -46,14 +46,14 @@ type IssueSpec = {
 };
 
 const LABELS: { name: string; color: string }[] = [
-  { name: "Bug", color: "#eb5757" },
-  { name: "Feature", color: "#5e6ad2" },
-  { name: "Polish", color: "#4cb782" },
-  { name: "Performance", color: "#f2994a" },
-  { name: "Security", color: "#c970ff" },
-  { name: "Infra", color: "#95a2b3" },
-  { name: "Design system", color: "#26b5ce" },
-  { name: "Accessibility", color: "#4ea7fc" },
+  { name: "Bug", color: "#D13438" },
+  { name: "Feature", color: "#4B637D" },
+  { name: "Polish", color: "#16C784" },
+  { name: "Performance", color: "#E8642B" },
+  { name: "Security", color: "#0B8457" },
+  { name: "Infra", color: "#8FA3B8" },
+  { name: "Design system", color: "#2F7DF6" },
+  { name: "Accessibility", color: "#F5A524" },
 ];
 
 const PROJECTS: {
@@ -69,7 +69,7 @@ const PROJECTS: {
       "Make the board first-class on every screen size: touch drag-and-drop, responsive columns and a mobile-friendly issue list.",
     status: "in_progress",
     targetInDays: 45,
-    color: "#5e6ad2",
+    color: "#4B637D",
   },
   {
     name: "Launch readiness",
@@ -77,7 +77,7 @@ const PROJECTS: {
       "Everything standing between us and the public launch: security hardening, marketing assets and the day-one checklist.",
     status: "in_progress",
     targetInDays: 30,
-    color: "#f2994a",
+    color: "#E8642B",
   },
 ];
 

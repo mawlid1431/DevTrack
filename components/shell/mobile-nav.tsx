@@ -11,6 +11,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useCommands } from "@/components/commands/command-provider";
+import { BrandName, Logo } from "@/components/brand/logo";
 import { AppSidebar } from "./app-sidebar";
 
 /**
@@ -48,7 +49,10 @@ export function MobileNav() {
       >
         <Menu className="size-5" />
       </Button>
-      <span className="text-sm font-semibold">DevTrack</span>
+      <span className="flex items-center gap-2">
+        <Logo size={20} title="" />
+        <BrandName className="text-sm" />
+      </span>
       <Button
         variant="ghost"
         size="icon"

@@ -145,7 +145,7 @@ function TriagePanelInner({ issue }: IssueDetailSlotProps) {
   return (
     <section className="flex flex-col gap-3 rounded-lg border bg-card/50 p-4">
       <div className="flex items-center gap-2">
-        <Sparkles className="size-3.5 text-primary" />
+        <Sparkles className="size-3.5 text-brand" />
         <h3 className="text-xs font-medium">AI triage</h3>
         <Button
           variant="outline"

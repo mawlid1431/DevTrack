@@ -62,7 +62,7 @@ function FilterMenu({
           {icon}
           {label}
           {activeCount > 0 ? (
-            <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-primary/15 px-1 font-mono text-[0.625rem] text-primary">
+            <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-primary/15 px-1 font-mono text-[0.625rem] text-brand">
               {activeCount}
             </span>
           ) : null}

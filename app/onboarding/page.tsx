@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { readLastWorkspace } from "@/lib/last-workspace";
+import { Logo } from "@/components/brand/logo";
 
 /** Clerk's automatic empty first organization ("My Organization"). */
 function isAutoCreated(slug: string | null, name: string): boolean {
@@ -100,6 +101,7 @@ function CreateWorkspace({
   return (
     <main className="flex min-h-dvh items-center justify-center px-6">
       <form onSubmit={submit} className="flex w-full max-w-sm flex-col gap-5">
+        <Logo size={40} title="DevTrack" />
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Create your workspace</h1>
           <p className="mt-1 text-sm text-muted-foreground">

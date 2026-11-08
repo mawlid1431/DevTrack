@@ -119,7 +119,7 @@ export function UseProjectTemplateDialog({
   );
 }
 
-/** Lines like "Engineering, ENG" or "Bug #ef4444" -> structured values. */
+/** Lines like "Engineering, ENG" or "Bug #D13438" -> structured values. */
 function parseTeams(text: string) {
   return text
     .split("\n")
@@ -138,7 +138,7 @@ function parseLabels(text: string) {
     .filter(Boolean)
     .map((line) => {
       const match = line.match(/^(.*?)\s*(#[0-9a-fA-F]{6})?$/);
-      return { name: (match?.[1] ?? line).trim(), color: match?.[2] ?? "#6b7280" };
+      return { name: (match?.[1] ?? line).trim(), color: match?.[2] ?? "#8FA3B8" };
     });
 }
 
@@ -267,7 +267,7 @@ export function CreateTemplateDialog({
                 <Textarea
                   id="template-labels"
                   className="min-h-20"
-                  placeholder={"Bug #ef4444\nFeature #8b5cf6"}
+                  placeholder={"Bug #D13438\nFeature #4B637D"}
                   value={labels}
                   onChange={(e) => setLabels(e.target.value)}
                 />

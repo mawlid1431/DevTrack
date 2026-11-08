@@ -113,7 +113,7 @@ export function IssueProjectCyclePanel({ issue, team }: IssueDetailSlotProps) {
               <SelectItem key={cycle._id} value={cycle._id}>
                 {cycleDisplayName(cycle)}
                 {isCurrentCycle(cycle) && (
-                  <span className="text-xs text-emerald-500">Current</span>
+                  <span className="text-xs text-success">Current</span>
                 )}
               </SelectItem>
             ))}

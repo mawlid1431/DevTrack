@@ -59,7 +59,7 @@ function ToolChip({
       ) : failed ? (
         <CircleAlert className="size-3 text-destructive" />
       ) : (
-        <CircleCheck className="size-3 text-emerald-500" />
+        <CircleCheck className="size-3 text-success" />
       )}
       <Wrench className="size-3" />
       {TOOL_LABELS[name] ?? name}

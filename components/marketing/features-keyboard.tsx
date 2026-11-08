@@ -38,10 +38,6 @@ export function FeaturesKeyboard() {
           </div>
         </div>
         <div className="relative">
-          <div
-            aria-hidden
-            className="absolute inset-0 -z-10 scale-110 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,color-mix(in_oklch,var(--foreground),transparent_94%),transparent)]"
-          />
           <MockCommandPalette className="mx-auto max-w-md" />
         </div>
       </div>

@@ -74,7 +74,7 @@ export function BoardCardContent({
           <span
             className={cn(
               "inline-flex items-center gap-1 text-[0.6875rem]",
-              overdue ? "text-red-500" : "text-muted-foreground"
+              overdue ? "text-danger" : "text-muted-foreground"
             )}
           >
             <CalendarDays className="size-3" />

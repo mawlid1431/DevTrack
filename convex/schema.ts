@@ -156,7 +156,7 @@ export default defineSchema({
   labels: defineTable({
     orgId: v.id("organizations"),
     name: v.string(),
-    /** Hex color, e.g. "#5e6ad2" */
+    /** Hex color, e.g. "#4B637D" */
     color: v.string(),
   }).index("by_org", ["orgId"]),
 

@@ -72,7 +72,7 @@ export function AiComposer({
         className={cn(
           "mx-auto flex w-full max-w-3xl items-end gap-1.5 rounded-xl border bg-background p-2 transition-shadow",
           compact ? "shadow-none" : "shadow-sm focus-within:shadow-md",
-          voice.listening && "border-red-400/60 ring-2 ring-red-400/20"
+          voice.listening && "border-danger-fill/60 ring-2 ring-danger-fill/20"
         )}
       >
         <Textarea

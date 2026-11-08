@@ -22,15 +22,15 @@ export function IssueProgressBar({
     <div className={cn("flex items-center gap-2", className)}>
       <div className="flex h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
         <div
-          className="bg-emerald-500"
+          className="bg-status-done"
           style={{ width: `${widthOf(progress.done)}%` }}
         />
         <div
-          className="bg-blue-500"
+          className="bg-status-in-review"
           style={{ width: `${widthOf(progress.in_review)}%` }}
         />
         <div
-          className="bg-yellow-500"
+          className="bg-status-in-progress"
           style={{ width: `${widthOf(progress.in_progress)}%` }}
         />
       </div>

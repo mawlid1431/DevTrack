@@ -165,7 +165,7 @@ export function ViewSwitcher({
                   className="group/view gap-2"
                 >
                   {isActive ? (
-                    <Check className="size-3.5 text-primary" />
+                    <Check className="size-3.5 text-brand" />
                   ) : (
                     <Bookmark className="size-3.5 text-muted-foreground" />
                   )}

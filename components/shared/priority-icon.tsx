@@ -1,5 +1,5 @@
 import {
-  Minus,
+  Ellipsis,
   SignalHigh,
   SignalLow,
   SignalMedium,
@@ -8,15 +8,13 @@ import {
 import { cn } from "@/lib/utils";
 import { IssuePriority } from "./issue-meta";
 
-const config: Record<
-  IssuePriority,
-  { icon: typeof Minus; className: string }
-> = {
-  none: { icon: Minus, className: "text-muted-foreground/50" },
-  urgent: { icon: TriangleAlert, className: "text-orange-500" },
-  high: { icon: SignalHigh, className: "text-foreground" },
-  medium: { icon: SignalMedium, className: "text-foreground" },
-  low: { icon: SignalLow, className: "text-foreground" },
+/** Issue priority: brand color + shape (urgent, 3, 2 or 1 bars, dots). */
+const config: Record<IssuePriority, { icon: typeof Ellipsis; className: string }> = {
+  none: { icon: Ellipsis, className: "text-priority-none" },
+  urgent: { icon: TriangleAlert, className: "text-priority-urgent" },
+  high: { icon: SignalHigh, className: "text-priority-high" },
+  medium: { icon: SignalMedium, className: "text-priority-medium" },
+  low: { icon: SignalLow, className: "text-priority-low" },
 };
 
 export function PriorityIcon({
@@ -27,5 +25,5 @@ export function PriorityIcon({
   className?: string;
 }) {
   const { icon: Icon, className: colorClass } = config[priority];
-  return <Icon className={cn("size-4 shrink-0", colorClass, className)} />;
+  return <Icon aria-hidden className={cn("size-4 shrink-0", colorClass, className)} />;
 }

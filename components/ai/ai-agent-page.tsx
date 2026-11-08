@@ -120,7 +120,7 @@ function AiWorkspace() {
   return (
     <>
       <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
-        <Bot className="size-4 text-primary" />
+        <Bot className="size-4 text-brand" />
         <h1 className="text-sm font-medium">AI Agent</h1>
         <div className="ml-auto flex items-center gap-2">
           <QuotaPill quota={quota} />
@@ -191,7 +191,7 @@ function EmptyState({
     <div className="flex flex-1 items-center justify-center p-8">
       <div className="flex w-full max-w-md flex-col items-center gap-5 text-center">
         <div className="flex size-10 items-center justify-center rounded-lg border bg-primary/10">
-          <Sparkles className="size-5 text-primary" />
+          <Sparkles className="size-5 text-brand" />
         </div>
         <div className="flex flex-col gap-1">
           <h2 className="text-base font-semibold">Ask DevTrack</h2>

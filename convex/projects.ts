@@ -50,7 +50,7 @@ function normalizeProjectName(raw: string): string {
 
 function assertHexColor(color: string): void {
   if (!HEX_COLOR.test(color)) {
-    throw new Error("Project color must be a hex value like #5e6ad2");
+    throw new Error("Project color must be a hex value like #4B637D");
   }
 }
 

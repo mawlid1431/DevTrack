@@ -18,13 +18,13 @@ export function MockCycle({ className }: { className?: string }) {
         <RefreshCcw className="size-3.5 text-muted-foreground" />
         <span className="text-sm font-medium">Cycle 14</span>
         <span className="text-xs text-muted-foreground">Jun 2 to Jun 16</span>
-        <span className="ml-auto font-mono text-xs text-emerald-500">
+        <span className="ml-auto font-mono text-xs text-success">
           {percent}%
         </span>
       </div>
       <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
         <div
-          className="h-full rounded-full bg-emerald-500"
+          className="h-full rounded-full bg-status-done"
           style={{ width: `${percent}%` }}
         />
       </div>
@@ -34,11 +34,11 @@ export function MockCycle({ className }: { className?: string }) {
           Scope {scope}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="size-1.5 rounded-full bg-yellow-500" />
+          <span className="size-1.5 rounded-full bg-status-in-progress" />
           Started 7
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="size-1.5 rounded-full bg-emerald-500" />
+          <span className="size-1.5 rounded-full bg-status-done" />
           Completed {completed}
         </span>
       </div>
@@ -48,7 +48,7 @@ export function MockCycle({ className }: { className?: string }) {
             key={index}
             className={
               index === CYCLE_BARS.length - 1
-                ? "flex-1 rounded-sm bg-emerald-500"
+                ? "flex-1 rounded-sm bg-status-done"
                 : "flex-1 rounded-sm bg-foreground/10"
             }
             style={{ height: `${Math.max(8, (value / max) * 100)}%` }}

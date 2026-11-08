@@ -76,7 +76,7 @@ function MockSidebar() {
   return (
     <aside className="hidden w-52 shrink-0 flex-col border-r bg-muted/20 md:flex">
       <div className="flex h-10 items-center gap-2 border-b px-3">
-        <span className="flex size-5 items-center justify-center rounded bg-primary text-[0.625rem] font-bold text-primary-foreground">
+        <span className="flex size-5 items-center justify-center rounded bg-foreground text-[0.625rem] font-bold text-background">
           A
         </span>
         <span className="text-xs font-semibold">Acme Inc</span>

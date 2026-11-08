@@ -28,7 +28,7 @@ export function AiUpgradeCta() {
     <div className="flex flex-1 items-center justify-center p-8">
       <div className="flex w-full max-w-md flex-col items-center gap-6 text-center">
         <div className="flex size-12 items-center justify-center rounded-xl border bg-primary/10">
-          <Bot className="size-6 text-primary" />
+          <Bot className="size-6 text-brand" />
         </div>
         <div className="flex flex-col gap-1.5">
           <h2 className="text-lg font-semibold">Meet DevTrack, your AI agent</h2>
@@ -40,7 +40,7 @@ export function AiUpgradeCta() {
         <div className="flex w-full flex-col gap-3 rounded-lg border bg-card p-4 text-left">
           {FEATURES.map((feature) => (
             <div key={feature.title} className="flex items-start gap-3">
-              <feature.icon className="mt-0.5 size-4 shrink-0 text-primary" />
+              <feature.icon className="mt-0.5 size-4 shrink-0 text-brand" />
               <div>
                 <p className="text-sm font-medium">{feature.title}</p>
                 <p className="text-xs text-muted-foreground">

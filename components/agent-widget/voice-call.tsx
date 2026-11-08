@@ -151,7 +151,7 @@ function CallStage({
         />
         <TrackToggle
           source={Track.Source.ScreenShare}
-          className="inline-flex h-8 items-center gap-1.5 rounded-lg border bg-background px-2 text-xs text-foreground transition-colors hover:bg-accent data-[lk-enabled=true]:border-primary data-[lk-enabled=true]:text-primary [&>svg]:size-4"
+          className="inline-flex h-8 items-center gap-1.5 rounded-lg border bg-background px-2 text-xs text-foreground transition-colors hover:bg-accent data-[lk-enabled=true]:border-primary data-[lk-enabled=true]:text-brand [&>svg]:size-4"
           aria-label="Share your screen with the agent"
         >
           Share screen

@@ -3,8 +3,8 @@ import { cn } from "@/lib/utils";
 import { CYCLE_STATUS_LABELS, CycleStatus } from "./cycle-meta";
 
 const styles: Record<CycleStatus, string> = {
-  current: "border-emerald-500/30 text-emerald-500",
-  upcoming: "border-blue-500/30 text-blue-500",
+  current: "border-success-fill/40 text-success",
+  upcoming: "border-info-fill/40 text-info",
   completed: "border-border text-muted-foreground",
 };
 

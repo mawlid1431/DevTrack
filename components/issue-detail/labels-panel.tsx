@@ -24,16 +24,16 @@ import { IssueDetailSlotProps } from "@/components/issue-detail/slots";
 import { LabelChip } from "@/components/shared/label-chip";
 import { cn } from "@/lib/utils";
 
-/** Linear's default label palette. */
+/** Brand label palette (navy, info, green, amber, orange, danger, green 700, navy 300). */
 const LABEL_COLORS = [
-  "#5e6ad2",
-  "#26b5ce",
-  "#4cb782",
-  "#f2c94c",
-  "#f2994a",
-  "#eb5757",
-  "#bb87fc",
-  "#95a2b3",
+  "#4B637D",
+  "#2F7DF6",
+  "#16C784",
+  "#F5A524",
+  "#E8642B",
+  "#D13438",
+  "#0B8457",
+  "#8FA3B8",
 ];
 
 export function LabelsPanel({ issue }: IssueDetailSlotProps) {

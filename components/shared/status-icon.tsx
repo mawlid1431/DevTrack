@@ -1,24 +1,25 @@
 import {
-  CircleDashed,
   Circle,
-  CircleDot,
-  CircleEllipsis,
   CircleCheck,
+  CircleDashed,
+  CircleEllipsis,
   CircleX,
+  Contrast,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { IssueStatus } from "./issue-meta";
 
-const config: Record<
-  IssueStatus,
-  { icon: typeof Circle; className: string }
-> = {
-  backlog: { icon: CircleDashed, className: "text-muted-foreground" },
-  todo: { icon: Circle, className: "text-muted-foreground" },
-  in_progress: { icon: CircleDot, className: "text-yellow-500" },
-  in_review: { icon: CircleEllipsis, className: "text-blue-500" },
-  done: { icon: CircleCheck, className: "text-emerald-500" },
-  canceled: { icon: CircleX, className: "text-muted-foreground/60" },
+/**
+ * Issue status: brand color + a distinct shape, so status never relies on
+ * color alone (guidelines, Contrast & visibility rule 6).
+ */
+const config: Record<IssueStatus, { icon: typeof Circle; className: string }> = {
+  backlog: { icon: CircleDashed, className: "text-status-backlog" },
+  todo: { icon: Circle, className: "text-status-todo" },
+  in_progress: { icon: Contrast, className: "text-status-in-progress" },
+  in_review: { icon: CircleEllipsis, className: "text-status-in-review" },
+  done: { icon: CircleCheck, className: "text-status-done" },
+  canceled: { icon: CircleX, className: "text-status-canceled" },
 };
 
 export function StatusIcon({
@@ -29,5 +30,5 @@ export function StatusIcon({
   className?: string;
 }) {
   const { icon: Icon, className: colorClass } = config[status];
-  return <Icon className={cn("size-4 shrink-0", colorClass, className)} />;
+  return <Icon aria-hidden className={cn("size-4 shrink-0", colorClass, className)} />;
 }

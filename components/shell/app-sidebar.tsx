@@ -31,6 +31,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useCommands } from "@/components/commands/command-provider";
 import { CreateTeamDialog } from "@/components/teams/create-team-dialog";
+import { Logo } from "@/components/brand/logo";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -40,9 +41,9 @@ import { ThemeToggle } from "./theme-toggle";
  * Collapsed, rows become 32px icon squares centred in a 56px rail.
  */
 const ROW =
-  "flex h-7 w-full min-w-0 items-center gap-2 rounded-md px-2 text-left text-sm text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground";
+  "group/row flex h-7 w-full min-w-0 items-center gap-2 rounded-md px-2 text-left text-sm text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground";
 const ROW_COLLAPSED = "h-8 w-8 justify-center gap-0 px-0 mx-auto";
-const ICON_SLOT = "flex size-4 shrink-0 items-center justify-center [&>svg]:size-4 [&>svg]:opacity-70";
+const ICON_SLOT = "flex size-4 shrink-0 items-center justify-center text-icon group-hover/row:text-icon-hover [&>svg]:size-4";
 
 const COLLAPSE_KEY = "devtrack:sidebar-collapsed";
 const CollapsedContext = createContext(false);
@@ -84,7 +85,7 @@ function NavLink({
         className={cn(
           ROW,
           collapsed && ROW_COLLAPSED,
-          active && "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
+          active && "bg-sidebar-accent font-medium text-sidebar-accent-foreground [&>span:first-child]:text-brand"
         )}
       >
         <span className={ICON_SLOT}>{icon}</span>
@@ -193,11 +194,17 @@ export function AppSidebar({
       >
         {/* Header: workspace switcher, new issue, collapse */}
         {collapsed ? (
-          <div className="flex shrink-0 flex-col items-center gap-1 py-2">
+          <div className="flex shrink-0 flex-col items-center gap-2 py-3">
+            <Link href={base} aria-label="DevTrack home">
+              <Logo size={22} title="" />
+            </Link>
             {collapseButton}
           </div>
         ) : (
-          <div className="flex h-12 shrink-0 items-center justify-between gap-1 px-2">
+          <div className="flex h-12 shrink-0 items-center justify-between gap-1 pl-3 pr-2">
+            <Link href={base} aria-label="DevTrack home" className="shrink-0">
+              <Logo size={22} title="" />
+            </Link>
             <div className="min-w-0 flex-1" data-tour="workspace-switcher">
               <OrganizationSwitcher
                 hidePersonal
@@ -277,7 +284,7 @@ export function AppSidebar({
                       href={`${base}/team/${team._id}`}
                       label={team.name}
                       icon={
-                        <span className="flex size-4 items-center justify-center rounded bg-primary/15 text-[0.5rem] font-semibold leading-none text-primary">
+                        <span className="flex size-4 items-center justify-center rounded bg-foreground/10 text-[0.5rem] font-semibold leading-none text-foreground">
                           {team.key.slice(0, 2)}
                         </span>
                       }
@@ -326,7 +333,7 @@ export function AppSidebar({
                       href={`${base}/team/${team._id}`}
                       label={team.name}
                       icon={
-                        <span className="flex size-4 items-center justify-center rounded bg-primary/15 text-[0.5rem] font-semibold leading-none text-primary">
+                        <span className="flex size-4 items-center justify-center rounded bg-foreground/10 text-[0.5rem] font-semibold leading-none text-foreground">
                           {team.key.slice(0, 2)}
                         </span>
                       }

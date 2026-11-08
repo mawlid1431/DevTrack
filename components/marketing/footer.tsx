@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandName, Logo } from "@/components/brand/logo";
 
 const COLUMNS: {
   heading: string;
@@ -31,10 +32,8 @@ export function Footer() {
         <div className="flex flex-col justify-between gap-10 md:flex-row">
           <div className="max-w-xs">
             <Link href="/" className="flex items-center gap-2 font-semibold">
-              <span className="flex size-6 items-center justify-center rounded bg-primary text-xs font-bold text-primary-foreground">
-                V
-              </span>
-              DevTrack
+              <Logo size={24} title="" />
+              <BrandName />
             </Link>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               The issue tracker built for speed. Plan, track, and ship with
@@ -85,7 +84,7 @@ export function Footer() {
             <span>MIT License</span>
           </p>
           <p className="flex items-center gap-1.5 font-mono text-[0.6875rem] text-muted-foreground">
-            <span className="size-1.5 rounded-full bg-emerald-500" />
+            <span className="size-1.5 rounded-full bg-status-done" />
             Realtime sync · 99.99% uptime
           </p>
         </div>

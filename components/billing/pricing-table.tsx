@@ -56,7 +56,7 @@ function PlanCard({
       className={cn(
         "relative flex flex-col rounded-xl border bg-card p-6",
         plan.popular &&
-          "border-primary/40 shadow-[0_0_60px_-16px] shadow-primary/25"
+          "border-primary/60"
       )}
     >
       {plan.popular && (
@@ -104,7 +104,7 @@ function PlanCard({
             key={highlight}
             className="flex items-start gap-2 text-xs text-muted-foreground"
           >
-            <Check className="mt-0.5 size-3.5 shrink-0 text-primary" />
+            <Check className="mt-0.5 size-3.5 shrink-0 text-brand" />
             {highlight}
           </li>
         ))}

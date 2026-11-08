@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 function ValueCell({ value }: { value: ComparisonValue }) {
   if (value === true) {
-    return <Check className="mx-auto size-4 text-primary" aria-label="Included" />;
+    return <Check className="mx-auto size-4 text-brand" aria-label="Included" />;
   }
   if (value === false) {
     return (
@@ -40,7 +40,7 @@ export function FeatureComparison() {
                 key={plan.slug}
                 className={cn(
                   "text-center text-xs font-semibold",
-                  plan.popular && "text-primary"
+                  plan.popular && "text-brand"
                 )}
               >
                 {plan.name}

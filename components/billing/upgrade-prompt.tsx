@@ -46,7 +46,7 @@ export function UpgradePromptDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="mb-1 flex size-8 items-center justify-center rounded-md bg-primary/15">
-            <Sparkles className="size-4 text-primary" />
+            <Sparkles className="size-4 text-brand" />
           </div>
           <DialogTitle>{copy.title}</DialogTitle>
           <DialogDescription>{copy.description}</DialogDescription>
@@ -58,7 +58,7 @@ export function UpgradePromptDialog({
               key={highlight}
               className="flex items-center gap-2 text-xs text-muted-foreground"
             >
-              <Check className="size-3.5 shrink-0 text-primary" />
+              <Check className="size-3.5 shrink-0 text-brand" />
               {highlight}
             </li>
           ))}

@@ -69,7 +69,7 @@ const BUILTIN_PROJECTS: Record<string, { name: string; description: string; cont
     name: "Product launch",
     description: "Plan, build and ship a new feature to customers.",
     content: {
-      project: { color: "#8b5cf6", status: "planned", description: "Everything needed to take a feature from spec to launch." },
+      project: { color: "#4B637D", status: "planned", description: "Everything needed to take a feature from spec to launch." },
       issues: [
         { title: "Write the product spec", priority: "high" },
         { title: "Design mockups and get sign-off", priority: "high" },
@@ -86,7 +86,7 @@ const BUILTIN_PROJECTS: Record<string, { name: string; description: string; cont
     name: "Website redesign",
     description: "Refresh the marketing site from audit to go-live.",
     content: {
-      project: { color: "#3b82f6", status: "planned" },
+      project: { color: "#2F7DF6", status: "planned" },
       issues: [
         { title: "Audit the current site and analytics", priority: "medium" },
         { title: "Define sitemap and page goals", priority: "high" },
@@ -102,7 +102,7 @@ const BUILTIN_PROJECTS: Record<string, { name: string; description: string; cont
     name: "Bug bash",
     description: "A focused sprint to find and fix bugs before a release.",
     content: {
-      project: { color: "#ef4444", status: "planned" },
+      project: { color: "#D13438", status: "planned" },
       issues: [
         { title: "Set the bug bash scope and test accounts", priority: "high" },
         { title: "Run the bug bash session", priority: "high" },
@@ -116,7 +116,7 @@ const BUILTIN_PROJECTS: Record<string, { name: string; description: string; cont
     name: "Customer onboarding",
     description: "Get a new customer set up and successful.",
     content: {
-      project: { color: "#10b981", status: "planned" },
+      project: { color: "#16C784", status: "planned" },
       issues: [
         { title: "Kickoff call and goals", priority: "high" },
         { title: "Set up accounts and access", priority: "high" },
@@ -140,11 +140,11 @@ const BUILTIN_WORKSPACES: Record<string, { name: string; description: string; co
         { name: "Product", key: "PRD" },
       ],
       labels: [
-        { name: "Bug", color: "#ef4444" },
-        { name: "Feature", color: "#8b5cf6" },
-        { name: "Improvement", color: "#3b82f6" },
-        { name: "Tech debt", color: "#f59e0b" },
-        { name: "Docs", color: "#10b981" },
+        { name: "Bug", color: "#D13438" },
+        { name: "Feature", color: "#4B637D" },
+        { name: "Improvement", color: "#2F7DF6" },
+        { name: "Tech debt", color: "#F5A524" },
+        { name: "Docs", color: "#16C784" },
       ],
       cycleLengthDays: 14,
     },
@@ -158,10 +158,10 @@ const BUILTIN_WORKSPACES: Record<string, { name: string; description: string; co
         { name: "Growth", key: "GROW" },
       ],
       labels: [
-        { name: "Bug", color: "#ef4444" },
-        { name: "Feature", color: "#8b5cf6" },
-        { name: "Customer request", color: "#ec4899" },
-        { name: "Marketing", color: "#f59e0b" },
+        { name: "Bug", color: "#D13438" },
+        { name: "Feature", color: "#4B637D" },
+        { name: "Customer request", color: "#E8642B" },
+        { name: "Marketing", color: "#F5A524" },
       ],
       cycleLengthDays: 7,
     },
@@ -175,10 +175,10 @@ const BUILTIN_WORKSPACES: Record<string, { name: string; description: string; co
         { name: "Internal", key: "INT" },
       ],
       labels: [
-        { name: "Design", color: "#8b5cf6" },
-        { name: "Development", color: "#3b82f6" },
-        { name: "Content", color: "#10b981" },
-        { name: "Client review", color: "#f59e0b" },
+        { name: "Design", color: "#4B637D" },
+        { name: "Development", color: "#2F7DF6" },
+        { name: "Content", color: "#16C784" },
+        { name: "Client review", color: "#F5A524" },
       ],
       cycleLengthDays: 14,
     },
@@ -201,7 +201,7 @@ export function validateProjectContent(content: ProjectTemplateContent): Project
   if (content.issues.length === 0) throw new Error("A project template needs at least one issue");
   if (content.issues.length > 50) throw new Error("A project template can have at most 50 issues");
   if (content.project.color !== undefined && !HEX.test(content.project.color)) {
-    throw new Error("Project color must be a hex color like #5e6ad2");
+    throw new Error("Project color must be a hex color like #4B637D");
   }
   return {
     project: content.project,
@@ -226,7 +226,7 @@ export function validateWorkspaceContent(content: WorkspaceTemplateContent): Wor
     return { ...t, key, name: cleanName(t.name, "Team name", 64) };
   });
   const labels = content.labels.map((l) => {
-    if (!HEX.test(l.color)) throw new Error(`Label color "${l.color}" must be a hex color like #ef4444`);
+    if (!HEX.test(l.color)) throw new Error(`Label color "${l.color}" must be a hex color like #D13438`);
     return { name: cleanName(l.name, "Label name", 40), color: l.color };
   });
   const days = content.cycleLengthDays;

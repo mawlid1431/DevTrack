@@ -201,8 +201,8 @@ function InviteMemberForm({
 
   if (atSeatLimit) {
     return (
-      <div className="flex items-center justify-between gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
-        <p className="text-xs text-amber-600 dark:text-amber-400">
+      <div className="flex items-center justify-between gap-3 rounded-lg border border-warning-fill/40 bg-warning-fill/10 p-3">
+        <p className="text-xs text-warning">
           All {planName} plan seats are in use.{" "}
           {isFreePlan
             ? "Upgrade to Pro for up to 10 seats, or Enterprise for unlimited members."
